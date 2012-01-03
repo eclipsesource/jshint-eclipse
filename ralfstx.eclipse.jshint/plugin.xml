@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            id="ralfstx.eclipse.jshint.properties.projectPropertyPage"
+            class="ralfstx.eclipse.jshint.properties.ProjectPropertyPage"
+            name="JSHint">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IResource">
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            id="ralfstx.eclipse.jshint.properties.filePropertyPage"
+            class="ralfstx.eclipse.jshint.properties.FilePropertyPage"
+            name="JSHint"
+            nameFilter="*.js">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IResource">
+               <instanceof
+                     value="org.eclipse.core.resources.IFile">
+               </instanceof>
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+   <extension
+         id="builder"
+         name="builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="false"
+            hasNature="false"
+            isConfigurable="false"
+            supportsConfigurations="false">
+         <run
+               class="ralfstx.eclipse.jshint.builder.JSHintBuilder">
+         </run>
+      </builder>
+   </extension>
+
+</plugin>

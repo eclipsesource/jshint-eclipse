@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+  <category-def
+      name="ralfstx.eclipse.jshint"
+      label="JSHint Integration for Eclipse"/>
+
+  <feature url="../ralfstx.eclipse.jshint.feature"
+      id="ralfstx.eclipse.jshint.feature"
+      version="0.1.0.qualifier">
+    <category name="ralfstx.eclipse.jshint"/>
+  </feature>
+
+</site>
