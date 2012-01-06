@@ -38,15 +38,12 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
     throws CoreException
   {
     if( kind == IncrementalProjectBuilder.FULL_BUILD ) {
-      System.out.println( "full build " + getProject() );
       fullBuild( monitor );
     } else {
       IResourceDelta delta = getDelta( getProject() );
       if( delta == null ) {
-        System.out.println( "build " + kind + " " + getProject() );
         fullBuild( monitor );
       } else {
-        System.out.println( "incremental build " + delta.getResource() );
         incrementalBuild( delta, monitor );
       }
     }
@@ -55,7 +52,6 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
 
   @Override
   protected void clean( IProgressMonitor monitor ) throws CoreException {
-    System.out.println( "clean " + getProject() );
     getProject().accept( new IResourceVisitor() {
       public boolean visit( IResource resource ) throws CoreException {
         new MarkerAdapter( resource ).removeMarkers();
@@ -103,31 +99,18 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
     }
 
     public boolean visit( IResource resource ) throws CoreException {
-      System.out.println( "   visit " + resource.getFullPath() );
-      if( resource.exists() && resource.getType() == IResource.FILE ) {
-        clean( resource );
-        if( mustCheck( resource ) ) {
-          check( ( IFile )resource );
+      boolean descend = true;
+      if( resource.exists() ) {
+        if( resource.getType() != IResource.FILE ) {
+          descend = allowContainer( resource );
+        } else {
+          clean( resource );
+          if( allowFile( resource ) ) {
+            check( ( IFile )resource );
+          }
         }
       }
-      return true;
-    }
-
-    private static boolean mustCheck( IResource resource ) throws CoreException {
-      Path binPath = new Path( "bin" );
-      if( binPath.isPrefixOf( resource.getProjectRelativePath() ) ) {
-        return false;
-      }
-      if( !StatusHelper.getProjectEnabled( resource ) ) {
-        return false;
-      }
-      if( !"js".equals( resource.getFileExtension() ) ) {
-        return false;
-      }
-      if( StatusHelper.getFileExcluded( resource ) ) {
-        return false;
-      }
-      return true;
+      return descend;
     }
 
     private void clean( IResource resource ) throws CoreException {
@@ -142,6 +125,27 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
       } catch( CoreExceptionWrapper wrapper ) {
         throw ( CoreException )wrapper.getCause();
       }
+    }
+
+    private static boolean allowContainer( IResource resource ) throws CoreException {
+      Path binPath = new Path( "bin" );
+      if( binPath.isPrefixOf( resource.getProjectRelativePath() ) ) {
+        return false;
+      }
+      if( !StatusHelper.getProjectEnabled( resource ) ) {
+        return false;
+      }
+      return true;
+    }
+
+    private static boolean allowFile( IResource resource ) throws CoreException {
+      if( !"js".equals( resource.getFileExtension() ) ) {
+        return false;
+      }
+      if( StatusHelper.getFileExcluded( resource ) ) {
+        return false;
+      }
+      return true;
     }
 
     private static String readContent( IFile file ) throws CoreException {
