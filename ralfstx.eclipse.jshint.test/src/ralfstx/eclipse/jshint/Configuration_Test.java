@@ -1,3 +1,5 @@
+package ralfstx.eclipse.jshint;
+
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
