@@ -22,7 +22,8 @@ import org.eclipse.core.runtime.Status;
 
 import ralfstx.eclipse.jshint.Configuration;
 import ralfstx.eclipse.jshint.ErrorHandler;
-import ralfstx.eclipse.jshint.JavaScriptChecker;
+import ralfstx.eclipse.jshint.JSHint;
+import ralfstx.eclipse.jshint.properties.ProjectPreferences;
 import ralfstx.eclipse.jshint.properties.StatusHelper;
 
 
@@ -64,28 +65,59 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
   }
 
   private void fullBuild( IProgressMonitor monitor ) throws CoreException {
-    getProject().accept( new MyBuilderVisitor() );
+    IProject project = getProject();
+    getProject().accept( new MyBuilderVisitor( project ) );
   }
 
   private void incrementalBuild( IResourceDelta delta, IProgressMonitor monitor )
     throws CoreException
   {
-    delta.accept( new MyBuilderVisitor() );
+    IProject project = getProject();
+    delta.accept( new MyBuilderVisitor( project ) );
   }
 
   private static class MyBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
-    private final JavaScriptChecker checker;
+    private final JSHint checker;
 
-    public MyBuilderVisitor() throws CoreException {
-      checker = new JavaScriptChecker();
+    public MyBuilderVisitor( IProject project ) throws CoreException {
+      checker = new JSHint();
       try {
         checker.init();
-        checker.setOptions( new Configuration() );
+        Configuration configuration = getConfiguration( project );
+        checker.configure( configuration );
       } catch( IOException exception ) {
         String message = "Failed to intialize JSHint";
         throw new CoreException( new Status( IStatus.ERROR, PLUGIN_ID, message, exception ) );
       }
+    }
+
+    private Configuration getConfiguration( IProject project ) {
+      Configuration configuration = new Configuration();
+      ProjectPreferences preferences = new ProjectPreferences( project );
+      String globalsString = preferences.getGlobals();
+      String[] globals = globalsString.split( "," );
+      for( String global : globals ) {
+        global = global.trim();
+        if( global.length() > 0 ) {
+          String[] parts = global.split( ":" );
+          if( parts.length == 2 ) {
+            configuration.addGlobal( parts[ 0 ].trim(), Boolean.parseBoolean( parts[ 1 ].trim() ) );
+          }
+        }
+      }
+      String optionsString = preferences.getOptions();
+      String[] options = optionsString.split( "," );
+      for( String option : options ) {
+        option = option.trim();
+        if( option.length() > 0 ) {
+          String[] parts = option.split( ":" );
+          if( parts.length == 2 ) {
+            configuration.addOption( parts[ 0 ].trim(), Boolean.parseBoolean( parts[ 1 ].trim() ) );
+          }
+        }
+      }
+      return configuration;
     }
 
     public boolean visit( IResourceDelta delta ) throws CoreException {

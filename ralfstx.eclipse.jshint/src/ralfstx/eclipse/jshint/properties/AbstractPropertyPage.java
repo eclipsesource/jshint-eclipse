@@ -8,7 +8,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 
@@ -16,22 +15,22 @@ public abstract class AbstractPropertyPage extends PropertyPage {
 
   protected static Composite createMainComposite( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( createMainLayout() );
+    composite.setLayout( createGridLayout( 1, false ) );
     composite.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
     return composite;
   }
 
-  private static GridLayout createMainLayout() {
-    GridLayout layout = new GridLayout();
+  protected static GridLayout createGridLayout( int numColumns, boolean makeColumnsEqualWidth ) {
+    GridLayout layout = new GridLayout( numColumns, makeColumnsEqualWidth );
     layout.marginHeight = 0;
     layout.marginWidth = 0;
     return layout;
   }
 
   protected static Composite createDefaultComposite( Composite parent ) {
-    Composite composite = new Composite( parent, SWT.NULL );
+    Composite composite = new Composite( parent, SWT.NONE );
     composite.setLayout( new GridLayout( 2, false ) );
-    composite.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, true ) );
+    composite.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
     return composite;
   }
 
@@ -47,11 +46,6 @@ public abstract class AbstractPropertyPage extends PropertyPage {
       return ( IResource )element;
     }
     return ( IResource )element.getAdapter( IResource.class );
-  }
-
-  protected void addSeparator( Composite parent ) {
-    Label separator = new Label( parent, SWT.SEPARATOR | SWT.HORIZONTAL );
-    separator.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
   }
 
   protected void hideButtons() {

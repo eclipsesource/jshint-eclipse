@@ -13,7 +13,7 @@ import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptableObject;
 
 
-public class JavaScriptChecker {
+public class JSHint {
 
   private static final String JSHINT_JS = "ralfstx/eclipse/jshint/jshint.js";
   private Function jshint;
@@ -35,32 +35,41 @@ public class JavaScriptChecker {
     }
   }
 
-  public void setOptions( Configuration configuration ) {
+  public void configure( Configuration configuration ) {
     Context context = Context.enter();
-    ScriptableObject scope = context.initStandardObjects();
-    String optString = configuration.toString();
-    opts = context.evaluateString( scope, "opts = " + optString + ";", "[opts]", 1, null );
+    try {
+      ScriptableObject scope = context.initStandardObjects();
+      String optionsString = configuration.getOptionsString();
+      System.out.println( "config: " + optionsString );
+      opts = context.evaluateString( scope, "opts = " + optionsString + ";", "[options]", 1, null );
+    } finally {
+      Context.exit();
+    }
   }
 
   public boolean check( String code, ErrorHandler handler ) {
     Context context = Context.enter();
-    ScriptableObject scope = context.initStandardObjects();
-    Object[] args = new Object[]{ code, opts };
     boolean result;
     try {
-      result = ( ( Boolean )jshint.call( context, scope, null, args ) ).booleanValue();
-    } catch( JavaScriptException exception ) {
-      handler.handleError( 0, -1, "Could not parse JavaScript: " + exception.getMessage() );
-      return false;
-    }
-    if( result == Boolean.FALSE ) {
-      NativeArray errors = ( NativeArray )jshint.get( "errors", jshint );
-      for( Object object : errors ) {
-        ScriptableObject error = ( ScriptableObject )object;
-        if( error != null ) {
-          handleError( handler, error );
+      ScriptableObject scope = context.initStandardObjects();
+      Object[] args = new Object[] { code, opts };
+      try {
+        result = ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
+      } catch( JavaScriptException exception ) {
+        handler.handleError( 0, -1, "Could not parse JavaScript: " + exception.getMessage() );
+        return false;
+      }
+      if( result == Boolean.FALSE ) {
+        NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
+        for( Object object : errors ) {
+          ScriptableObject error = (ScriptableObject)object;
+          if( error != null ) {
+            handleError( handler, error );
+          }
         }
       }
+    } finally {
+      Context.exit();
     }
     return result;
   }
@@ -96,7 +105,7 @@ public class JavaScriptChecker {
   }
 
   private static BufferedReader getJsHintReader() throws UnsupportedEncodingException {
-    ClassLoader classLoader = JavaScriptChecker.class.getClassLoader();
+    ClassLoader classLoader = JSHint.class.getClassLoader();
     InputStream inputStream = classLoader.getResourceAsStream( JSHINT_JS );
     return new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
   }
@@ -106,9 +115,9 @@ public class JavaScriptChecker {
 
   public static void main( String[] args ) {
     try {
-      JavaScriptChecker checker = new JavaScriptChecker();
+      JSHint checker = new JSHint();
       checker.init();
-      checker.setOptions( new Configuration() );
+      checker.configure( new Configuration() );
       String code = "foo = { bar : 23, bar : 42 };\nif( foo == null )\n  bar = x";
       checker.check( code, new SysoutErrorHandler() );
     } catch( Exception e ) {

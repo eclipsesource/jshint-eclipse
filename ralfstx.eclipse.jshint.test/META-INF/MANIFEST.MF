@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests for JSHint Eclipse Integration
+Bundle-SymbolicName: ralfstx.eclipse.jshint.test
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: ralfstx.eclipse.jshint
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.junit
