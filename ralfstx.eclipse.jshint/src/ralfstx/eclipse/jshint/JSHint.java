@@ -40,7 +40,6 @@ public class JSHint {
     try {
       ScriptableObject scope = context.initStandardObjects();
       String optionsString = configuration.getOptionsString();
-      System.out.println( "config: " + optionsString );
       opts = context.evaluateString( scope, "opts = " + optionsString + ";", "[options]", 1, null );
     } finally {
       Context.exit();
