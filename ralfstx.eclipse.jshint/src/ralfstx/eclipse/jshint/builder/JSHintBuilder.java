@@ -92,32 +92,9 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
       }
     }
 
-    private Configuration getConfiguration( IProject project ) {
-      Configuration configuration = new Configuration();
+    private static Configuration getConfiguration( IProject project ) {
       ProjectPreferences preferences = new ProjectPreferences( project );
-      String globalsString = preferences.getGlobals();
-      String[] globals = globalsString.split( "," );
-      for( String global : globals ) {
-        global = global.trim();
-        if( global.length() > 0 ) {
-          String[] parts = global.split( ":" );
-          if( parts.length == 2 ) {
-            configuration.addGlobal( parts[ 0 ].trim(), Boolean.parseBoolean( parts[ 1 ].trim() ) );
-          }
-        }
-      }
-      String optionsString = preferences.getOptions();
-      String[] options = optionsString.split( "," );
-      for( String option : options ) {
-        option = option.trim();
-        if( option.length() > 0 ) {
-          String[] parts = option.split( ":" );
-          if( parts.length == 2 ) {
-            configuration.addOption( parts[ 0 ].trim(), Boolean.parseBoolean( parts[ 1 ].trim() ) );
-          }
-        }
-      }
-      return configuration;
+      return preferences.getConfiguration();
     }
 
     public boolean visit( IResourceDelta delta ) throws CoreException {

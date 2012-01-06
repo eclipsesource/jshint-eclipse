@@ -1,5 +1,6 @@
 package ralfstx.eclipse.jshint.properties;
 
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -9,6 +10,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
 import ralfstx.eclipse.jshint.Activator;
+import ralfstx.eclipse.jshint.Configuration;
 
 
 public class ProjectPreferences {
@@ -52,6 +54,17 @@ public class ProjectPreferences {
       Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
       throw new CoreException( status );
     }
+  }
+
+  public Configuration getConfiguration() {
+    Configuration configuration = new Configuration();
+    for( OptionParserUtil.Entry entry : OptionParserUtil.parseOptionString( getGlobals() ) ) {
+      configuration.addGlobal( entry.name, entry.value );
+    }
+    for( OptionParserUtil.Entry entry : OptionParserUtil.parseOptionString( getOptions() ) ) {
+      configuration.addOption( entry.name, entry.value );
+    }
+    return configuration;
   }
 
 }
