@@ -1,7 +1,6 @@
 package ralfstx.eclipse.jshint.properties;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -32,18 +31,17 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   @Override
   public boolean performOk() {
     try {
-      IResource resource = getResource();
-      IProject project = resource.getProject();
+      prefs.setGlobals( predefinedText.getText() );
+      prefs.setOptions( optionsText.getText() );
+      prefs.save();
+      IProject project = getResource().getProject();
       boolean enabled = enablementCheckbox.getSelection();
+      StatusHelper.setProjectEnabled( project, enabled );
       if( enabled ) {
         new BuilderAdapter( project ).enableJSHint();
       } else {
         new BuilderAdapter( project ).disableJSHint();
       }
-      StatusHelper.setProjectEnabled( project, enabled );
-      prefs.setGlobals( predefinedText.getText() );
-      prefs.setOptions( optionsText.getText() );
-      prefs.save();
     } catch( CoreException exception ) {
       String message = "Failed to store settings";
       Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
