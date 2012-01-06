@@ -96,12 +96,13 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     Label predefinedLabel = new Label( configSection, SWT.NONE );
     predefinedLabel.setText( "Predefined globals:" );
 
-    predefinedText = new Text( configSection, SWT.BORDER );
-    predefinedText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
+    predefinedText = new Text( configSection, SWT.BORDER | SWT.MULTI | SWT.WRAP );
+    predefinedText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
     predefinedText.setText( prefs.getGlobals() );
 
     Text predefinedSubLabel = new Text( configSection, SWT.READ_ONLY | SWT.WRAP );
-    predefinedSubLabel.setText( "Example: \"org, com, ...\"" );
+    predefinedSubLabel.setText( "Example: \"org: true, com: true, ...\"\n"
+                                + "use false for read-only identifiers" );
     predefinedSubLabel.setLayoutData( createGridDataWithIndent( 20 ) );
     predefinedSubLabel.setBackground( configSection.getBackground() );
 
