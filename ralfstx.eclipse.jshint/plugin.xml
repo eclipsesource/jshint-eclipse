@@ -46,5 +46,19 @@
          </run>
       </builder>
    </extension>
+   <extension
+         id="problemmarker"
+         name="JSHint Problem"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="true">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+   </extension>
 
 </plugin>

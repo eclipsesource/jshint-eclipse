@@ -52,12 +52,7 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
 
   @Override
   protected void clean( IProgressMonitor monitor ) throws CoreException {
-    getProject().accept( new IResourceVisitor() {
-      public boolean visit( IResource resource ) throws CoreException {
-        new MarkerAdapter( resource ).removeMarkers();
-        return true;
-      }
-    } );
+    new MarkerAdapter( getProject() ).removeMarkers();
   }
 
   private void fullBuild( IProgressMonitor monitor ) throws CoreException {

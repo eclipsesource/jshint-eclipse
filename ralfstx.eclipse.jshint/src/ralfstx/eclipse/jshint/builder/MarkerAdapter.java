@@ -4,12 +4,10 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
-import ralfstx.eclipse.jshint.Activator;
-
 
 public class MarkerAdapter {
 
-  private static final String CUSTOM_TYPE = Activator.PLUGIN_ID;
+  private static final String TYPE_PROBLEM = "ralfstx.eclipse.jshint.problemmarker";
   private final IResource resource;
 
   public MarkerAdapter( IResource resource ) {
@@ -17,17 +15,11 @@ public class MarkerAdapter {
   }
 
   public void removeMarkers() throws CoreException {
-    IMarker[] markers = resource.findMarkers( IMarker.PROBLEM, true, IResource.DEPTH_INFINITE );
-    for( IMarker marker : markers ) {
-      if( marker.getAttribute( CUSTOM_TYPE ) != null ) {
-        marker.delete();
-      }
-    }
+    resource.deleteMarkers( TYPE_PROBLEM, true, IResource.DEPTH_INFINITE );
   }
 
   public void createMarker( int lineNr, int start, int end, String message ) throws CoreException {
-    IMarker marker = resource.createMarker( IMarker.PROBLEM );
-    marker.setAttribute( CUSTOM_TYPE, "true" );
+    IMarker marker = resource.createMarker( TYPE_PROBLEM );
     marker.setAttribute( IMarker.SEVERITY, new Integer( IMarker.SEVERITY_WARNING ) );
     marker.setAttribute( IMarker.MESSAGE, message );
     marker.setAttribute( IMarker.LINE_NUMBER, new Integer( lineNr ) );
