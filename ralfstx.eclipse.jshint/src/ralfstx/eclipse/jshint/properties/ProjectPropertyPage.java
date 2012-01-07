@@ -128,14 +128,14 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
 
   private void setBuilderEnabled( boolean enabled ) throws CoreException {
     IProject project = getResource().getProject();
+    boolean changed;
     if( enabled ) {
-      if( BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID ) ) {
-        BuilderUtil.triggerBuild( project, JSHintBuilder.ID );
-      }
+      changed = BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID );
     } else {
-      if( BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID ) ) {
-        BuilderUtil.triggerClean( project, JSHintBuilder.ID );
-      }
+      changed = BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID );
+    }
+    if( changed ) {
+      BuilderUtil.triggerClean( project, JSHintBuilder.ID );
     }
   }
 
