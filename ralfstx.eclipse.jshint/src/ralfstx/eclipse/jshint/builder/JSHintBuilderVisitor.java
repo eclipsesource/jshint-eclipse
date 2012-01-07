@@ -94,6 +94,9 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
   }
 
   private boolean considerContainer( IResource resource ) throws CoreException {
+    if( preferences.getExcluded( resource ) ) {
+      return false;
+    }
     Path binPath = new Path( "bin" );
     if( binPath.isPrefixOf( resource.getProjectRelativePath() ) ) {
       return false;

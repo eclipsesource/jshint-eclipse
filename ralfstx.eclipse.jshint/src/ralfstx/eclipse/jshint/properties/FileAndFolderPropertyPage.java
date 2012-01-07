@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 
-public class FilePropertyPage extends AbstractPropertyPage {
+public class FileAndFolderPropertyPage extends AbstractPropertyPage {
 
   private Button excludeCheckbox;
 
@@ -48,13 +48,8 @@ public class FilePropertyPage extends AbstractPropertyPage {
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = createMainComposite( parent );
-    try {
-      State state = readState();
-      addEnablementSection( composite, state );
-    } catch( CoreException exception ) {
-      addErrorSection( composite );
-      hideButtons();
-    }
+    State state = readState();
+    addEnablementSection( composite, state );
     return composite;
   }
 
@@ -64,20 +59,13 @@ public class FilePropertyPage extends AbstractPropertyPage {
     label.setLayoutData( createSpanGridData() );
     label.setText( "The project has JSHint " + ( state.projectEnabled ? "enabled" : "disabled" ) );
     excludeCheckbox = new Button( composite, SWT.CHECK );
-    excludeCheckbox.setText( "Exclude this file from jshint checks" );
+    String fileOrFolder = getResource().getType() == IResource.FILE ? "file" : "folder";
+    excludeCheckbox.setText( "Exclude this " + fileOrFolder + " from jshint validation" );
     excludeCheckbox.setSelection( state.fileExcluded );
     excludeCheckbox.setEnabled( state.projectEnabled );
   }
 
-  private void addErrorSection( Composite parent ) {
-    Composite composite = createDefaultComposite( parent );
-    Label iconLabel = new Label( composite, SWT.NONE );
-    iconLabel.setImage( parent.getDisplay().getSystemImage( SWT.ICON_ERROR ) );
-    Label messageLabel = new Label( composite, SWT.NONE );
-    messageLabel.setText( "Failed to read properties" );
-  }
-
-  private State readState() throws CoreException {
+  private State readState() {
     ProjectPreferences preferences = getProjectPreferences();
     boolean projectEnabled = preferences.getEnabled();
     boolean fileExcluded = preferences.getExcluded( getResource() );
