@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.Status;
 import ralfstx.eclipse.jshint.Configuration;
 import ralfstx.eclipse.jshint.ErrorHandler;
 import ralfstx.eclipse.jshint.JSHint;
+import ralfstx.eclipse.jshint.Text;
 import ralfstx.eclipse.jshint.properties.ProjectPreferences;
 import ralfstx.eclipse.jshint.properties.StatusHelper;
 
@@ -118,10 +119,10 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
     }
 
     private void check( IFile file ) throws CoreException {
-      String code = readContent( file );
-      ErrorHandler handler = new MarkerErrorHandler( new MarkerAdapter( file ) );
+      Text code = readContent( file );
+      ErrorHandler handler = new MarkerErrorHandler( new MarkerAdapter( file ), code );
       try {
-        checker.check( code, handler );
+        checker.check( code.getContent(), handler );
       } catch( CoreExceptionWrapper wrapper ) {
         throw ( CoreException )wrapper.getCause();
       }
@@ -148,7 +149,7 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
       return true;
     }
 
-    private static String readContent( IFile file ) throws CoreException {
+    private static Text readContent( IFile file ) throws CoreException {
       try {
         InputStream inputStream = file.getContents();
         String charset = file.getCharset();
@@ -159,20 +160,13 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
       }
     }
 
-    private static String readContent( InputStream inputStream, String charset )
+    private static Text readContent( InputStream inputStream, String charset )
       throws UnsupportedEncodingException, IOException
     {
-      String result;
+      Text result;
       BufferedReader reader = new BufferedReader( new InputStreamReader( inputStream, charset ) );
       try {
-        StringBuilder builder = new StringBuilder();
-        String line = reader.readLine();
-        while( line != null ) {
-          builder.append( line );
-          builder.append( '\n' );
-          line = reader.readLine();
-        }
-        result = builder.toString();
+        result = new Text( reader );
       } finally {
         reader.close();
       }
@@ -184,18 +178,17 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
   private static final class MarkerErrorHandler implements ErrorHandler {
 
     private final MarkerAdapter markerAdapter;
+    private final Text code;
 
-    private MarkerErrorHandler( MarkerAdapter markerAdapter ) {
+    private MarkerErrorHandler( MarkerAdapter markerAdapter, Text code ) {
       this.markerAdapter = markerAdapter;
+      this.code = code;
     }
 
     public void handleError( int line, int character, String message ) {
       try {
-        // TODO Character is line-relative, we need absolute position in the text
-        // int start = getAbsolutePosition( line, character );
-        // int end = start;
-        int start = -1;
-        int end = -1;
+        int start = code.getLineOffset( line - 1 ) + character - 1;
+        int end = start;
         markerAdapter.createMarker( line, start, end, message );
       } catch( CoreException ce ) {
         throw new CoreExceptionWrapper( ce );
