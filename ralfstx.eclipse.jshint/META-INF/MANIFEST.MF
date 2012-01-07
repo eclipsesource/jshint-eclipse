@@ -10,3 +10,5 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: ralfstx
 Bundle-ClassPath: lib/rhino1_7R3-js.jar,
  .
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: ralfstx.eclipse.jshint.Activator
