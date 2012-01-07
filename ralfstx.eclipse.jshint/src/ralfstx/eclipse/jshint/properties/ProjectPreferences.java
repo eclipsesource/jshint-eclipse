@@ -35,7 +35,11 @@ public class ProjectPreferences {
   }
 
   public void setGlobals( String value ) {
-    node.put( KEY_GLOBALS, value );
+    if( DEF_GLOBALS.equals( value ) ) {
+      node.remove( KEY_GLOBALS );
+    } else {
+      node.put( KEY_GLOBALS, value );
+    }
   }
 
   public String getOptions() {
@@ -43,7 +47,11 @@ public class ProjectPreferences {
   }
 
   public void setOptions( String value ) {
-    node.put( KEY_OPTIONS, value );
+    if( value.equals( DEF_OPTIONS ) ) {
+      node.remove( KEY_OPTIONS );
+    } else {
+      node.put( KEY_OPTIONS, value );
+    }
   }
 
   public void save() throws CoreException {
