@@ -1,11 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Ralf Sternberg.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Ralf Sternberg - initial implementation and API
+ ******************************************************************************/
 package ralfstx.eclipse.jshint;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import ralfstx.eclipse.jshint.Configuration;
 
 
 public class Configuration_Test {

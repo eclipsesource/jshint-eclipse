@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Ralf Sternberg.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Ralf Sternberg - initial implementation and API
+ ******************************************************************************/
 package ralfstx.eclipse.jshint;
 
 import static org.junit.Assert.assertFalse;
@@ -8,10 +18,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import ralfstx.eclipse.jshint.Configuration;
-import ralfstx.eclipse.jshint.ErrorHandler;
-import ralfstx.eclipse.jshint.JSHint;
 
 
 public class JSHint_Test {
