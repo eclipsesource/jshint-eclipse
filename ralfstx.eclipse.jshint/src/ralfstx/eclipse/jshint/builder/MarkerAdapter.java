@@ -31,7 +31,6 @@ public class MarkerAdapter {
     marker.setAttribute( IMarker.SEVERITY, new Integer( IMarker.SEVERITY_WARNING ) );
     marker.setAttribute( IMarker.MESSAGE, message );
     marker.setAttribute( IMarker.LINE_NUMBER, new Integer( lineNr ) );
-    System.out.println( "marker at line " + lineNr );
     if( start >= 0 ) {
       marker.setAttribute( IMarker.CHAR_START, new Integer( start ) );
       marker.setAttribute( IMarker.CHAR_END, new Integer( end >= 0 ? end : start ) );
