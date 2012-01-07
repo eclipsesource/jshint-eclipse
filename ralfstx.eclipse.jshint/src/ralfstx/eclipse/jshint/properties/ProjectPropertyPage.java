@@ -17,7 +17,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import ralfstx.eclipse.jshint.Activator;
-import ralfstx.eclipse.jshint.builder.BuilderAdapter;
+import ralfstx.eclipse.jshint.builder.BuilderUtil;
+import ralfstx.eclipse.jshint.builder.JSHintBuilder;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {
@@ -118,9 +119,13 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   private void setBuilderEnabled( boolean enabled ) throws CoreException {
     IProject project = getResource().getProject();
     if( enabled ) {
-      new BuilderAdapter( project ).enableJSHint();
+      if( BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID ) ) {
+        BuilderUtil.triggerBuild( project, JSHintBuilder.ID );
+      }
     } else {
-      new BuilderAdapter( project ).disableJSHint();
+      if( BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID ) ) {
+        BuilderUtil.triggerClean( project, JSHintBuilder.ID );
+      }
     }
   }
 

@@ -10,38 +10,22 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 
 
-public class BuilderAdapter {
+public class BuilderUtil {
 
-  private final IProject project;
-
-  public BuilderAdapter( IProject project ) {
-    this.project = project;
+  private BuilderUtil() {
+    // prevent instantiation
   }
 
-  public void enableJSHint() throws CoreException {
-    boolean changed = addBuilderToProject( project, JSHintBuilder.ID );
-    if( changed ) {
-      triggerBuild();
-    }
+  public static void triggerClean( IProject project, String builderName ) throws CoreException {
+    project.build( IncrementalProjectBuilder.CLEAN_BUILD, builderName, null, null );
   }
 
-  public void disableJSHint() throws CoreException {
-    boolean changed = removeBuilderFromProject( project, JSHintBuilder.ID );
-    if( changed ) {
-      triggerClean();
-    }
-  }
-
-  public void triggerClean() throws CoreException {
-    project.build( IncrementalProjectBuilder.CLEAN_BUILD, JSHintBuilder.ID, null, null );
-  }
-
-  public void triggerBuild() throws CoreException {
-    project.build( IncrementalProjectBuilder.FULL_BUILD, JSHintBuilder.ID, null, null );
+  public static void triggerBuild( IProject project, String builderName ) throws CoreException {
+    project.build( IncrementalProjectBuilder.FULL_BUILD, builderName, null, null );
   }
 
   public static boolean addBuilderToProject( IProject project, String builderId )
-    throws CoreException
+      throws CoreException
   {
     IProjectDescription description = project.getDescription();
     if( !containsBuildCommand( description, builderId ) ) {
@@ -53,7 +37,7 @@ public class BuilderAdapter {
   }
 
   public static boolean removeBuilderFromProject( IProject project, String builderId )
-    throws CoreException
+      throws CoreException
   {
     IProjectDescription description = project.getDescription();
     if( containsBuildCommand( description, builderId ) ) {
@@ -75,9 +59,9 @@ public class BuilderAdapter {
 
   private static void addBuildCommand( IProjectDescription description, String builderId ) {
     ICommand[] oldCommands = description.getBuildSpec();
-    ICommand[] newCommands = new ICommand[ oldCommands.length + 1 ];
+    ICommand[] newCommands = new ICommand[oldCommands.length + 1];
     System.arraycopy( oldCommands, 0, newCommands, 0, oldCommands.length );
-    newCommands[ newCommands.length - 1 ] = createBuildCommand( description, builderId );
+    newCommands[newCommands.length - 1] = createBuildCommand( description, builderId );
     description.setBuildSpec( newCommands );
   }
 
@@ -89,7 +73,7 @@ public class BuilderAdapter {
         list.add( command );
       }
     }
-    ICommand[] newCommands = new ICommand[ list.size() ];
+    ICommand[] newCommands = new ICommand[list.size()];
     list.toArray( newCommands );
     description.setBuildSpec( newCommands );
   }
