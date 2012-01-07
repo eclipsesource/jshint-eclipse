@@ -7,7 +7,7 @@ targetRepo=$HOME/eclipse/targets/eclipse-rcp-indigo-sr1
 
 # build
 
-cd "$HOME/git/eclipse-jshint/ralfstx.eclipse.jshint.releng"
+cd "$HOME/git/jshint-eclipse/ralfstx.eclipse.jshint.releng"
 
 $MVN -DtargetRepo=$targetRepo clean package || exit 1
 
@@ -20,4 +20,4 @@ if [ -z "$version" ]; then
 fi
 echo "Version: $version"
 
-rsync -av repository/target/repository/ $HOME/git/ralfstx.github.com/update/eclipse-jshint/eclipse-jshint-$version
+rsync -av repository/target/repository/ $HOME/git/ralfstx.github.com/update/jshint-eclipse/eclipse-jshint-$version

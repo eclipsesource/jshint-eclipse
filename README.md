@@ -19,7 +19,7 @@ Eclipse 3.6 (Helios) or newer.
 Installation
 ------------
 
-Install from this Eclipse update site: http://ralfstx.github.com/update/eclipse-jshint/
+Install from this Eclipse update site: http://ralfstx.github.com/update/jshint-eclipse/
 
 * Eclipse main menu: _Help_ -> _Install New Software..._
 
