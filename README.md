@@ -11,10 +11,15 @@ JSHint validation can be enabled separately for every project.
 Whenever a *.js file changes, it is validated and a warning marker is added for every problem found.
 The configuration options for JSHint (http://www.jshint.com/options/) can also be set on project level and are persisted in the projects itself.
 
+Requirements
+------------
+
+Eclipse 3.6 (Helios) or newer.
+
 Installation
 ------------
 
-Install from this Eclipse update site: http://ralfstx.github.com/update/eclipse-jslint/
+Install from this Eclipse update site: http://ralfstx.github.com/update/eclipse-jshint/
 
 * Eclipse main menu: _Help_ -> _Install New Software..._
 
