@@ -26,22 +26,16 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   private Text predefinedText;
   private Text optionsText;
   private Composite configSection;
-  private ProjectPreferences prefs;
 
   @Override
   public boolean performOk() {
     try {
-      prefs.setGlobals( predefinedText.getText() );
-      prefs.setOptions( optionsText.getText() );
-      prefs.save();
-      IProject project = getResource().getProject();
-      boolean enabled = enablementCheckbox.getSelection();
-      StatusHelper.setProjectEnabled( project, enabled );
-      if( enabled ) {
-        new BuilderAdapter( project ).enableJSHint();
-      } else {
-        new BuilderAdapter( project ).disableJSHint();
-      }
+      ProjectPreferences preferences = getProjectPreferences();
+      preferences.setEnabled( enablementCheckbox.getSelection() );
+      preferences.setGlobals( predefinedText.getText() );
+      preferences.setOptions( optionsText.getText() );
+      preferences.save();
+      setBuilderEnabled( enablementCheckbox.getSelection() );
     } catch( CoreException exception ) {
       String message = "Failed to store settings";
       Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
@@ -61,16 +55,10 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
 
   @Override
   protected Control createContents( Composite parent ) {
-    prefs = new ProjectPreferences( (IProject)getResource() );
     Composite composite = createMainComposite( parent );
-    try {
-      boolean enabled = getProjectEnabled();
-      addEnablementSection( composite, enabled );
-      addConfigSection( composite, enabled );
-    } catch( CoreException e ) {
-      addErrorSection( composite );
-      hideButtons();
-    }
+    boolean enabled = getProjectPreferences().getEnabled();
+    addEnablementSection( composite, enabled );
+    addConfigSection( composite, enabled );
     return composite;
   }
 
@@ -88,6 +76,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   }
 
   private void addConfigSection( Composite parent, boolean enabled ) {
+    ProjectPreferences preferences = getProjectPreferences();
     configSection = new Composite( parent, SWT.NONE );
     configSection.setLayout( new GridLayout() );
     configSection.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
@@ -98,7 +87,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
 
     predefinedText = new Text( configSection, SWT.BORDER | SWT.MULTI | SWT.WRAP );
     predefinedText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    predefinedText.setText( prefs.getGlobals() );
+    predefinedText.setText( preferences.getGlobals() );
 
     Text predefinedSubLabel = new Text( configSection, SWT.READ_ONLY | SWT.WRAP );
     predefinedSubLabel.setText( "Example: \"org: true, com: true, ...\"\n"
@@ -111,7 +100,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
 
     optionsText = new Text( configSection, SWT.BORDER | SWT.MULTI | SWT.WRAP );
     optionsText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    optionsText.setText( prefs.getOptions() );
+    optionsText.setText( preferences.getOptions() );
 
     Text optionsSubLabel = new Text( configSection, SWT.READ_ONLY | SWT.WRAP );
     optionsSubLabel.setText( "Example: \"strict: false, sub: true, ...\"\n"
@@ -126,12 +115,13 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     return predefinedSubData;
   }
 
-  private void addErrorSection( Composite parent ) {
-    Composite composite = createDefaultComposite( parent );
-    Label iconLabel = new Label( composite, SWT.NONE );
-    iconLabel.setImage( parent.getDisplay().getSystemImage( SWT.ICON_ERROR ) );
-    Label messageLabel = new Label( composite, SWT.NONE );
-    messageLabel.setText( "Failed to read properties" );
+  private void setBuilderEnabled( boolean enabled ) throws CoreException {
+    IProject project = getResource().getProject();
+    if( enabled ) {
+      new BuilderAdapter( project ).enableJSHint();
+    } else {
+      new BuilderAdapter( project ).disableJSHint();
+    }
   }
 
 }

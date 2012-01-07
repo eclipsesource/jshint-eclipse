@@ -1,8 +1,6 @@
 package ralfstx.eclipse.jshint.properties;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -12,6 +10,8 @@ import org.eclipse.ui.dialogs.PropertyPage;
 
 
 public abstract class AbstractPropertyPage extends PropertyPage {
+
+  private ProjectPreferences projectPreferences;
 
   protected static Composite createMainComposite( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
@@ -53,9 +53,11 @@ public abstract class AbstractPropertyPage extends PropertyPage {
     getApplyButton().setVisible( false );
   }
 
-  protected boolean getProjectEnabled() throws CoreException {
-    IProject project = getResource().getProject();
-    return StatusHelper.getProjectEnabled( project );
+  protected ProjectPreferences getProjectPreferences() {
+    if( projectPreferences == null ) {
+      projectPreferences = new ProjectPreferences( getResource().getProject() );
+    }
+    return projectPreferences;
   }
 
 }

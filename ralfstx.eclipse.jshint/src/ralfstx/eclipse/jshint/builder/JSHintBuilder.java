@@ -25,7 +25,6 @@ import ralfstx.eclipse.jshint.ErrorHandler;
 import ralfstx.eclipse.jshint.JSHint;
 import ralfstx.eclipse.jshint.Text;
 import ralfstx.eclipse.jshint.properties.ProjectPreferences;
-import ralfstx.eclipse.jshint.properties.StatusHelper;
 
 
 public class JSHintBuilder extends IncrementalProjectBuilder {
@@ -76,22 +75,11 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
   private static class MyBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
     private final JSHint checker;
+    private final ProjectPreferences preferences;
 
     public MyBuilderVisitor( IProject project ) throws CoreException {
-      checker = new JSHint();
-      try {
-        checker.init();
-        Configuration configuration = getConfiguration( project );
-        checker.configure( configuration );
-      } catch( IOException exception ) {
-        String message = "Failed to intialize JSHint";
-        throw new CoreException( new Status( IStatus.ERROR, PLUGIN_ID, message, exception ) );
-      }
-    }
-
-    private static Configuration getConfiguration( IProject project ) {
-      ProjectPreferences preferences = new ProjectPreferences( project );
-      return preferences.getConfiguration();
+      preferences = new ProjectPreferences( project );
+      checker = preferences.getEnabled() ? createJSHint( preferences.getConfiguration() ) : null;
     }
 
     public boolean visit( IResourceDelta delta ) throws CoreException {
@@ -100,8 +88,8 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
     }
 
     public boolean visit( IResource resource ) throws CoreException {
-      boolean descend = true;
-      if( resource.exists() ) {
+      boolean descend = false;
+      if( resource.exists() && preferences.getEnabled() ) {
         if( resource.getType() != IResource.FILE ) {
           descend = allowContainer( resource );
         } else {
@@ -109,9 +97,22 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
           if( allowFile( resource ) ) {
             check( ( IFile )resource );
           }
+          descend = true;
         }
       }
       return descend;
+    }
+
+    private JSHint createJSHint( Configuration configuration ) throws CoreException {
+      JSHint jshint = new JSHint();
+      try {
+        jshint.init();
+        jshint.configure( configuration );
+      } catch( IOException exception ) {
+        String message = "Failed to intialize JSHint";
+        throw new CoreException( new Status( IStatus.ERROR, PLUGIN_ID, message, exception ) );
+      }
+      return jshint;
     }
 
     private void clean( IResource resource ) throws CoreException {
@@ -133,17 +134,14 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
       if( binPath.isPrefixOf( resource.getProjectRelativePath() ) ) {
         return false;
       }
-      if( !StatusHelper.getProjectEnabled( resource ) ) {
-        return false;
-      }
       return true;
     }
 
-    private static boolean allowFile( IResource resource ) throws CoreException {
+    private boolean allowFile( IResource resource ) throws CoreException {
       if( !"js".equals( resource.getFileExtension() ) ) {
         return false;
       }
-      if( StatusHelper.getFileExcluded( resource ) ) {
+      if( preferences.getExcluded( resource ) ) {
         return false;
       }
       return true;

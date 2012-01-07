@@ -17,8 +17,9 @@ public class FilePropertyPage extends AbstractPropertyPage {
   public boolean performOk() {
     try {
       IResource resource = getResource();
-      boolean excluded = excludeCheckbox.getSelection();
-      StatusHelper.setFileExcluded( resource, excluded );
+      ProjectPreferences preferences = getProjectPreferences();
+      preferences.setExcluded( resource, excludeCheckbox.getSelection() );
+      preferences.save();
       resource.touch( null );
     } catch( CoreException e ) {
       return false;
@@ -67,14 +68,10 @@ public class FilePropertyPage extends AbstractPropertyPage {
   }
 
   private State readState() throws CoreException {
-    boolean projectEnabled = getProjectEnabled();
-    boolean fileExcluded = getFileExcluded();
+    ProjectPreferences preferences = getProjectPreferences();
+    boolean projectEnabled = preferences.getEnabled();
+    boolean fileExcluded = preferences.getExcluded( getResource() );
     return new State( projectEnabled, fileExcluded );
-  }
-
-  private boolean getFileExcluded() throws CoreException {
-    IResource resource = getResource();
-    return StatusHelper.getFileExcluded( resource );
   }
 
   static class State {
