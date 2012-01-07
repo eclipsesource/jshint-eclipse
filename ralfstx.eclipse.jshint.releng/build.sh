@@ -20,5 +20,4 @@ if [ -z "$version" ]; then
 fi
 echo "Version: $version"
 
-rsync -av repository/target/repository/ $HOME/git/ralfstx.github.com/update/eclipse-addons/eclipse-jshint-$version
-
+rsync -av repository/target/repository/ $HOME/git/ralfstx.github.com/update/eclipse-jshint/eclipse-jshint-$version
