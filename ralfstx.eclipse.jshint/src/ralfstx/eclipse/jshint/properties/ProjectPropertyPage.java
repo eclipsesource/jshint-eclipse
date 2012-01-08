@@ -12,9 +12,6 @@ package ralfstx.eclipse.jshint.properties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,7 +23,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import ralfstx.eclipse.jshint.Activator;
 import ralfstx.eclipse.jshint.builder.BuilderUtil;
 import ralfstx.eclipse.jshint.builder.JSHintBuilder;
 
@@ -41,16 +37,14 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   @Override
   public boolean performOk() {
     try {
-      ProjectPreferences preferences = getProjectPreferences();
-      preferences.setEnabled( enablementCheckbox.getSelection() );
-      preferences.setGlobals( predefinedText.getText() );
-      preferences.setOptions( optionsText.getText() );
-      preferences.save();
-      setBuilderEnabled( enablementCheckbox.getSelection() );
+      boolean preferencesChanged = storePreferences();
+      boolean builderChanged = setBuilderEnablement();
+      if( preferencesChanged || builderChanged ) {
+        triggerRebuild();
+      }
     } catch( CoreException exception ) {
       String message = "Failed to store settings";
-      Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
-      Platform.getLog( Activator.getDefault().getBundle() ).log( status );
+      logError( message, exception );
       return false;
     }
     return true;
@@ -126,17 +120,34 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     return predefinedSubData;
   }
 
-  private void setBuilderEnabled( boolean enabled ) throws CoreException {
-    IProject project = getResource().getProject();
-    boolean changed;
-    if( enabled ) {
-      changed = BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID );
-    } else {
-      changed = BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID );
-    }
+  private boolean storePreferences() throws CoreException {
+    ProjectPreferences preferences = getProjectPreferences();
+    preferences.setEnabled( enablementCheckbox.getSelection() );
+    preferences.setGlobals( predefinedText.getText() );
+    preferences.setOptions( optionsText.getText() );
+    boolean changed = preferences.hasChanged();
     if( changed ) {
-      BuilderUtil.triggerClean( project, JSHintBuilder.ID );
+      preferences.save();
     }
+    return changed;
+  }
+
+  private boolean setBuilderEnablement() throws CoreException {
+    return setBuilderEnabled( enablementCheckbox.getSelection() );
+  }
+
+  private boolean setBuilderEnabled( boolean enabled ) throws CoreException {
+    IProject project = getResource().getProject();
+    if( enabled ) {
+      return BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID );
+    } else {
+      return BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID );
+    }
+  }
+
+  private void triggerRebuild() throws CoreException {
+    IProject project = getResource().getProject();
+    BuilderUtil.triggerClean( project, JSHintBuilder.ID );
   }
 
 }

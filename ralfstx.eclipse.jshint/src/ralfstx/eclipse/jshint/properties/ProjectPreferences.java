@@ -38,9 +38,11 @@ public class ProjectPreferences {
   private static final String DEF_EXCLUDED = "";
 
   private final IEclipsePreferences node;
+  private boolean changed;
 
   public ProjectPreferences( IProject project ) {
     node = new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
+    changed = false;
   }
 
   public IEclipsePreferences getNode() {
@@ -49,10 +51,13 @@ public class ProjectPreferences {
 
   public void setEnabled( boolean enabled ) {
     String value = Boolean.toString( enabled );
-    if( DEF_ENABLED.equals( value ) ) {
-      node.remove( KEY_ENABLED );
-    } else {
-      node.put( KEY_ENABLED, value );
+    if( !value.equals( node.get( KEY_ENABLED, DEF_ENABLED ) ) ) {
+      if( DEF_ENABLED.equals( value ) ) {
+        node.remove( KEY_ENABLED );
+      } else {
+        node.put( KEY_ENABLED, value );
+      }
+      changed = true;
     }
   }
 
@@ -88,10 +93,13 @@ public class ProjectPreferences {
 
   void setExcluded( List<String> excluded ) {
     String value = encodePath( excluded );
-    if( DEF_EXCLUDED.equals( value ) ) {
-      node.remove( KEY_EXCLUDED );
-    } else {
-      node.put( KEY_EXCLUDED, value );
+    if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
+      if( DEF_EXCLUDED.equals( value ) ) {
+        node.remove( KEY_EXCLUDED );
+      } else {
+        node.put( KEY_EXCLUDED, value );
+      }
+      changed = true;
     }
   }
 
@@ -100,10 +108,13 @@ public class ProjectPreferences {
   }
 
   public void setGlobals( String value ) {
-    if( DEF_GLOBALS.equals( value ) ) {
-      node.remove( KEY_GLOBALS );
-    } else {
-      node.put( KEY_GLOBALS, value );
+    if( !value.equals( node.get( KEY_GLOBALS, DEF_GLOBALS ) ) ) {
+      if( DEF_GLOBALS.equals( value ) ) {
+        node.remove( KEY_GLOBALS );
+      } else {
+        node.put( KEY_GLOBALS, value );
+      }
+      changed = true;
     }
   }
 
@@ -112,16 +123,24 @@ public class ProjectPreferences {
   }
 
   public void setOptions( String value ) {
-    if( value.equals( DEF_OPTIONS ) ) {
-      node.remove( KEY_OPTIONS );
-    } else {
-      node.put( KEY_OPTIONS, value );
+    if( !value.equals( node.get( KEY_OPTIONS, DEF_OPTIONS ) ) ) {
+      if( value.equals( DEF_OPTIONS ) ) {
+        node.remove( KEY_OPTIONS );
+      } else {
+        node.put( KEY_OPTIONS, value );
+      }
+      changed = true;
     }
+  }
+
+  public boolean hasChanged() {
+    return changed;
   }
 
   public void save() throws CoreException {
     try {
       node.flush();
+      changed = false;
     } catch( BackingStoreException exception ) {
       String message = "Failed to store preferences";
       Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
