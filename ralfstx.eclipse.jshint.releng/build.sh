@@ -9,6 +9,15 @@ targetRepo=$HOME/eclipse/targets/eclipse-rcp-indigo-sr1
 
 cd "$HOME/git/jshint-eclipse/ralfstx.eclipse.jshint.releng"
 
+stat="$(git status -s)"
+if [ -n "$stat" ]; then
+  echo "uncommitted changes, run 'git status'"
+  exit 1
+fi
+
+commit_date=$(date -u -d "$(git log -1 --format='%ci')" +"%Y%m%d-%H%M")
+// TODO use commit date for build
+
 $MVN -DtargetRepo=$targetRepo clean package || exit 1
 
 # publish
@@ -20,4 +29,4 @@ if [ -z "$version" ]; then
 fi
 echo "Version: $version"
 
-rsync -av repository/target/repository/ $HOME/git/ralfstx.github.com/update/jshint-eclipse/eclipse-jshint-$version
+rsync -av repository/target/repository/ $HOME/git/ralfstx.github.com/update/jshint-eclipse/jshint-eclipse-$version
