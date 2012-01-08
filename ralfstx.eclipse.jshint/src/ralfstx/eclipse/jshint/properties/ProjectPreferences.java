@@ -73,6 +73,10 @@ public class ProjectPreferences {
 
   public boolean getExcluded( IResource resource ) {
     String resourcePath = getResourcePath( resource );
+    // projects have resource path == "", they can be disabled but not excluded
+    if( "".equals( resourcePath ) ) {
+      return false;
+    }
     List<String> excludedFiles = getExcluded();
     return excludedFiles.contains( resourcePath );
   }
