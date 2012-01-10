@@ -1,15 +1,21 @@
-JSHint Integration for Eclipse
-==============================
+JSHint integration for the Eclipse IDE
+======================================
 
-JSHint (http://www.jshint.com) is a popular tool for JavaScript code analysis.
-This integration provides JSHint validation for the Eclipse IDE.
+[JSHint](http://www.jshint.com/about/) is a popular, community-driven tool to detect
+errors and potential problems in JavaScript code.
+
+[jshint-eclipse](http://ralfstx.github.com/jshint-eclipse/) integrates JSHint into
+the Eclipse IDE.  It automatically validates *.js files and adds warning markers for
+every problem found by JSHint.
+For details, see the [project page](http://ralfstx.github.com/jshint-eclipse/).
 
 Features
 --------
 
-JSHint validation can be enabled separately for every project.
-Whenever a *.js file changes, it is validated and a warning marker is added for every problem found.
-The configuration options for JSHint (http://www.jshint.com/options/) can also be set on project level and are persisted in the projects itself.
+JSHint validation can be enabled separately for every project in the IDE.  Whenever
+a *.js file changes, it is validated. For every project, a separate set of
+[configuration options](http://www.jshint.com/options/) can be defined.
+The options are stored in the projects itself and can easily be shared over an SCM.
 
 Requirements
 ------------
