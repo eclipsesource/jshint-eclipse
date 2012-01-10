@@ -16,6 +16,10 @@ ul, ol {
   margin-left: 20px;
 }
 
+img.shadow {
+  box-shadow: 2px 2px 6px #CECECE;
+}
+
 #header {
   color: white;
   background-color: #515f55;
@@ -39,7 +43,7 @@ ul, ol {
   padding-bottom: 3px;
 }
 
-#header a {
+#header div.menu a {
   margin-left: 12px;
 }
 
