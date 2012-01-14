@@ -32,9 +32,12 @@ img.shadow {
   font-size: 18px;
 }
 
+#header h1 {
+  display: inline-block;
+}
+
 #header h1 a {
   font-size: 24px;
-  display: inline-block;
 }
 
 #header div.menu {
