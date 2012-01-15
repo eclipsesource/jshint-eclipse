@@ -53,6 +53,7 @@ img.shadow {
 
 #header h1 {
   display: inline-block;
+  float: left;
 }
 
 #header h1 a {
