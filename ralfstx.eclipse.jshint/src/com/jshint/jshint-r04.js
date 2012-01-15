@@ -200,7 +200,7 @@
  close, closed, closure, comment, condition, confirm, console, constructor,
  content, couch, create, css, curly, d, data, datalist, dd, debug, decodeURI,
  decodeURIComponent, defaultStatus, defineClass, deserialize, devel, document,
- dojo, dijit, dojox, define, edition, else, emit, encodeURI, encodeURIComponent,
+ dojo, dijit, dojox, define, else, emit, encodeURI, encodeURIComponent,
  entityify, eqeqeq, eqnull, errors, es5, escape, esnext, eval, event, evidence, evil,
  ex, exception, exec, exps, expr, exports, FileReader, first, floor, focus,
  forin, fragment, frames, from, fromCharCode, fud, funcscope, funct, function, functions,
@@ -2329,6 +2329,9 @@ loop:   for (;;) {
             }
             if (t.id !== '(endline)') {
                 if (t.id === 'function') {
+                    if (!option.latedef) {
+                        break;
+                    }
                     warning(
 "Inner functions should be listed at the top of the outer function.", t);
                     break;
@@ -2414,7 +2417,10 @@ loop:   for (;;) {
 
         while (!nexttoken.reach && nexttoken.id !== '(end)') {
             if (nexttoken.id === ';') {
-                warning("Unnecessary semicolon.");
+                p = peek();
+                if (!p || p.id !== "(") {
+                    warning("Unnecessary semicolon.");
+                }
                 advance(';');
             } else {
                 a.push(statement(startLine === nexttoken.line));
@@ -2652,9 +2658,15 @@ loop:   for (;;) {
                 // Operators typeof and delete do not raise runtime errors even if
                 // the base object of a reference is null so no need to display warning
                 // if we're inside of typeof or delete.
-                if (anonname !== 'typeof' && anonname !== 'delete' &&
-                    option.undef && typeof predefined[v] !== 'boolean') {
-                    isundef(funct, "'{a}' is not defined.", token, v);
+                if (option.undef && typeof predefined[v] !== 'boolean') {
+                    // Attempting to subscript a null reference will throw an
+                    // error, even within the typeof and delete operators
+                    if (!(anonname === 'typeof' || anonname === 'delete') ||
+                        (nexttoken &&
+                            (nexttoken.value === '.' || nexttoken.value === '['))) {
+
+                        isundef(funct, "'{a}' is not defined.", token, v);
+                    }
                 }
                 note_implied(token);
             } else {
@@ -2686,8 +2698,15 @@ loop:   for (;;) {
                         // Operators typeof and delete do not raise runtime errors even
                         // if the base object of a reference is null so no need to
                         // display warning if we're inside of typeof or delete.
-                        if (anonname !== 'typeof' && anonname !== 'delete' && option.undef) {
-                            isundef(funct, "'{a}' is not defined.", token, v);
+                        if (option.undef) {
+                            // Attempting to subscript a null reference will throw an
+                            // error, even within the typeof and delete operators
+                            if (!(anonname === 'typeof' || anonname === 'delete') ||
+                                (nexttoken &&
+                                    (nexttoken.value === '.' || nexttoken.value === '['))) {
+
+                                isundef(funct, "'{a}' is not defined.", token, v);
+                            }
                         }
                         funct[v] = true;
                         note_implied(token);
@@ -4076,6 +4095,17 @@ loop:   for (;;) {
                 statements();
             }
             advance('(end)');
+
+            // Check queued 'x is not defined' instances to see if they're still undefined.
+            for (i = 0; i < JSHINT.undefs.length; i += 1) {
+                k = JSHINT.undefs[i].slice(0);
+                scope = k.shift();
+                a = k[2];
+
+                if (typeof scope[a] !== 'string' && typeof funct[a] !== 'string') {
+                    warning.apply(warning, k);
+                }
+            }
         } catch (e) {
             if (e) {
                 var nt = nexttoken || {};
@@ -4085,16 +4115,6 @@ loop:   for (;;) {
                     line      : e.line || nt.line,
                     character : e.character || nt.from
                 }, null);
-            }
-        }
-
-        for (i = 0; i < JSHINT.undefs.length; i += 1) {
-            k = JSHINT.undefs[i].slice(0);
-            scope = k.shift();
-            a = k[2];
-
-            if (typeof scope[a] !== 'string' && typeof funct[a] !== 'string') {
-                warning.apply(warning, k);
             }
         }
 
@@ -4314,7 +4334,6 @@ loop:   for (;;) {
     };
 
     itself.jshint = itself;
-    itself.edition = '2011-04-16';
 
     return itself;
 }());
