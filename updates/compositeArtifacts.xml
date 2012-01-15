@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeArtifactRepository version='1.0.0'?>
+<repository name='JSHint Eclipse Integration Updates' type='org.eclipse.equinox.internal.p2.artifact.repository.CompositeArtifactRepository' version='1.0.0'>
+  <properties size='1'>
+    <property name='p2.timestamp' value='1326631060214'/>
+  </properties>
+  <children size='2'>
+    <child location='jshint-eclipse-0.1.0.20120108-1232'/>
+    <child location='jshint-eclipse-0.1.0.20120115-1214'/>
+  </children>
+</repository>

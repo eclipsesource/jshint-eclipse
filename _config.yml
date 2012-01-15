@@ -1,4 +1,5 @@
 safe: true
 lsi: false
 pygments: true
+baseurl: /jshint-eclipse
 
