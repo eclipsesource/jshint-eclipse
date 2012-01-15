@@ -11,9 +11,27 @@ a {
   color: #1b4177;
 }
 
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  margin-bottom: 7px;
+}
+
 ul, ol {
   list-style-position: inside;
   margin-left: 20px;
+}
+
+li {
+  margin-top: 10px;
+}
+
+hr {
+  padding-top: 20px;
+  border: none;
+  border-bottom: 1px dotted #cecece;
 }
 
 img.shadow {
@@ -64,11 +82,32 @@ img.shadow {
 
 div.center {
   width: 800px;
-  margin-right: auto;
   margin-left: auto;
+  margin-right: auto;
 }
 
 h2 {
   margin-top: 20px;
   margin-bottom: 10px;
 }
+
+div.columns {
+  margin-left: -17px;
+  margin-right: -17px;
+}
+
+div.third {
+  float: left;
+  width: 244px;
+  padding-left: 17px;
+  padding-right: 17px;
+}
+
+div.block:first-child {
+  margin-left: 0;
+}
+
+div.clear {
+  clear: both;
+}
+

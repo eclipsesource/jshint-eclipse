@@ -1,0 +1,84 @@
+---
+layout: default
+name: about
+title: jshint-eclipse - About
+---
+
+<p style="font-size: 24px; padding: 20px;">
+  <em>jshint-eclipse</em> integrates
+  <a href="http://www.jshint.com">JSHint</a>,
+  a popular tool for static code analysis, in the
+  <a href="http://eclipse.org/">Eclipse</a> IDE.
+</p>
+
+<div class="columns">
+
+  <div class="third">
+
+    <h2>Features</h2>
+
+    <p>
+      This extension can be used to validate JavaScript files in Eclipse.
+      Every problem found by JSHint is represented by a warning marker.
+      The <em>Problems</em> view in Eclipse provides an overview of all
+      problems found in a particular project.
+    </p>
+    <p>
+      As usual in Eclipse, files are validated automatically when they change.
+    </p>
+
+  </div>
+
+  <div class="third">
+
+    <h2>Options</h2>
+
+    <p>
+      All <a href="http://www.jshint.com/options/">configuration options</a>
+      for JSHint can be specified on project level, i.e. for every project in
+      the IDE, separate options can be defined.
+      Settings are stored in the projects itself to be shared with the team.
+    </p>
+    <p>
+      The configuration also allows to exclude certain files and folders from
+      JSHint validation.
+    </p>
+
+  </div>
+
+  <div class="third">
+
+    <h2>Performance</h2>
+
+    <p>
+      JSHint is written in JavaScript.
+      This integration uses <a href="http://www.mozilla.org/rhino/">Rhino</a>
+      to run it from Java.
+      Once loaded, the library can be reused.
+      This approach provides much better performance than running JSHint standalone
+      on every single file.
+    </p>
+
+  </div>
+
+  <div class="clear"></div>
+
+</div>
+
+<div class="columns">
+
+  <div class="third">
+
+    <h2>Requirements</h2>
+
+    <p>
+      Works with all Eclipse versions back to 3.6 (Helios).
+      There are no other dependencies, both Rhino and JSHint are included.
+    </p>
+
+  </div>
+
+  <div class="clear"></div>
+
+</div>
+
