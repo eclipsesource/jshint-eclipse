@@ -54,6 +54,14 @@ img.shadow {
   padding-top: 25px;
 }
 
+#footer {
+  margin-top: 35px;
+  padding-top: 10px;
+  padding-bottom: 25px;
+  text-align: center;
+  font-size: 12px;
+}
+
 div.center {
   width: 800px;
   margin-right: auto;
