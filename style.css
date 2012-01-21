@@ -1,9 +1,13 @@
 
 * {
-  color: #202020;
-  font-family: 'Open Sans', sans-serif;
   margin: 0;
   padding: 0;
+}
+
+body, p, ul, ol {
+  color: #1e1e1e;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
 }
 
 a {
@@ -34,13 +38,15 @@ hr {
   border-bottom: 1px dotted #cecece;
 }
 
-img.shadow {
-  box-shadow: 2px 2px 6px #CECECE;
+h1, h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 22px;
 }
 
 #header {
   color: white;
-  background-color: #515f55;
+  background-color: #34332f;
   padding-top: 5px;
   padding-bottom: 5px;
   box-shadow: 0 0 3px 1px rgba( 0, 0, 0, 0.25 );
@@ -48,7 +54,7 @@ img.shadow {
 
 #header * {
   color: white;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 #header h1 {
@@ -57,7 +63,8 @@ img.shadow {
 }
 
 #header h1 a {
-  font-size: 24px;
+  font-size: 22px;
+  font-weight: normal;
 }
 
 #header div.menu {
@@ -70,6 +77,13 @@ img.shadow {
   margin-left: 12px;
 }
 
+#header div.menu a.active {
+  background-image: url("/jshint-eclipse/images/selection.png");
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  padding-bottom: 15px;
+}
+
 #main {
   padding-top: 25px;
 }
@@ -79,7 +93,14 @@ img.shadow {
   padding-top: 10px;
   padding-bottom: 25px;
   text-align: center;
+}
+
+#footer * {
   font-size: 12px;
+}
+
+img.shadow {
+  box-shadow: 2px 2px 6px rgba( 0, 0, 0, 0.25 );
 }
 
 div.center {
@@ -88,9 +109,9 @@ div.center {
   margin-right: auto;
 }
 
-h2 {
-  margin-top: 20px;
-  margin-bottom: 10px;
+p.headline {
+  font-size: 22px;
+  padding: 20px 35px;
 }
 
 div.columns {
