@@ -28,7 +28,7 @@ JSHint version r04 is included.
 Installation
 ------------
 
-Install from this Eclipse update site: http://github.eclipsesource.com/jshint-eclipse//updates/
+Install from this Eclipse update site: http://github.eclipsesource.com/jshint-eclipse/updates/
 
 * Eclipse main menu: _Help_ -> _Install New Software..._
 
