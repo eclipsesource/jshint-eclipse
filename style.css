@@ -34,6 +34,7 @@ li {
 
 hr {
   padding-top: 20px;
+  margin: 0 100px 10px;
   border: none;
   border-bottom: 1px dotted #cecece;
 }
