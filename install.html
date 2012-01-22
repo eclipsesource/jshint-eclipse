@@ -8,20 +8,31 @@ title: jshint-eclipse - Install
 
   <div class="cell twothirds">
 
-    <h2>Install</h2>
+    <h2>Install from update site (recommended)</h2>
 
     <p>
-      The latest stable version can be installed from this update site:
+      The latest stable version can always be installed from this update site:
     </p>
     <p style="margin: 5px 20px;">
       <a href="{{ site.baseurl }}/updates/">http://github.eclipsesource.com/jshint-eclipse/updates/</a>
     </p>
     <ul>
       <li>
-        In the Eclipse main menu, click: <em>Help &gt; Install New Software...</em>
+        In the Eclipse main menu, click: <em>Help &gt; Install New Software…</em>
       </li>
       <li>
         Enter the URL above and select <em>JSHint Eclipse Integration</em>
+      </li>
+    </ul>
+
+    <h2>Update</h2>
+
+    <p>
+      If installed as described above, Eclipse can look for updates by itself:
+    </p>
+    <ul>
+      <li>
+        In the Eclipse main menu, click: <em>Help &gt; Check for Updates</em>
       </li>
     </ul>
 
@@ -29,19 +40,35 @@ title: jshint-eclipse - Install
 
     <ul>
       <li>
-        Open the context menu on a project and select <em>Properties</em>
+        On a project that contains JavaScript files,
+        open the context menu and select <em>Properties</em>
       </li>
       <li>
         On the <em>JSHint</em> page, enable JSHint for this project
       </li>
       <li>
-        Exclude non-source files and folders from JSHint validation in the context menu of the respective files/folders
+        Exclude non-source files and folders from JSHint validation
+        in the context menu of the respective files/folders
       </li>
     </ul>
 
   </div>
 
   <div class="cell onethird">
+
+    <h2>Download</h2>
+
+    <p>
+      Published versions can also be downloaded from the
+    </p>
+    <p style="margin: 5px 20px;">
+      <a href="https://github.com/eclipsesource/jshint-eclipse/downloads">github
+        download page</a>
+    </p>
+    <p>
+      The zip files contain a p2 repository that can be used for installation into Eclipse.
+    </p>
+
   </div>
 
   <div class="clear"></div>
