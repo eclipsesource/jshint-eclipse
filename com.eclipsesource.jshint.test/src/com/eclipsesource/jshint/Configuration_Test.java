@@ -30,7 +30,7 @@ public class Configuration_Test {
     assertEquals( "{}", configuration.getOptionsString() );
   }
 
-@Test
+  @Test
   public void addOneOption() throws Exception {
     configuration.addOption( "foo", true );
 
@@ -38,20 +38,20 @@ public class Configuration_Test {
   }
 
   @Test
-public void addSeparateOptions() throws Exception {
-  configuration.addOption( "foo", true );
-  configuration.addOption( "bar", false );
+  public void addSeparateOptions() throws Exception {
+    configuration.addOption( "foo", true );
+    configuration.addOption( "bar", false );
 
-  assertEquals( "{\"foo\": true, \"bar\": false}", configuration.getOptionsString() );
-}
+    assertEquals( "{\"foo\": true, \"bar\": false}", configuration.getOptionsString() );
+  }
 
-  @Test( expected=IllegalArgumentException.class )
-public void addSameOptionTwice() throws Exception {
-  configuration.addOption( "foo", true );
-  configuration.addOption( "foo", true );
-}
+  @Test( expected = IllegalArgumentException.class )
+  public void addSameOptionTwice() throws Exception {
+    configuration.addOption( "foo", true );
+    configuration.addOption( "foo", true );
+  }
 
-  @Test( expected=IllegalArgumentException.class )
+  @Test( expected = IllegalArgumentException.class )
   public void addSameGlobalTwice() throws Exception {
     configuration.addGlobal( "foo", true );
     configuration.addGlobal( "foo", true );

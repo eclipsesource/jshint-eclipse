@@ -22,7 +22,7 @@ import com.eclipsesource.jshint.properties.OptionParserUtil.Entry;
 
 public class OptionParserUtil_Test {
 
-  @Test(expected=NullPointerException.class)
+  @Test( expected = NullPointerException.class )
   public void parseNull() throws Exception {
     OptionParserUtil.parseOptionString( null );
   }
