@@ -114,20 +114,23 @@ p.headline {
   padding: 20px 35px;
 }
 
-div.columns {
+div.row {
   margin-left: -17px;
   margin-right: -17px;
 }
 
-div.third {
+div.cell {
   float: left;
-  width: 244px;
   padding-left: 17px;
   padding-right: 17px;
 }
 
-div.block:first-child {
-  margin-left: 0;
+div.onethird {
+  width: 244px;
+}
+
+div.twothirds {
+  width: 522px;
 }
 
 div.clear {
