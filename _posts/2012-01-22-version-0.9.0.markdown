@@ -3,8 +3,8 @@ layout: post
 title: Version 0.9.0 published
 ---
 
-After some early builds for my own use in the [RAP](http://eclipse.org/rap/) project, I'm quite satisfied with the current state and think that this plug-in may already be helpful to others.
-So I decided to move this project to EclipseSource, which will be a better home in the log run, created this site, and made a first version available.
+After some early builds for my own use in the [RAP](http://eclipse.org/rap/) project, I'm quite satisfied with the current state and think that this plug-in may already be helpful to others, too.
+So I decided to move this project to EclipseSource, which will be a better home in the long run, created this site, and made a first version available.
 
 Apart from its humble feature set, I'm not aware of any bugs.
 I'm happy to receive feedback, also bug reports and contributions are welcome.
