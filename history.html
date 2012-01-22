@@ -1,0 +1,25 @@
+---
+layout: default
+name: history
+title: jshint-eclipse - History
+---
+
+{% for post in site.posts %}
+
+<div class="row">
+
+  <div class="cell onethird">
+    <h2>{{ post.date | date:"%B %e, %Y" }}</h2>
+  </div>
+
+  <div class="cell twothirds">
+    <h2>{{ post.title }}</h2>
+    {{ post.content }}
+  </div>
+
+  <div class="clear"></div>
+
+</div>
+
+{% endfor %}
+
