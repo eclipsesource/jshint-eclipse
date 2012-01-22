@@ -2,8 +2,9 @@
 
 JAVA_HOME=$HOME/tools/jvm/sun-jdk-1.7.0
 MVN=$HOME/bin/mvn
+TARGET_PLATFORM_REPO=$HOME/eclipse/targets/eclipse-rcp-indigo-sr1
+BUILD_TARGET_DIR=/tmp/jshint-eclipse
 
-targetRepo=$HOME/eclipse/targets/eclipse-rcp-indigo-sr1
 includePaths="com.eclipsesource.jshint com.eclipsesource.jshint.feature"
 
 # make sure we're in the git repository root
@@ -31,7 +32,7 @@ echo "-> $commit_date $commit_subject [$commit_hash]"
 
 cd "com.eclipsesource.jshint.releng" || exit 1
 
-$MVN -DtargetRepo=$targetRepo clean package || exit 1
+$MVN -DtargetRepo=$TARGET_PLATFORM_REPO clean package || exit 1
 
 # copy resulting repository
 version=`ls -1 repository/target/repository/features/*.jar | sed -e 's/.*_\([0-9\.-]*\)\.jar/\1/'`
@@ -41,5 +42,7 @@ if [ -z "$version" ]; then
 fi
 echo "Version: $version"
 
-mkdir -p /tmp/jshint-eclipse
-rsync -av repository/target/repository/ /tmp/jshint-eclipse/jshint-eclipse-$version
+mkdir -p $BUILD_TARGET_DIR
+rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version
+cp repository/target/*repository.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
+
