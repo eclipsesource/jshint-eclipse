@@ -6,6 +6,8 @@
 
   <properties>
     <tycho-version>0.13.0</tycho-version>
+    <surefire-version>2.9</surefire-version>
+    <junit-version>4.8.2</junit-version>
   </properties>
 
   <prerequisites>
@@ -21,6 +23,7 @@
 
   <modules>
     <module>../com.eclipsesource.jshint</module>
+    <module>../com.eclipsesource.jshint.test</module>
     <module>../com.eclipsesource.jshint.feature</module>
     <module>repository</module>
   </modules>
@@ -68,7 +71,38 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire-version}</version>
+        <executions>
+          <execution>
+            <id>test</id>
+            <phase>test</phase>
+            <configuration>
+              <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
+              <includes>
+                <include>**/*_Test.java</include>
+              </includes>
+              <runOrder>random</runOrder>
+            </configuration>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit-version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>
