@@ -62,17 +62,22 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = createMainComposite( parent );
-    boolean enabled = getProjectPreferences().getEnabled();
-    addEnablementSection( composite, enabled );
-    addConfigSection( composite, enabled );
+    try {
+      ProjectPreferences preferences = getProjectPreferences();
+      addEnablementSection( composite, preferences );
+      addConfigSection( composite, preferences );
+    } catch( CoreException exception ) {
+      Activator.logError( "Failed to load preferences", exception );
+      setErrorMessage( "Failed to load preferences" );
+    }
     return composite;
   }
 
-  private void addEnablementSection( Composite parent, boolean enabled ) {
+  private void addEnablementSection( Composite parent, ProjectPreferences preferences ) {
     Composite composite = createDefaultComposite( parent );
     enablementCheckbox = new Button( composite, SWT.CHECK );
     enablementCheckbox.setText( "Enable JSHint for this project" );
-    enablementCheckbox.setSelection( enabled );
+    enablementCheckbox.setSelection( preferences.getEnabled() );
     enablementCheckbox.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
@@ -81,12 +86,11 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     } );
   }
 
-  private void addConfigSection( Composite parent, boolean enabled ) {
-    ProjectPreferences preferences = getProjectPreferences();
+  private void addConfigSection( Composite parent, ProjectPreferences preferences ) {
     configSection = new Composite( parent, SWT.NONE );
     configSection.setLayout( new GridLayout() );
     configSection.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    configSection.setEnabled( enabled );
+    configSection.setEnabled( preferences.getEnabled() );
 
     Label predefinedLabel = new Label( configSection, SWT.NONE );
     predefinedLabel.setText( "Predefined globals:" );

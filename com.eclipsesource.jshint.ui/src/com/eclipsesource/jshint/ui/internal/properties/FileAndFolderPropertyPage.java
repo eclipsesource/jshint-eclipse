@@ -52,8 +52,13 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = createMainComposite( parent );
-    State state = readState();
-    addEnablementSection( composite, state );
+    try {
+      State state = readState();
+      addEnablementSection( composite, state );
+    } catch( CoreException exception ) {
+      Activator.logError( "Failed to load preferences", exception );
+      setErrorMessage( "Failed to load preferences" );
+    }
     return composite;
   }
 
@@ -69,7 +74,7 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
     excludeCheckbox.setEnabled( state.projectEnabled );
   }
 
-  private State readState() {
+  private State readState() throws CoreException {
     ProjectPreferences preferences = getProjectPreferences();
     boolean projectEnabled = preferences.getEnabled();
     boolean fileExcluded = preferences.getExcluded( getResource() );
