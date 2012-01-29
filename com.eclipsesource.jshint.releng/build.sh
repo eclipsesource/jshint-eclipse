@@ -26,22 +26,23 @@ if [ -z "$stat" ]; then
   echo "-> $commit_date $commit_subject [$commit_hash]"
 else
   echo "Uncommitted changes, run 'git status'"
-  commit_hash="uncommitted"
 fi
 
 cd "com.eclipsesource.jshint.releng" || exit 1
 
 $MVN -DtargetRepo=$TARGET_PLATFORM_REPO clean install || exit 1
 
-# copy resulting repository
-version=`ls -1 repository/target/repository/features/*.jar | sed -e 's/.*_\([0-9\.-]*\)\.jar/\1/'`
-if [ -z "$version" ]; then
-  echo "Could not determine feature version"
-  exit 1
+if [ -n "$commit_hash" ]; then
+  # copy resulting repository
+  feature_version=`ls -1 repository/target/repository/features/*.jar | sed -e 's/.*_\([0-9\.-]*\)\.jar/\1/'`
+  if [ -z "$feature_version" ]; then
+    echo "Could not determine feature version"
+    exit 1
+  fi
+  version="$feature_version-$commit_hash"
+  echo "Version: $version"
+  
+  mkdir -p $BUILD_TARGET_DIR
+  rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version
+  cp repository/target/*repository.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
 fi
-echo "Version: $version-$hash"
-
-mkdir -p $BUILD_TARGET_DIR
-rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version-$commit_hash
-cp repository/target/*repository.zip $BUILD_TARGET_DIR/jshint-eclipse-$version-$commit_hash.zip
-
