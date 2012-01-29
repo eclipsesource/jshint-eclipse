@@ -5,7 +5,7 @@ MVN=$HOME/bin/mvn
 TARGET_PLATFORM_REPO=$HOME/eclipse/targets/eclipse-rcp-indigo-sr1
 BUILD_TARGET_DIR=/tmp/jshint-eclipse
 
-includePaths="com.eclipsesource.jshint com.eclipsesource.jshint.feature"
+includePaths="com.eclipsesource.jshint com.eclipsesource.jshint.ui com.eclipsesource.jshint.feature"
 
 # make sure we're in the git repository root
 if [ ! -d ".git" ]; then
@@ -31,7 +31,7 @@ fi
 
 cd "com.eclipsesource.jshint.releng" || exit 1
 
-$MVN -DtargetRepo=$TARGET_PLATFORM_REPO clean package || exit 1
+$MVN -DtargetRepo=$TARGET_PLATFORM_REPO clean install || exit 1
 
 # copy resulting repository
 version=`ls -1 repository/target/repository/features/*.jar | sed -e 's/.*_\([0-9\.-]*\)\.jar/\1/'`
