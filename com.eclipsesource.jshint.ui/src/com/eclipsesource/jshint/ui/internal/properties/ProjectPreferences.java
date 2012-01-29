@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.properties;
+package com.eclipsesource.jshint.ui.internal.properties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
 
-import com.eclipsesource.jshint.Activator;
 import com.eclipsesource.jshint.Configuration;
+import com.eclipsesource.jshint.ui.internal.Activator;
 
 
 public class ProjectPreferences {

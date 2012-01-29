@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.properties;
+package com.eclipsesource.jshint.ui.internal.properties;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -22,7 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-import com.eclipsesource.jshint.Activator;
+import com.eclipsesource.jshint.ui.internal.Activator;
 
 
 public abstract class AbstractPropertyPage extends PropertyPage {

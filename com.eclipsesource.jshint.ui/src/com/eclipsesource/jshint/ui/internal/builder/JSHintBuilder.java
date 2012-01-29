@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.builder;
+package com.eclipsesource.jshint.ui.internal.builder;
 
 import java.util.Map;
 
@@ -18,8 +18,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import com.eclipsesource.jshint.Activator;
-
+import com.eclipsesource.jshint.ui.internal.Activator;
 
 
 public class JSHintBuilder extends IncrementalProjectBuilder {

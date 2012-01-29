@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.builder;
+package com.eclipsesource.jshint.ui.internal.builder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,14 +27,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
-import com.eclipsesource.jshint.Activator;
 import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.ErrorHandler;
 import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.Text;
-import com.eclipsesource.jshint.builder.JSHintBuilder.CoreExceptionWrapper;
-import com.eclipsesource.jshint.properties.ProjectPreferences;
-
+import com.eclipsesource.jshint.ui.internal.Activator;
+import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
+import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 
 
 class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {

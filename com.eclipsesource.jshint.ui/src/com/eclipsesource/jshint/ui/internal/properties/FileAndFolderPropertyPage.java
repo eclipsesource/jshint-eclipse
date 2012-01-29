@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.properties;
+package com.eclipsesource.jshint.ui.internal.properties;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;

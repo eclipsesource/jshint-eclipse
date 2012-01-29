@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.properties;
+package com.eclipsesource.jshint.ui.internal.properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.eclipsesource.jshint.properties.OptionParserUtil.Entry;
+import com.eclipsesource.jshint.ui.internal.properties.OptionParserUtil.Entry;
 
 
 public class OptionParserUtil_Test {

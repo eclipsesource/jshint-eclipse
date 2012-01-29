@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.builder;
+package com.eclipsesource.jshint.ui.internal.builder;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 
 public class MarkerAdapter {
 
-  private static final String TYPE_PROBLEM = "com.eclipsesource.jshint.problemmarker";
+  private static final String TYPE_PROBLEM = "com.eclipsesource.jshint.ui.problemmarker";
   private final IResource resource;
 
   public MarkerAdapter( IResource resource ) {

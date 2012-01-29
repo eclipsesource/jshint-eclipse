@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.properties;
+package com.eclipsesource.jshint.ui.internal.properties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.eclipsesource.jshint.builder.BuilderUtil;
-import com.eclipsesource.jshint.builder.JSHintBuilder;
+import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {

@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint;
+package com.eclipsesource.jshint.ui.internal;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -17,7 +17,7 @@ import org.osgi.framework.BundleContext;
 
 public class Activator extends AbstractUIPlugin {
 
-  public static final String PLUGIN_ID = "com.eclipsesource.jshint"; //$NON-NLS-1$
+  public static final String PLUGIN_ID = "com.eclipsesource.jshint.ui"; //$NON-NLS-1$
   private static Activator instance;
 
   @Override

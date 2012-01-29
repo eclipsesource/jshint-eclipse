@@ -8,14 +8,13 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.builder;
+package com.eclipsesource.jshint.ui.internal.builder;
 
 import org.eclipse.core.runtime.CoreException;
 
 import com.eclipsesource.jshint.ErrorHandler;
 import com.eclipsesource.jshint.Text;
-import com.eclipsesource.jshint.builder.JSHintBuilder.CoreExceptionWrapper;
-
+import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
 
 
 final class MarkerErrorHandler implements ErrorHandler {

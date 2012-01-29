@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.builder;
+package com.eclipsesource.jshint.ui.internal.builder;
 
 import java.util.ArrayList;
 import java.util.List;
