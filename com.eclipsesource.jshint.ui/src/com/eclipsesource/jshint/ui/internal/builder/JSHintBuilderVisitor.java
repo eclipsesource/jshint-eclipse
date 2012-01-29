@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import com.eclipsesource.jshint.Configuration;
-import com.eclipsesource.jshint.ErrorHandler;
+import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.Activator;
@@ -85,7 +85,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private void check( IFile file ) throws CoreException {
     Text code = readContent( file );
-    ErrorHandler handler = new MarkerErrorHandler( new MarkerAdapter( file ), code );
+    ProblemHandler handler = new MarkerHandler( new MarkerAdapter( file ), code );
     try {
       checker.check( code.getContent(), handler );
     } catch( CoreExceptionWrapper wrapper ) {

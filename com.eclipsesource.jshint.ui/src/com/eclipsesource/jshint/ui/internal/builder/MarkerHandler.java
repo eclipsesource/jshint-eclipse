@@ -12,22 +12,22 @@ package com.eclipsesource.jshint.ui.internal.builder;
 
 import org.eclipse.core.runtime.CoreException;
 
-import com.eclipsesource.jshint.ErrorHandler;
+import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
 
 
-final class MarkerErrorHandler implements ErrorHandler {
+final class MarkerHandler implements ProblemHandler {
 
   private final MarkerAdapter markerAdapter;
   private final Text code;
 
-  MarkerErrorHandler( MarkerAdapter markerAdapter, Text code ) {
+  MarkerHandler( MarkerAdapter markerAdapter, Text code ) {
     this.markerAdapter = markerAdapter;
     this.code = code;
   }
 
-  public void handleError( int line, int character, String message ) {
+  public void handleProblem( int line, int character, String message ) {
     try {
       int start = code.getLineOffset( line - 1 ) + character - 1;
       int end = start;

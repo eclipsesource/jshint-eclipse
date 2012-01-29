@@ -56,7 +56,7 @@ public class JSHint {
     }
   }
 
-  public boolean check( String code, ErrorHandler handler ) {
+  public boolean check( String code, ProblemHandler handler ) {
     Context context = Context.enter();
     boolean result;
     try {
@@ -65,7 +65,7 @@ public class JSHint {
       try {
         result = ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
       } catch( JavaScriptException exception ) {
-        handler.handleError( 0, -1, "Could not parse JavaScript: " + exception.getMessage() );
+        handler.handleProblem( 0, -1, "Could not parse JavaScript: " + exception.getMessage() );
         return false;
       }
       if( result == Boolean.FALSE ) {
@@ -83,12 +83,12 @@ public class JSHint {
     return result;
   }
 
-  private void handleError( ErrorHandler handler, ScriptableObject error ) {
+  private void handleError( ProblemHandler handler, ScriptableObject error ) {
     String reason = getPropertyAsString( error, "reason", "" );
     int line = getPropertyAsInt( error, "line", -1 );
     int character = getPropertyAsInt( error, "character", -1 );
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
-    handler.handleError( line, character, message );
+    handler.handleProblem( line, character, message );
   }
 
   private static String getPropertyAsString( ScriptableObject object,
@@ -134,9 +134,9 @@ public class JSHint {
     }
   }
 
-  private static final class SysoutErrorHandler implements ErrorHandler {
+  private static final class SysoutErrorHandler implements ProblemHandler {
 
-    public void handleError( int line, int character, String message ) {
+    public void handleProblem( int line, int character, String message ) {
       System.out.println( line + "," + character + ": " + message );
     }
 

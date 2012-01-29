@@ -8,11 +8,21 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint;
+package com.eclipsesource.jshint.test;
 
 
-public interface ErrorHandler {
+public class Problem {
+  public final int line;
+  public final int character;
+  public final String message;
 
-  void handleError( int line, int character, String message );
+  public Problem( int line, int character, String message ) {
+    this.line = line;
+    this.character = character;
+    this.message = message;
+  }
 
+  public String getPosition() {
+    return line + "." + character;
+  }
 }
