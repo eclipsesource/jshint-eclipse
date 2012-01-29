@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -17,6 +20,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 
 
 public class Activator extends AbstractUIPlugin {
@@ -27,6 +33,7 @@ public class Activator extends AbstractUIPlugin {
   @Override
   public void start( BundleContext context ) throws Exception {
     super.start( context );
+    repairObsoleteBuilderInProjects();
     instance = this;
   }
 
@@ -59,6 +66,20 @@ public class Activator extends AbstractUIPlugin {
   public static void logError( String message, CoreException exception ) {
     Status status = new Status( IStatus.ERROR, PLUGIN_ID, message, exception );
     Platform.getLog( getDefault().getBundle() ).log( status );
+  }
+
+  private static void repairObsoleteBuilderInProjects() throws CoreException {
+    IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    if( workspace != null ) {
+      IProject[] projects = workspace.getRoot().getProjects();
+      for( IProject project : projects ) {
+        if( project.isAccessible() ) {
+          if( BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID_OLD ) ) {
+            BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID );
+          }
+        }
+      }
+    }
   }
 
 }
