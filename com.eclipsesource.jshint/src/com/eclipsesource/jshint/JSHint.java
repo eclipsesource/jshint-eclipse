@@ -25,7 +25,7 @@ import org.mozilla.javascript.ScriptableObject;
 
 public class JSHint {
 
-  private static final String JSHINT_JS = "com/jshint/jshint-r04.js";
+  private static final String JSHINT_JS = "com/jshint/jshint-r05.js";
   private Function jshint;
   private Object opts;
 
