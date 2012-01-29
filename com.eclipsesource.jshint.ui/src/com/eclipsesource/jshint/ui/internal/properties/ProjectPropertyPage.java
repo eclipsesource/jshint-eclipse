@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 
@@ -44,7 +45,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
       }
     } catch( CoreException exception ) {
       String message = "Failed to store settings";
-      logError( message, exception );
+      Activator.logError( message, exception );
       return false;
     }
     return true;

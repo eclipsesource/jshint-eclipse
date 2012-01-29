@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import com.eclipsesource.jshint.ui.internal.Activator;
+
 
 public class FileAndFolderPropertyPage extends AbstractPropertyPage {
 
@@ -31,7 +33,9 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
       preferences.setExcluded( resource, excludeCheckbox.getSelection() );
       preferences.save();
       resource.touch( null );
-    } catch( CoreException e ) {
+    } catch( CoreException exception ) {
+      String message = "Failed to store settings";
+      Activator.logError( message, exception );
       return false;
     }
     return true;

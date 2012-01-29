@@ -11,18 +11,13 @@
 package com.eclipsesource.jshint.ui.internal.properties;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.PropertyPage;
 
-import com.eclipsesource.jshint.ui.internal.Activator;
 
 
 public abstract class AbstractPropertyPage extends PropertyPage {
@@ -74,11 +69,6 @@ public abstract class AbstractPropertyPage extends PropertyPage {
       projectPreferences = new ProjectPreferences( getResource().getProject() );
     }
     return projectPreferences;
-  }
-
-  protected void logError( String message, CoreException exception ) {
-    Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
-    Platform.getLog( Activator.getDefault().getBundle() ).log( status );
   }
 
 }
