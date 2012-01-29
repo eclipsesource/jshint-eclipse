@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 public class MarkerAdapter {
 
   private static final String TYPE_PROBLEM = "com.eclipsesource.jshint.ui.problemmarker";
+  private static final String TYPE_PROBLEM_OLD = "com.eclipsesource.jshint.problemmarker";
   private final IResource resource;
 
   public MarkerAdapter( IResource resource ) {
@@ -26,6 +27,7 @@ public class MarkerAdapter {
 
   public void removeMarkers() throws CoreException {
     resource.deleteMarkers( TYPE_PROBLEM, true, IResource.DEPTH_INFINITE );
+    resource.deleteMarkers( TYPE_PROBLEM_OLD, true, IResource.DEPTH_INFINITE );
   }
 
   public void createMarker( int lineNr, int start, int end, String message ) throws CoreException {
