@@ -13,22 +13,21 @@ if [ ! -d ".git" ]; then
   exit 1
 fi
 
-# make sure the local repository is clean
-stat="$(git status -s)"
-if [ -n "$stat" ]; then
-  echo "uncommitted changes, run 'git status'"
-  exit 1
-fi
-
 # determine last commit
-echo "Find latest commit date in paths:"
-for path in $includePaths; do
-  echo "* $path"
-done
-commit_hash=$(git log -1 --format='%h' -- $includePaths)
-commit_subject=$(git log -1 --format='%s' -- $includePaths)
-commit_date=$(date -u -d "$(git log -1 --format='%ci' -- $includePaths)" +"%Y%m%d-%H%M")
-echo "-> $commit_date $commit_subject [$commit_hash]"
+stat="$(git status -s)"
+if [ -z "$stat" ]; then
+  echo "Find latest commit date in paths:"
+  for path in $includePaths; do
+    echo "* $path"
+  done
+  commit_hash=$(git log -1 --format='%h' -- $includePaths)
+  commit_subject=$(git log -1 --format='%s' -- $includePaths)
+  commit_date=$(date -u -d "$(git log -1 --format='%ci' -- $includePaths)" +"%Y%m%d-%H%M")
+  echo "-> $commit_date $commit_subject [$commit_hash]"
+else
+  echo "Uncommitted changes, run 'git status'"
+  commit_hash="uncommitted"
+fi
 
 cd "com.eclipsesource.jshint.releng" || exit 1
 
@@ -40,9 +39,9 @@ if [ -z "$version" ]; then
   echo "Could not determine feature version"
   exit 1
 fi
-echo "Version: $version"
+echo "Version: $version-$hash"
 
 mkdir -p $BUILD_TARGET_DIR
-rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version
-cp repository/target/*repository.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
+rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version-$commit_hash
+cp repository/target/*repository.zip $BUILD_TARGET_DIR/jshint-eclipse-$version-$commit_hash.zip
 
