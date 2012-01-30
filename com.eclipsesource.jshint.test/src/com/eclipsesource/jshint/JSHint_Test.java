@@ -156,6 +156,14 @@ public class JSHint_Test {
     assertEquals( "1.12", log.get( 0 ).getPosition() );
   }
 
+  @Test
+  public void testPositionWithLeadingTab() throws Exception {
+    jsHint.configure( new Configuration() );
+    jsHint.check( "\tvar a = x == null ? null : 1;", handler );
+
+    assertEquals( "1.12", log.get( 0 ).getPosition() );
+  }
+
   private class TestHandler implements ProblemHandler {
 
     public void handleProblem( int line, int character, String message ) {

@@ -19,12 +19,13 @@ import java.util.Map;
  */
 public class Configuration {
 
-  private final Map<String, Boolean> options;
-  private final Map<String,Boolean> globals;
+  private final Map<String,Object> options;
+  private final Map<String, Object> globals;
 
   public Configuration() {
-    globals = new LinkedHashMap<String, Boolean>();
-    options = new LinkedHashMap<String, Boolean>();
+    globals = new LinkedHashMap<String, Object>();
+    options = new LinkedHashMap<String, Object>();
+    options.put( "indent", Integer.valueOf( 1 ) );
   }
 
   public void addOption( String option, boolean value ) {
@@ -57,7 +58,7 @@ public class Configuration {
     return builder.toString();
   }
 
-  private void addMap( StringBuilder builder, Map<String, Boolean> map ) {
+  private void addMap( StringBuilder builder, Map<String, Object> map ) {
     boolean first = true;
     for( String key : map.keySet() ) {
       if( !first ) {
