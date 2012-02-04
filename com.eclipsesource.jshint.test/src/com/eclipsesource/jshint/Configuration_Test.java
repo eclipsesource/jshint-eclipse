@@ -53,30 +53,30 @@ public class Configuration_Test {
   }
 
   @Test( expected = IllegalArgumentException.class )
-  public void addSameGlobalTwice() throws Exception {
-    configuration.addGlobal( "foo", true );
-    configuration.addGlobal( "foo", true );
+  public void addSamePredefTwice() throws Exception {
+    configuration.addPredefined( "foo", true );
+    configuration.addPredefined( "foo", true );
   }
 
   @Test
-  public void addOneGlobal() throws Exception {
-    configuration.addGlobal( "foo", true );
+  public void addOnePredef() throws Exception {
+    configuration.addPredefined( "foo", true );
 
     assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.getOptionsString() );
   }
 
   @Test
-  public void addSeparateGlobals() throws Exception {
-    configuration.addGlobal( "foo", true );
-    configuration.addGlobal( "bar", false );
+  public void addSeparatePredefs() throws Exception {
+    configuration.addPredefined( "foo", true );
+    configuration.addPredefined( "bar", false );
 
     assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}, \"indent\": 1}",
                   configuration.getOptionsString() );
   }
 
   @Test
-  public void addGlobalAndOption() throws Exception {
-    configuration.addGlobal( "foo", true );
+  public void addPredefAndOption() throws Exception {
+    configuration.addPredefined( "foo", true );
     configuration.addOption( "bar", false );
 
     assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1, \"bar\": false}",

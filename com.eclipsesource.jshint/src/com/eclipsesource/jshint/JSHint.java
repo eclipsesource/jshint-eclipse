@@ -25,12 +25,27 @@ import org.mozilla.javascript.ScriptableObject;
 import com.eclipsesource.jshint.internal.ProblemImpl;
 
 
+/**
+ * JSHint code analysis tool written in Java.
+ * <p>
+ * Usage:
+ * <pre>
+ * JSHint jshint = new JSHint();
+ * jshint.load();
+ * jshint.configure( new Configuration() );
+ * jshint.check( jsCode, new ProblemHandler() { ... } );
+ * </pre>
+ * </p>
+ */
 public class JSHint {
 
   private static final String JSHINT_JS = "com/jshint/jshint-r05.js";
   private Function jshint;
   private Object opts;
 
+  /**
+   * Loads the JSHint library.
+   */
   public void load() throws IOException {
     Context context = Context.enter();
     try {
@@ -47,7 +62,16 @@ public class JSHint {
     }
   }
 
+  /**
+   * Sets the configuration to use for all subsequent checks.
+   *
+   * @param configuration
+   *          the configuration to use, must not be null
+   */
   public void configure( Configuration configuration ) {
+    if( configuration == null ) {
+      throw new NullPointerException( "configuration is null" );
+    }
     Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
@@ -58,23 +82,37 @@ public class JSHint {
     }
   }
 
+  /**
+   * Checks the given JavaScript code. All problems will be reported to the given problem handler.
+   *
+   * @param code
+   *          the JavaScript code to check, must not be null
+   * @param handler
+   *          the handler to report problems to or <code>null</code>
+   * @return <code>true</code> if no problems have been found, otherwise <code>false</code>
+   */
   public boolean check( String code, ProblemHandler handler ) {
+    if( code == null ) {
+      throw new NullPointerException( "code is null" );
+    }
     if( jshint == null ) {
       throw new IllegalStateException( "JSHint is not loaded" );
     }
-    Context context = Context.enter();
     boolean result;
+    Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
       Object[] args = new Object[] { code, opts };
       try {
         result = ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
       } catch( JavaScriptException exception ) {
-        String message = "Could not parse JavaScript: " + exception.getMessage();
-        handler.handleProblem( new ProblemImpl( 0, -1, message ) );
+        if( handler != null ) {
+          String message = "Could not parse JavaScript: " + exception.getMessage();
+          handler.handleProblem( new ProblemImpl( 0, 0, message ) );
+        }
         return false;
       }
-      if( !result ) {
+      if( !result && handler != null ) {
         NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
         for( Object object : errors ) {
           ScriptableObject error = (ScriptableObject)object;
@@ -134,13 +172,13 @@ public class JSHint {
       checker.load();
       checker.configure( new Configuration() );
       String code = "foo = { bar : 23, bar : 42 };\nif( foo == null )\n  bar = x";
-      checker.check( code, new SysoutErrorHandler() );
+      checker.check( code, new SysoutProblemHandler() );
     } catch( Exception e ) {
       e.printStackTrace();
     }
   }
 
-  private static final class SysoutErrorHandler implements ProblemHandler {
+  private static final class SysoutProblemHandler implements ProblemHandler {
 
     public void handleProblem( Problem problem ) {
       int line = problem.getLine();

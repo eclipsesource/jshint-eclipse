@@ -151,7 +151,7 @@ public class ProjectPreferences {
   public Configuration getConfiguration() {
     Configuration configuration = new Configuration();
     for( OptionParserUtil.Entry entry : OptionParserUtil.parseOptionString( getGlobals() ) ) {
-      configuration.addGlobal( entry.name, entry.value );
+      configuration.addPredefined( entry.name, entry.value );
     }
     for( OptionParserUtil.Entry entry : OptionParserUtil.parseOptionString( getOptions() ) ) {
       configuration.addOption( entry.name, entry.value );

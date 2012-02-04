@@ -56,6 +56,22 @@ public class JSHint_Test {
     assertFalse( problems.isEmpty() );
   }
 
+  @Test( expected = NullPointerException.class )
+  public void checkWithNullCode() throws Exception {
+    jsHint.check( null, handler );
+  }
+
+  @Test
+  public void checkWithNullHandler() throws Exception {
+    assertTrue( jsHint.check( "var a = 23;", null ) );
+    assertFalse( jsHint.check( "HMPF!", null ) );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void configWithNull() throws Exception {
+    jsHint.configure( null );
+  }
+
   @Test
   public void checkEmpty() throws Exception {
     jsHint.check( "", handler );
@@ -108,7 +124,7 @@ public class JSHint_Test {
   public void checkUndefWithConfigAndGlobal() throws Exception {
     Configuration configuration = new Configuration();
     configuration.addOption( "undef", true );
-    configuration.addGlobal( "org", true );
+    configuration.addPredefined( "org", true );
     jsHint.configure( configuration );
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
@@ -120,7 +136,7 @@ public class JSHint_Test {
   public void checkUndefWithConfigAndReadonlyGlobal() throws Exception {
     Configuration configuration = new Configuration();
     configuration.addOption( "undef", true );
-    configuration.addGlobal( "org", false );
+    configuration.addPredefined( "org", false );
     jsHint.configure( configuration );
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );

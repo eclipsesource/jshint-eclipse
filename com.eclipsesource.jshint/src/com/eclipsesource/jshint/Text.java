@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 
+/**
+ * Wrapper class for the text, used to read the content of a text file and to track line offsets.
+ */
 public class Text {
 
   private String code;

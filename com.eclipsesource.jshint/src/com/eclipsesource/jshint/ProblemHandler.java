@@ -11,8 +11,17 @@
 package com.eclipsesource.jshint;
 
 
+/**
+ * Implementations of this class are used to handle problems returned from JSHint.
+ */
 public interface ProblemHandler {
 
+  /**
+   * Handles a problem occurred during the code check.
+   *
+   * @param problem
+   *          the problem
+   */
   void handleProblem( Problem problem );
 
 }
