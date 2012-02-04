@@ -22,6 +22,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.eclipsesource.jshint.internal.JSHintRunner;
 import com.eclipsesource.jshint.internal.ProblemImpl;
 
 
@@ -163,30 +164,9 @@ public class JSHint {
     return new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
   }
 
-  ////////////////////////////////////////////////
-  // Usage example
-
   public static void main( String[] args ) {
-    try {
-      JSHint checker = new JSHint();
-      checker.load();
-      checker.configure( new Configuration() );
-      String code = "foo = { bar : 23, bar : 42 };\nif( foo == null )\n  bar = x";
-      checker.check( code, new SysoutProblemHandler() );
-    } catch( Exception e ) {
-      e.printStackTrace();
-    }
-  }
-
-  private static final class SysoutProblemHandler implements ProblemHandler {
-
-    public void handleProblem( Problem problem ) {
-      int line = problem.getLine();
-      int character = problem.getCharacter();
-      String message = problem.getMessage();
-      System.out.println( line + "," + character + ": " + message );
-    }
-
+    JSHintRunner runner = new JSHintRunner();
+    runner.run( args );
   }
 
 }
