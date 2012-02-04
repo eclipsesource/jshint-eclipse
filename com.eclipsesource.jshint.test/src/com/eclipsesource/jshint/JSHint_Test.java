@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-
 public class JSHint_Test {
 
   private static final String CODE_WITH_EQNULL = "var f = x == null ? null : x + 1;";
@@ -38,7 +37,23 @@ public class JSHint_Test {
     problems = new ArrayList<Problem>();
     handler = new TestHandler();
     jsHint = new JSHint();
-    jsHint.init();
+    jsHint.load();
+  }
+
+  @Test( expected = IllegalStateException.class )
+  public void checkWithoutLoad() throws Exception {
+    JSHint jsHint = new JSHint();
+    jsHint.check( "hmpf!", handler );
+  }
+
+  @Test
+  public void configureBeforeLoad() throws Exception {
+    JSHint jsHint = new JSHint();
+    jsHint.configure( new Configuration() );
+    jsHint.load();
+    jsHint.check( "hmpf!", handler );
+
+    assertFalse( problems.isEmpty() );
   }
 
   @Test

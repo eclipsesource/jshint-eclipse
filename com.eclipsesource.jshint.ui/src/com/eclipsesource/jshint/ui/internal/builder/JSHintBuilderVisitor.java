@@ -70,7 +70,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
   private JSHint createJSHint( Configuration configuration ) throws CoreException {
     JSHint jshint = new JSHint();
     try {
-      jshint.init();
+      jshint.load();
       jshint.configure( configuration );
     } catch( IOException exception ) {
       String message = "Failed to intialize JSHint";

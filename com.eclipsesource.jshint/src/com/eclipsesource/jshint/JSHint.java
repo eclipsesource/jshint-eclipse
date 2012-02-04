@@ -31,7 +31,7 @@ public class JSHint {
   private Function jshint;
   private Object opts;
 
-  public void init() throws IOException {
+  public void load() throws IOException {
     Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
@@ -59,6 +59,9 @@ public class JSHint {
   }
 
   public boolean check( String code, ProblemHandler handler ) {
+    if( jshint == null ) {
+      throw new IllegalStateException( "JSHint is not loaded" );
+    }
     Context context = Context.enter();
     boolean result;
     try {
@@ -128,7 +131,7 @@ public class JSHint {
   public static void main( String[] args ) {
     try {
       JSHint checker = new JSHint();
-      checker.init();
+      checker.load();
       checker.configure( new Configuration() );
       String code = "foo = { bar : 23, bar : 42 };\nif( foo == null )\n  bar = x";
       checker.check( code, new SysoutErrorHandler() );
