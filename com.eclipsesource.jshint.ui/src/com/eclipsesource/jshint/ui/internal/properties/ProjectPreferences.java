@@ -42,7 +42,6 @@ public class ProjectPreferences {
 
   public ProjectPreferences( IProject project ) throws CoreException {
     node = new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
-    checkFallbackToOldProperties( project );
     changed = false;
   }
 
@@ -158,29 +157,6 @@ public class ProjectPreferences {
       configuration.addOption( entry.name, entry.value );
     }
     return configuration;
-  }
-
-  private void checkFallbackToOldProperties( IProject project ) throws CoreException {
-    try {
-      if( node.keys().length == 0 ) {
-        copyOldProperties( project );
-      }
-    } catch( BackingStoreException exception ) {
-      String message = "Failed to read properties for project " + project.getName();
-      throw new CoreException( new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception ) );
-    }
-  }
-
-  private void copyOldProperties( IProject project ) throws BackingStoreException {
-    OldProjectPreferences oldPrefs = new OldProjectPreferences( project );
-    if( oldPrefs.exists() ) {
-      node.put( KEY_ENABLED, oldPrefs.getEnabled() );
-      node.put( KEY_EXCLUDED, encodePath( oldPrefs.getExcluded( ) ) );
-      node.put( KEY_GLOBALS, oldPrefs.getGlobals( ) );
-      node.put( KEY_OPTIONS, oldPrefs.getOptions( ) );
-      node.flush();
-      oldPrefs.delete();
-    }
   }
 
   private static String getResourcePath( IResource resource ) {

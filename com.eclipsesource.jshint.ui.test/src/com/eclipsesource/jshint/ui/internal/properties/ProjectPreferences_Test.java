@@ -15,11 +15,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,12 +25,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.eclipsesource.jshint.ui.test.TestUtil;
+
 
 public class ProjectPreferences_Test {
-  private static final String SETTINGS_FOLDER_PATH = "/.settings";
-  private static final String SETTINGS_FILE = "com.eclipsesource.jshint.ui.prefs";
-  private static final String OLD_SETTINGS_FILE = "com.eclipsesource.jshint.prefs";
-
   private IProject project;
   private IFile file;
 
@@ -66,7 +61,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void prefsFromExampleSettingsFile() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
 
     ProjectPreferences prefs = new ProjectPreferences( project );
 
@@ -79,21 +74,8 @@ public class ProjectPreferences_Test {
   }
 
   @Test
-  public void fallbackToOldPrefs() throws Exception {
-    createExampleSettingsFile( OLD_SETTINGS_FILE );
-
-    ProjectPreferences prefs = new ProjectPreferences( project );
-
-    assertEquals( true, prefs.getEnabled() );
-    assertEquals( true, prefs.getExcluded( project.getFile( "js/test.js" ) ) );
-    assertEquals( false, prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
-    assertEquals( "org: true, com: false", prefs.getGlobals() );
-    assertEquals( "bitwise: true, curly: true, eqnull: true", prefs.getOptions() );
-  }
-
-  @Test
   public void setEnabled() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setEnabled( false );
@@ -105,7 +87,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void setEnabled_unchanged() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setEnabled( prefs.getEnabled() );
@@ -115,7 +97,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void setGlobals() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setGlobals( "foo" );
@@ -127,7 +109,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void setGlobals_unchanged() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setGlobals( prefs.getGlobals() );
@@ -137,7 +119,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void setOptions() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setOptions( "foo" );
@@ -149,7 +131,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void setOptions_unchanged() throws Exception {
-    createExampleSettingsFile( SETTINGS_FILE );
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setOptions( prefs.getOptions() );
@@ -157,27 +139,4 @@ public class ProjectPreferences_Test {
     assertFalse( prefs.hasChanged() );
   }
 
-  private void createExampleSettingsFile( String settingsFileName ) throws CoreException,
-      IOException
-  {
-    IFolder folder = getSettingsFolder();
-    IFile settingsFile = folder.getFile( settingsFileName );
-    InputStream inputStream = getClass().getResourceAsStream( settingsFileName );
-    if( inputStream != null ) {
-      try {
-        settingsFile.create( inputStream, true, null );
-        assertTrue( settingsFile.exists() );
-      } finally {
-        inputStream.close();
-      }
-    }
-  }
-
-  private IFolder getSettingsFolder() throws CoreException {
-    IFolder folder = project.getFolder( SETTINGS_FOLDER_PATH );
-    if( !folder.exists() ) {
-      folder.create( true, true, null );
-    }
-    return folder;
-  }
 }
