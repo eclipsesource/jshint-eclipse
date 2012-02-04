@@ -11,6 +11,7 @@
 package com.eclipsesource.jshint;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -88,6 +89,20 @@ public class Text_Test {
     assertEquals( "line1\r\nline2\r\n", textFile.getContent() );
     assertEquals( 3, textFile.getLineCount() );
     assertEquals( "0, 7, 14", getAllLineOffsets( textFile ) );
+  }
+
+  @Test
+  public void readLongFile() throws Exception {
+    StringBuilder builder = new StringBuilder();
+    for( int i = 1; i <= 5000; i++ ) {
+      builder.append( "line " + i + "\n" );
+    }
+    Reader reader = new StringReader( builder.toString() );
+    Text textFile = new Text( reader );
+
+    assertTrue( textFile.getContent().startsWith( "line 1\n" ) );
+    assertTrue( textFile.getContent().endsWith( "line 5000\n" ) );
+    assertEquals( 5001, textFile.getLineCount() );
   }
 
   private static String getAllLineOffsets( Text textFile ) {
