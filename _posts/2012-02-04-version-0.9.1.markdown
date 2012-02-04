@@ -1,0 +1,17 @@
+---
+layout: post
+title: Version 0.9.1 published
+---
+
+To be able to run the JSHint checker headless from Java code, the plug-in has been split into a
+core and a ui bundle. The core bundle has a simple API that can be used as follows:
+
+    JSHint jshint = new JSHint();
+    jshint.load();
+    jshint.configure( new Configuration() );
+    jshint.check( jsCode, new ProblemHandler() { ... } );
+
+As a result, the ui plug-in's id has changed, so that configurations created with the previous
+version have to be updated. The plug-in will do this automatically.
+
+A problem with wrong marker positions when using tabs has been fixed.

@@ -19,8 +19,24 @@ a:hover {
   text-decoration: underline;
 }
 
-p {
+p, pre, ul, ol {
   margin-bottom: 7px;
+}
+
+pre {
+  background-color: #fcfcfa;
+  border: 1px solid #f2efde;
+  border-radius: 3px;
+  overflow-x: auto;
+  padding: 6px 12px;
+}
+
+p > code {
+  background-color: #fcfcfa;
+  border: 1px solid #f2efde;
+  border-radius: 2px;
+  padding: 0 2px;
+  margin: 0 -1px;
 }
 
 ul, ol {
