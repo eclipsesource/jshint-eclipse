@@ -71,7 +71,7 @@ public class JSHint {
         handler.handleProblem( new ProblemImpl( 0, -1, message ) );
         return false;
       }
-      if( result == Boolean.FALSE ) {
+      if( !result ) {
         NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
         for( Object object : errors ) {
           ScriptableObject error = (ScriptableObject)object;
