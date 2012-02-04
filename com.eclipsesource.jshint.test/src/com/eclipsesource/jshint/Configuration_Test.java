@@ -46,16 +46,20 @@ public class Configuration_Test {
                   configuration.getOptionsString() );
   }
 
-  @Test( expected = IllegalArgumentException.class )
+  @Test
   public void addSameOptionTwice() throws Exception {
     configuration.addOption( "foo", true );
-    configuration.addOption( "foo", true );
+    configuration.addOption( "foo", false );
+
+    assertEquals( "{\"indent\": 1, \"foo\": false}", configuration.getOptionsString() );
   }
 
-  @Test( expected = IllegalArgumentException.class )
+  @Test
   public void addSamePredefTwice() throws Exception {
     configuration.addPredefined( "foo", true );
-    configuration.addPredefined( "foo", true );
+    configuration.addPredefined( "foo", false );
+
+    assertEquals( "{\"predef\": {\"foo\": false}, \"indent\": 1}", configuration.getOptionsString() );
   }
 
   @Test
