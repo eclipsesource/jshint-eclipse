@@ -8,21 +8,32 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.test;
+package com.eclipsesource.jshint.internal;
+
+import com.eclipsesource.jshint.Problem;
 
 
-public class Problem {
-  public final int line;
-  public final int character;
-  public final String message;
+public class ProblemImpl implements Problem {
+  private final int line;
+  private final int character;
+  private final String message;
 
-  public Problem( int line, int character, String message ) {
+  public ProblemImpl( int line, int character, String message ) {
     this.line = line;
     this.character = character;
     this.message = message;
   }
 
-  public String getPosition() {
-    return line + "." + character;
+  public int getLine() {
+    return line;
   }
+
+  public int getCharacter() {
+    return character;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
 }

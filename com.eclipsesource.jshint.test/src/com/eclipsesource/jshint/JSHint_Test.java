@@ -21,7 +21,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.eclipsesource.jshint.test.Problem;
 
 
 public class JSHint_Test {
@@ -30,13 +29,13 @@ public class JSHint_Test {
   private static final String CODE_WITH_GLOBAL_ORG = "org = {};";
 
   private static final String WARN_EQNULL = "Use '===' to compare with 'null'";
-  private List<Problem> log;
+  private List<Problem> problems;
   private TestHandler handler;
   private JSHint jsHint;
 
   @Before
   public void setUp() throws IOException {
-    log = new ArrayList<Problem>();
+    problems = new ArrayList<Problem>();
     handler = new TestHandler();
     jsHint = new JSHint();
     jsHint.init();
@@ -46,28 +45,28 @@ public class JSHint_Test {
   public void checkEmpty() throws Exception {
     jsHint.check( "", handler );
 
-    assertTrue( log.isEmpty() );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
   public void checkOk() throws Exception {
     jsHint.check( "var foo = 23;", handler );
 
-    assertTrue( log.isEmpty() );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
   public void checkErrors() throws Exception {
     jsHint.check( "cheese!", handler );
 
-    assertFalse( log.isEmpty() );
+    assertFalse( problems.isEmpty() );
   }
 
   @Test
   public void checkUndefWithoutConfig() throws Exception {
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( log.isEmpty() );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
@@ -76,7 +75,7 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( log.isEmpty() );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
@@ -87,7 +86,7 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( log.get( 0 ).message.contains( "'org' is not defined" ) );
+    assertTrue( problems.get( 0 ).getMessage().contains( "'org' is not defined" ) );
   }
 
   @Test
@@ -99,7 +98,7 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( log.isEmpty() );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
@@ -111,14 +110,14 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( log.get( 0 ).message.contains( "Read only" ) );
+    assertTrue( problems.get( 0 ).getMessage().contains( "Read only" ) );
   }
 
   @Test
   public void checkEqNullWithoutConfig() throws Exception {
     jsHint.check( CODE_WITH_EQNULL, handler );
 
-    assertTrue( log.get( 0 ).message.contains( WARN_EQNULL ) );
+    assertTrue( problems.get( 0 ).getMessage().contains( WARN_EQNULL ) );
   }
 
   @Test
@@ -127,7 +126,7 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_EQNULL, handler );
 
-    assertTrue( log.get( 0 ).message.contains( WARN_EQNULL ) );
+    assertTrue( problems.get( 0 ).getMessage().contains( WARN_EQNULL ) );
   }
 
   @Test
@@ -137,7 +136,7 @@ public class JSHint_Test {
     jsHint.configure( configuration );
     jsHint.check( CODE_WITH_EQNULL, handler );
 
-    assertTrue( log.isEmpty() );
+    assertTrue( problems.isEmpty() );
   }
 
   @Test
@@ -145,7 +144,7 @@ public class JSHint_Test {
     jsHint.configure( new Configuration() );
     jsHint.check( "var a = x == null ? null : 1;", handler );
 
-    assertEquals( "1.11", log.get( 0 ).getPosition() );
+    assertEquals( "1.11", getPosition( problems.get( 0 ) ) );
   }
 
   @Test
@@ -153,7 +152,7 @@ public class JSHint_Test {
     jsHint.configure( new Configuration() );
     jsHint.check( " var a = x == null ? null : 1;", handler );
 
-    assertEquals( "1.12", log.get( 0 ).getPosition() );
+    assertEquals( "1.12", getPosition( problems.get( 0 ) ) );
   }
 
   @Test
@@ -161,13 +160,17 @@ public class JSHint_Test {
     jsHint.configure( new Configuration() );
     jsHint.check( "\tvar a = x == null ? null : 1;", handler );
 
-    assertEquals( "1.12", log.get( 0 ).getPosition() );
+    assertEquals( "1.12", getPosition( problems.get( 0 ) ) );
+  }
+
+  private static String getPosition( Problem problem ) {
+    return problem.getLine() + "." + problem.getCharacter();
   }
 
   private class TestHandler implements ProblemHandler {
 
-    public void handleProblem( int line, int character, String message ) {
-      log.add( new Problem( line, character, message ) );
+    public void handleProblem( Problem problem ) {
+      problems.add( problem );
     }
   }
 

@@ -22,6 +22,8 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.eclipsesource.jshint.internal.ProblemImpl;
+
 
 public class JSHint {
 
@@ -65,7 +67,8 @@ public class JSHint {
       try {
         result = ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
       } catch( JavaScriptException exception ) {
-        handler.handleProblem( 0, -1, "Could not parse JavaScript: " + exception.getMessage() );
+        String message = "Could not parse JavaScript: " + exception.getMessage();
+        handler.handleProblem( new ProblemImpl( 0, -1, message ) );
         return false;
       }
       if( result == Boolean.FALSE ) {
@@ -88,7 +91,7 @@ public class JSHint {
     int line = getPropertyAsInt( error, "line", -1 );
     int character = getPropertyAsInt( error, "character", -1 );
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
-    handler.handleProblem( line, character, message );
+    handler.handleProblem( new ProblemImpl( line, character, message ) );
   }
 
   private static String getPropertyAsString( ScriptableObject object,
@@ -136,7 +139,10 @@ public class JSHint {
 
   private static final class SysoutErrorHandler implements ProblemHandler {
 
-    public void handleProblem( int line, int character, String message ) {
+    public void handleProblem( Problem problem ) {
+      int line = problem.getLine();
+      int character = problem.getCharacter();
+      String message = problem.getMessage();
       System.out.println( line + "," + character + ": " + message );
     }
 

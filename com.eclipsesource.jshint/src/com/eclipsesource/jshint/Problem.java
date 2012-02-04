@@ -11,8 +11,12 @@
 package com.eclipsesource.jshint;
 
 
-public interface ProblemHandler {
+public interface Problem {
 
-  void handleProblem( Problem problem );
+  int getLine();
+
+  int getCharacter();
+
+  String getMessage();
 
 }
