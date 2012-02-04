@@ -27,14 +27,14 @@ public class Configuration_Test {
 
   @Test
   public void emptyAfterCreation() throws Exception {
-    assertEquals( "{}", configuration.getOptionsString() );
+    assertEquals( "{\"indent\": 1}", configuration.getOptionsString() );
   }
 
   @Test
   public void addOneOption() throws Exception {
     configuration.addOption( "foo", true );
 
-    assertEquals( "{\"foo\": true}", configuration.getOptionsString() );
+    assertEquals( "{\"indent\": 1, \"foo\": true}", configuration.getOptionsString() );
   }
 
   @Test
@@ -42,7 +42,8 @@ public class Configuration_Test {
     configuration.addOption( "foo", true );
     configuration.addOption( "bar", false );
 
-    assertEquals( "{\"foo\": true, \"bar\": false}", configuration.getOptionsString() );
+    assertEquals( "{\"indent\": 1, \"foo\": true, \"bar\": false}",
+                  configuration.getOptionsString() );
   }
 
   @Test( expected = IllegalArgumentException.class )
@@ -61,7 +62,7 @@ public class Configuration_Test {
   public void addOneGlobal() throws Exception {
     configuration.addGlobal( "foo", true );
 
-    assertEquals( "{\"predef\": {\"foo\": true}}", configuration.getOptionsString() );
+    assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.getOptionsString() );
   }
 
   @Test
@@ -69,7 +70,8 @@ public class Configuration_Test {
     configuration.addGlobal( "foo", true );
     configuration.addGlobal( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}}", configuration.getOptionsString() );
+    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}, \"indent\": 1}",
+                  configuration.getOptionsString() );
   }
 
   @Test
@@ -77,7 +79,8 @@ public class Configuration_Test {
     configuration.addGlobal( "foo", true );
     configuration.addOption( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true}, \"bar\": false}", configuration.getOptionsString() );
+    assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1, \"bar\": false}",
+                  configuration.getOptionsString() );
   }
 
 }
