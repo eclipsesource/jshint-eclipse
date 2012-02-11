@@ -35,6 +35,10 @@ public class JSHintRunner {
       processFiles();
     } catch( Exception e ) {
       System.out.println( e.getMessage() );
+      System.out.println();
+      System.out.println( "Usage: JSHint [ <options> ] <input-file> [ <input-file> ... ]" );
+      System.out.println( "Options: --custom <custom-jshint-file>" );
+      System.out.println( "         --charset <charset>" );
     }
   }
 
