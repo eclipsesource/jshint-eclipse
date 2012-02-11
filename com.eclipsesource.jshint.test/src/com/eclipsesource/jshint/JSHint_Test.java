@@ -163,6 +163,20 @@ public class JSHint_Test {
   }
 
   @Test
+  public void checkWithJavaScriptException() throws Exception {
+    JSHint jsHint = new JSHint();
+    jsHint.load( new ByteArrayInputStream( "JSHINT = function() { throw 'ERROR'; };".getBytes() ) );
+
+    try {
+      jsHint.check( "var a = 1;", handler );
+    } catch( RuntimeException exception ) {
+
+      String expected = "JavaScript exception occured in JSHint check: ERROR";
+      assertTrue( exception.getMessage().startsWith( expected ) );
+    }
+  }
+
+  @Test
   public void checkUndefWithoutConfig() throws Exception {
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 

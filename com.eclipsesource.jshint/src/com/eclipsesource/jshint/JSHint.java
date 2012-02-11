@@ -29,16 +29,19 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
 
 
 /**
- * JSHint code analysis tool written in Java.
+ * Lightweight Java wrapper for the JSHint code analysis tool.
  * <p>
  * Usage:
+ * </p>
+ *
  * <pre>
  * JSHint jshint = new JSHint();
  * jshint.load();
  * jshint.configure( new Configuration() );
  * jshint.check( jsCode, new ProblemHandler() { ... } );
  * </pre>
- * </p>
+ *
+ * @see http://www.jshint.com/
  */
 public class JSHint {
 
@@ -81,34 +84,6 @@ public class JSHint {
     }
   }
 
-  private void load( Reader reader ) throws IOException {
-    Context context = Context.enter();
-    try {
-      ScriptableObject scope = context.initStandardObjects();
-      context.evaluateReader( scope, reader, "jshint library", 1, null );
-      jshint = findJSHintFunction( scope );
-    } catch( EvaluatorException exception ) {
-      throw new IllegalArgumentException( "Could not parse input as JavaScript", exception );
-    } finally {
-      Context.exit();
-    }
-  }
-
-  private Function findJSHintFunction( ScriptableObject scope ) throws IllegalArgumentException {
-    Object object;
-    if( ScriptableObject.hasProperty( scope, "JSHINT" ) ) {
-      object = scope.get( "JSHINT", scope );
-    } else if( ScriptableObject.hasProperty( scope, "JSLINT" ) ) {
-      object = scope.get( "JSLINT", scope );
-    } else {
-      throw new IllegalArgumentException( "Global JSHINT or JSLINT function missing in input" );
-    }
-    if( !( object instanceof Function ) ) {
-      throw new IllegalArgumentException( "Global JSHINT or JSLINT is not a function" );
-    }
-    return (Function)object;
-  }
-
   /**
    * Sets the configuration to use for all subsequent checks.
    *
@@ -148,25 +123,9 @@ public class JSHint {
     boolean result;
     Context context = Context.enter();
     try {
-      ScriptableObject scope = context.initStandardObjects();
-      Object[] args = new Object[] { code, opts };
-      try {
-        result = ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
-      } catch( JavaScriptException exception ) {
-        if( handler != null ) {
-          String message = "Could not parse JavaScript: " + exception.getMessage();
-          handler.handleProblem( new ProblemImpl( 0, 0, message ) );
-        }
-        return false;
-      }
+      result = checkCode( context, code );
       if( !result && handler != null ) {
-        NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
-        for( Object object : errors ) {
-          ScriptableObject error = (ScriptableObject)object;
-          if( error != null ) {
-            handleError( handler, error );
-          }
-        }
+        handleProblems( handler );
       }
     } finally {
       Context.exit();
@@ -174,12 +133,62 @@ public class JSHint {
     return result;
   }
 
-  private void handleError( ProblemHandler handler, ScriptableObject error ) {
+  private void load( Reader reader ) throws IOException {
+    Context context = Context.enter();
+    try {
+      ScriptableObject scope = context.initStandardObjects();
+      context.evaluateReader( scope, reader, "jshint library", 1, null );
+      jshint = findJSHintFunction( scope );
+    } catch( EvaluatorException exception ) {
+      throw new IllegalArgumentException( "Could not parse input as JavaScript", exception );
+    } finally {
+      Context.exit();
+    }
+  }
+
+  private boolean checkCode( Context context, String code ) {
+    try {
+      ScriptableObject scope = context.initStandardObjects();
+      Object[] args = new Object[] { code, opts };
+      return ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
+    } catch( JavaScriptException exception ) {
+      String message = "JavaScript exception occured in JSHint check: " + exception.getMessage();
+      throw new RuntimeException( message, exception );
+    }
+  }
+
+  private Function findJSHintFunction( ScriptableObject scope ) throws IllegalArgumentException {
+    Object object;
+    if( ScriptableObject.hasProperty( scope, "JSHINT" ) ) {
+      object = scope.get( "JSHINT", scope );
+    } else if( ScriptableObject.hasProperty( scope, "JSLINT" ) ) {
+      object = scope.get( "JSLINT", scope );
+    } else {
+      throw new IllegalArgumentException( "Global JSHINT or JSLINT function missing in input" );
+    }
+    if( !( object instanceof Function ) ) {
+      throw new IllegalArgumentException( "Global JSHINT or JSLINT is not a function" );
+    }
+    return (Function)object;
+  }
+
+  private void handleProblems( ProblemHandler handler ) {
+    NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
+    for( Object object : errors ) {
+      ScriptableObject error = (ScriptableObject)object;
+      if( error != null ) {
+        Problem problem = createProblem( error );
+        handler.handleProblem( problem );
+      }
+    }
+  }
+
+  private ProblemImpl createProblem( ScriptableObject error ) {
     String reason = getPropertyAsString( error, "reason", "" );
     int line = getPropertyAsInt( error, "line", -1 );
     int character = getPropertyAsInt( error, "character", -1 );
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
-    handler.handleProblem( new ProblemImpl( line, character, message ) );
+    return new ProblemImpl( line, character, message );
   }
 
   private static String getPropertyAsString( ScriptableObject object,
