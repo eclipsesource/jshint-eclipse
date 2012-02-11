@@ -42,7 +42,7 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
  */
 public class JSHint {
 
-  private static final String JSHINT_JS = "com/jshint/jshint-r05.js";
+  private static final String JSHINT_JS = "com/jshint/jshint-r05.min.js";
   private Function jshint;
   private Object opts;
 
