@@ -5,8 +5,8 @@ Bundle-SymbolicName: com.eclipsesource.jshint.test
 Bundle-Version: 0.9.1.qualifier
 Fragment-Host: com.eclipsesource.jshint;bundle-version="0.9.1"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.hamcrest;core=split;version="1.1.0",
- org.junit;version="4.8.2",
+Import-Package: org.junit;version="4.8.2",
  org.junit.runner;version="4.8.2",
  org.junit.runners;version="4.8.2"
 Bundle-Vendor: EclipseSource
+Require-Bundle: org.hamcrest;bundle-version="1.1.0"

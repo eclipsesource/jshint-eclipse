@@ -10,9 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,6 +20,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+
+import static org.hamcrest.Matchers.greaterThan;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith( value = Parameterized.class )
@@ -63,13 +66,14 @@ public class JSHint_Compatibility_Test {
   }
 
   @Test
+  @SuppressWarnings( "boxing" )
   public void checkInvalid_problemFieldsSet() throws Exception {
     jsHint.check( "hmpf!", handler );
 
     assertFalse( problems.isEmpty() );
-    assertTrue( problems.get( 0 ).getLine() > 0 );
-    assertTrue( problems.get( 0 ).getCharacter() > 0 );
-    assertTrue( problems.get( 0 ).getMessage().length() > 0 );
+    assertThat( problems.get( 0 ).getLine(), greaterThan( 0 ) );
+    assertThat( problems.get( 0 ).getCharacter(), greaterThan( 0 ) );
+    assertThat( problems.get( 0 ).getMessage().length(), greaterThan( 0 ) );
   }
 
   private void loadJsHint() throws IOException {

@@ -10,13 +10,16 @@
  ******************************************************************************/
 package com.eclipsesource.jshint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.Reader;
 import java.io.StringReader;
 
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 
 public class Text_Test {
@@ -100,8 +103,8 @@ public class Text_Test {
     Reader reader = new StringReader( builder.toString() );
     Text textFile = new Text( reader );
 
-    assertTrue( textFile.getContent().startsWith( "line 1\n" ) );
-    assertTrue( textFile.getContent().endsWith( "line 5000\n" ) );
+    assertThat( textFile.getContent(), startsWith( "line 1\n" ) );
+    assertThat( textFile.getContent(), endsWith( "line 5000\n" ) );
     assertEquals( 5001, textFile.getLineCount() );
   }
 

@@ -10,9 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -25,6 +22,12 @@ import java.io.UnsupportedEncodingException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 
 public class JSHintRunner_Test {
@@ -51,7 +54,8 @@ public class JSHintRunner_Test {
 
     runner.run();
 
-    assertTrue( getSysout().startsWith( "No input files\n" ) );
+    assertThat( getSysout(), startsWith( "No input files\n" ) );
+    assertThat( getSysout(), containsString( "Usage:" ) );
   }
 
   @Test
@@ -60,7 +64,8 @@ public class JSHintRunner_Test {
 
     runner.run( "--charset" );
 
-    assertTrue( getSysout().startsWith( "No input files\n" ) );
+    assertThat( getSysout(), startsWith( "No input files\n" ) );
+    assertThat( getSysout(), containsString( "Usage:" ) );
   }
 
   @Test
@@ -91,8 +96,8 @@ public class JSHintRunner_Test {
     runner.run( file.getAbsolutePath() );
 
     String fileName = file.getAbsolutePath();
-    assertTrue( getSysout().contains( "Problem in file " + fileName + " at line 1: " ) );
-    assertTrue( getSysout().contains( "\nProblem in file" ) );
+    assertThat( getSysout(), containsString( "Problem in file " + fileName + " at line 1: " ) );
+    assertThat( getSysout(), containsString( "\nProblem in file" ) );
   }
 
   @Test
@@ -103,7 +108,7 @@ public class JSHintRunner_Test {
 
     runner.run( fileName, "/nowhere/missing-file.js" );
 
-    assertTrue( getSysout().startsWith( "No such file: /nowhere/missing-file.js" ) );
+    assertThat( getSysout(), startsWith( "No such file: /nowhere/missing-file.js" ) );
   }
 
   @Test
@@ -113,7 +118,7 @@ public class JSHintRunner_Test {
 
     runner.run( file.getAbsolutePath() );
 
-    assertTrue( getSysout().contains( "ö" ) );
+    assertThat( getSysout(), containsString( "ö" ) );
   }
 
   @Test
@@ -123,7 +128,7 @@ public class JSHintRunner_Test {
 
     runner.run( "--charset", "ISO-8859-1", file.getAbsolutePath() );
 
-    assertTrue( getSysout().contains( "ö" ) );
+    assertThat( getSysout(), containsString( "ö" ) );
   }
 
   @Test
@@ -133,7 +138,7 @@ public class JSHintRunner_Test {
 
     runner.run( "--charset", "HMPF!", file.getAbsolutePath() );
 
-    assertTrue( getSysout().startsWith( "Unknown or unsupported charset: HMPF!" ) );
+    assertThat( getSysout(), startsWith( "Unknown or unsupported charset: HMPF!" ) );
   }
 
   @Test
@@ -148,7 +153,7 @@ public class JSHintRunner_Test {
 
     runner.run( "--custom", fakeJSHintFileName, jsFileName );
 
-    assertTrue( getSysout().startsWith( "Problem in file " + jsFileName + " at line 23: test" ) );
+    assertThat( getSysout(), startsWith( "Problem in file " + jsFileName + " at line 23: test" ) );
   }
 
   @Test
@@ -159,7 +164,7 @@ public class JSHintRunner_Test {
 
     runner.run( "--custom", libraryFile.getAbsolutePath(), jsFile.getAbsolutePath() );
 
-    assertTrue( getSysout().startsWith( "Failed to load JSHint library: Could not parse input" ) );
+    assertThat( getSysout(), startsWith( "Failed to load JSHint library: Could not parse input" ) );
   }
 
   private String getSysout() {

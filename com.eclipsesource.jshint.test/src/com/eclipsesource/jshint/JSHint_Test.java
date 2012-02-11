@@ -10,11 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +18,15 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 
 public class JSHint_Test {
@@ -172,7 +176,7 @@ public class JSHint_Test {
     } catch( RuntimeException exception ) {
 
       String expected = "JavaScript exception occured in JSHint check: ERROR";
-      assertTrue( exception.getMessage().startsWith( expected ) );
+      assertThat( exception.getMessage(), startsWith( expected ) );
     }
   }
 
@@ -200,7 +204,7 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( problems.get( 0 ).getMessage().contains( "'org' is not defined" ) );
+    assertThat( problems.get( 0 ).getMessage(), containsString( "'org' is not defined" ) );
   }
 
   @Test
@@ -224,14 +228,14 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
-    assertTrue( problems.get( 0 ).getMessage().contains( "Read only" ) );
+    assertThat( problems.get( 0 ).getMessage(), containsString( "Read only" ) );
   }
 
   @Test
   public void checkEqNullWithoutConfig() throws Exception {
     jsHint.check( CODE_WITH_EQNULL, handler );
 
-    assertTrue( problems.get( 0 ).getMessage().contains( WARN_EQNULL ) );
+    assertThat( problems.get( 0 ).getMessage(), containsString( WARN_EQNULL ) );
   }
 
   @Test
@@ -240,7 +244,7 @@ public class JSHint_Test {
 
     jsHint.check( CODE_WITH_EQNULL, handler );
 
-    assertTrue( problems.get( 0 ).getMessage().contains( WARN_EQNULL ) );
+    assertThat( problems.get( 0 ).getMessage(), containsString( WARN_EQNULL ) );
   }
 
   @Test
