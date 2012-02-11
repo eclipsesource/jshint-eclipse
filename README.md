@@ -29,4 +29,4 @@ License
 
 The code is published under the terms of the [Eclipse Public License, version 1.0](http://www.eclipse.org/legal/epl-v10.html).
 
-Includes code from [jshint](https://github.com/jshint/jshint/), version r04, which is published under the terms of the MIT license with the addition "The Software shall be used for Good, not Evil."
+Includes code from [jshint](https://github.com/jshint/jshint/), version r05, which is published under the terms of the MIT license with the addition "The Software shall be used for Good, not Evil."
