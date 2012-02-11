@@ -14,9 +14,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeArray;
@@ -45,22 +47,66 @@ public class JSHint {
   private Object opts;
 
   /**
-   * Loads the JSHint library.
+   * Loads the default JSHint library.
    */
   public void load() throws IOException {
+    Reader reader = getJsHintReader();
+    try {
+      load( reader );
+    } finally {
+      reader.close();
+    }
+  }
+
+  /**
+   * Loads a custom JSHint library. The input stream must provide the contents of the
+   * file <code>jshint.js</code> found in the JSHint distribution.
+   * <p>
+   * JSLint is also supported. In this case the file to provide is <code>jslint.js</code>.
+   * </p>
+   *
+   * @param inputStream
+   *          an input stream to load the the JSHint library from
+   * @throws IOException
+   *           if an I/O error occurs while reading from the input stream
+   * @throws IllegalArgumentException
+   *           if the given input is not a proper JSHint library file
+   */
+  public void load( InputStream inputStream ) throws IOException {
+    Reader reader = new InputStreamReader( inputStream );
+    try {
+      load( reader );
+    } finally {
+      reader.close();
+    }
+  }
+
+  private void load( Reader reader ) throws IOException {
     Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
-      BufferedReader reader = getJsHintReader();
-      try {
-        context.evaluateReader( scope, reader, "jshint.js", 1, null );
-      } finally {
-        reader.close();
-      }
-      jshint = ( Function )scope.get( "JSHINT", scope );
+      context.evaluateReader( scope, reader, "jshint library", 1, null );
+      jshint = findJSHintFunction( scope );
+    } catch( EvaluatorException exception ) {
+      throw new IllegalArgumentException( "Could not parse input as JavaScript", exception );
     } finally {
       Context.exit();
     }
+  }
+
+  private Function findJSHintFunction( ScriptableObject scope ) throws IllegalArgumentException {
+    Object object;
+    if( ScriptableObject.hasProperty( scope, "JSHINT" ) ) {
+      object = scope.get( "JSHINT", scope );
+    } else if( ScriptableObject.hasProperty( scope, "JSLINT" ) ) {
+      object = scope.get( "JSLINT", scope );
+    } else {
+      throw new IllegalArgumentException( "Global JSHINT or JSLINT function missing in input" );
+    }
+    if( !( object instanceof Function ) ) {
+      throw new IllegalArgumentException( "Global JSHINT or JSLINT is not a function" );
+    }
+    return (Function)object;
   }
 
   /**

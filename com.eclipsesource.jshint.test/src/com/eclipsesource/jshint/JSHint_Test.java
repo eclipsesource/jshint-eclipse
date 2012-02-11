@@ -13,8 +13,11 @@ package com.eclipsesource.jshint;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +73,72 @@ public class JSHint_Test {
   @Test( expected = NullPointerException.class )
   public void configWithNull() throws Exception {
     jsHint.configure( null );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void loadCustomWithNullParameter() throws Exception {
+    JSHint jsHint = new JSHint();
+    jsHint.load( null );
+  }
+
+  @Test
+  public void loadCustomWithEmptyFile() throws Exception {
+    JSHint jsHint = new JSHint();
+    try {
+      jsHint.load( new ByteArrayInputStream( "".getBytes() ) );
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertEquals( "Global JSHINT or JSLINT function missing in input", exception.getMessage() );
+    }
+  }
+
+  @Test
+  public void loadCustomWithWrongJsFile() throws Exception {
+    JSHint jsHint = new JSHint();
+    try {
+      jsHint.load( new ByteArrayInputStream( "var a = 23;".getBytes() ) );
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertEquals( "Global JSHINT or JSLINT function missing in input", exception.getMessage() );
+    }
+  }
+
+  @Test
+  public void loadCustomWithFakeJsHintFile() throws Exception {
+    JSHint jsHint = new JSHint();
+    try {
+      jsHint.load( new ByteArrayInputStream( "JSHINT = {};".getBytes() ) );
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertEquals( "Global JSHINT or JSLINT is not a function", exception.getMessage() );
+    }
+  }
+
+  @Test
+  public void loadCustomWithGarbage() throws Exception {
+    JSHint jsHint = new JSHint();
+    try {
+      jsHint.load( new ByteArrayInputStream( "cheese! :D".getBytes() ) );
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertEquals( "Could not parse input as JavaScript", exception.getMessage() );
+    }
+  }
+
+  @Test
+  public void loadCustom() throws Exception {
+    JSHint jsHint = new JSHint();
+    ClassLoader classLoader = getClass().getClassLoader();
+    InputStream stream = classLoader.getResourceAsStream( "com/jshint/jshint-r03.js" );
+    try {
+      jsHint.load( stream );
+    } finally {
+      stream.close();
+    }
+
+    jsHint.check( "cheese! :D", handler );
+
+    assertFalse( problems.isEmpty() );
   }
 
   @Test
