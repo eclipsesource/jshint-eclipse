@@ -96,6 +96,17 @@ public class JSHintRunner_Test {
   }
 
   @Test
+  public void missingFile() throws Exception {
+    JSHintRunner runner = new JSHintRunner();
+    File file = createTmpFile( "-- not processed --", "UTF-8" );
+    String fileName = file.getAbsolutePath();
+
+    runner.run( fileName, "/nowhere/missing-file.js" );
+
+    assertTrue( getSysout().startsWith( "No such file: /nowhere/missing-file.js" ) );
+  }
+
+  @Test
   public void charsetDefaultsToUtf8() throws Exception {
     JSHintRunner runner = new JSHintRunner();
     File file = createTmpFile( "var föhn = 23;", "UTF-8" );
@@ -125,6 +136,32 @@ public class JSHintRunner_Test {
     assertTrue( getSysout().startsWith( "Unknown or unsupported charset: HMPF!" ) );
   }
 
+  @Test
+  public void customLibrary() throws Exception {
+    JSHintRunner runner = new JSHintRunner();
+    String fakeJsHint = "JSHINT = function() { return false; };"
+            + "JSHINT.errors = [ { line: 23, character: 42, reason: 'test' } ]";
+    File fakeJSHintFile = createTmpFile( fakeJsHint, "UTF-8" );
+    File jsFile = createTmpFile( "-- ignored --", "UTF-8" );
+    String fakeJSHintFileName = fakeJSHintFile.getAbsolutePath();
+    String jsFileName = jsFile.getAbsolutePath();
+
+    runner.run( "--custom", fakeJSHintFileName, jsFileName );
+
+    assertTrue( getSysout().startsWith( "Problem in file " + jsFileName + " at line 23: test" ) );
+  }
+
+  @Test
+  public void customLibrary_invalidFile() throws Exception {
+    JSHintRunner runner = new JSHintRunner();
+    File libraryFile = createTmpFile( "cheese! :D", "UTF-8" );
+    File jsFile = createTmpFile( "var föhn = 23;", "UTF-8" );
+
+    runner.run( "--custom", libraryFile.getAbsolutePath(), jsFile.getAbsolutePath() );
+
+    assertTrue( getSysout().startsWith( "Failed to load JSHint library: Could not parse input" ) );
+  }
+
   private String getSysout() {
     try {
       return sysout.toString( SYSOUT_ENCODING );
@@ -148,6 +185,7 @@ public class JSHintRunner_Test {
         outputStream.close();
       }
     }
+    file.deleteOnExit();
     return file;
   }
 

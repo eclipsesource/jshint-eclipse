@@ -206,9 +206,8 @@ public class JSHint {
   private static int getPropertyAsInt( ScriptableObject object, String name, int defaultValue ) {
     int result = defaultValue;
     Object property = ScriptableObject.getProperty( object, name );
-    if( property instanceof Double ) {
-      Double doule = ( Double )property;
-      result = ( int )doule.doubleValue();
+    if( property instanceof Number ) {
+      result = ( ( Number )property ).intValue();
     }
     return result;
   }

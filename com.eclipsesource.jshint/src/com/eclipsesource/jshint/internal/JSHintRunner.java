@@ -18,8 +18,11 @@ import com.eclipsesource.jshint.ProblemHandler;
 
 public class JSHintRunner {
 
+  private static final String PARAM_CHARSET = "--charset";
+  private static final String PARAM_CUSTOM_JSHINT = "--custom";
   private List<File> files;
   private Charset charset;
+  private File library;
   private JSHint jshint;
 
   public void run( String... args ) {
@@ -39,18 +42,27 @@ public class JSHintRunner {
     files = new ArrayList<File>();
     String lastArg = null;
     for( String arg : args ) {
-      if( "--charset".equals( lastArg ) ) {
+      if( PARAM_CHARSET.equals( lastArg ) ) {
         setCharset( arg );
-      } else if( "--charset".equals( arg ) ) {
+      } else if( PARAM_CUSTOM_JSHINT.equals( lastArg ) ) {
+        setLibrary( arg );
+      } else if( PARAM_CHARSET.equals( arg ) || PARAM_CUSTOM_JSHINT.equals( arg ) ) {
         // continue
       } else {
         File file = new File( arg );
-        if( !file.exists() ) {
-          throw new IllegalArgumentException( "No such file: " + file.getAbsolutePath() );
-        }
+        checkFile( file );
         files.add( file );
       }
       lastArg = arg;
+    }
+  }
+
+  private void checkFile( File file ) throws IllegalArgumentException {
+    if( !file.isFile() ) {
+      throw new IllegalArgumentException( "No such file: " + file.getAbsolutePath() );
+    }
+    if( !file.canRead() ) {
+      throw new IllegalArgumentException( "Cannot read file: " + file.getAbsolutePath() );
     }
   }
 
@@ -68,6 +80,10 @@ public class JSHintRunner {
     }
   }
 
+  private void setLibrary( String name ) {
+    library = new File( name );
+  }
+
   private void ensureInputFiles() {
     if( files.isEmpty() ) {
       throw new IllegalArgumentException( "No input files" );
@@ -77,8 +93,17 @@ public class JSHintRunner {
   private void loadJSHint() {
     jshint = new JSHint();
     try {
-      jshint.load();
-    } catch( IOException exception ) {
+      if( library != null ) {
+        FileInputStream inputStream = new FileInputStream( library );
+        try {
+          jshint.load( inputStream );
+        } finally {
+          inputStream.close();
+        }
+      } else {
+        jshint.load();
+      }
+    } catch( Exception exception ) {
       String message = "Failed to load JSHint library: " + exception.getMessage();
       throw new IllegalArgumentException( message );
     }
@@ -86,8 +111,8 @@ public class JSHintRunner {
 
   private void processFiles() throws IOException {
     for( File file : files ) {
-      ProblemHandler handler = new SysoutProblemHandler( file.getAbsolutePath() );
       String code = readFileContents( file );
+      ProblemHandler handler = new SysoutProblemHandler( file.getAbsolutePath() );
       jshint.check( code, handler );
     }
   }
