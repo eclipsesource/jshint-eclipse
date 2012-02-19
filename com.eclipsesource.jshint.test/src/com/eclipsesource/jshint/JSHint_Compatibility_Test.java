@@ -59,7 +59,7 @@ public class JSHint_Compatibility_Test {
   }
 
   @Test
-  public void checkValid_noProblems() throws Exception {
+  public void checkValid_noProblems() {
     jsHint.check( "var a = 23;", handler );
 
     assertTrue( problems.isEmpty() );
@@ -67,7 +67,7 @@ public class JSHint_Compatibility_Test {
 
   @Test
   @SuppressWarnings( "boxing" )
-  public void checkInvalid_problemFieldsSet() throws Exception {
+  public void checkInvalid_problemFieldsSet() {
     jsHint.check( "hmpf!", handler );
 
     assertFalse( problems.isEmpty() );

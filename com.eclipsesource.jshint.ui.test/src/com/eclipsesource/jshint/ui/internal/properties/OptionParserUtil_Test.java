@@ -24,19 +24,19 @@ import static org.junit.Assert.assertTrue;
 public class OptionParserUtil_Test {
 
   @Test( expected = NullPointerException.class )
-  public void parseNull() throws Exception {
+  public void parseNull() {
     OptionParserUtil.parseOptionString( null );
   }
 
   @Test
-  public void parseEmpty() throws Exception {
+  public void parseEmpty() {
     List<Entry> result = OptionParserUtil.parseOptionString( "" );
 
     assertTrue( result.isEmpty() );
   }
 
   @Test
-  public void parseSingle() throws Exception {
+  public void parseSingle() {
     List<Entry> result = OptionParserUtil.parseOptionString( "foo: true" );
 
     assertEquals( 1, result.size() );
@@ -45,7 +45,7 @@ public class OptionParserUtil_Test {
   }
 
   @Test
-  public void parseTwoOptions() throws Exception {
+  public void parseTwoOptions() {
     List<Entry> result = OptionParserUtil.parseOptionString( "foo: true, bar: false" );
 
     assertEquals( 2, result.size() );
@@ -56,7 +56,7 @@ public class OptionParserUtil_Test {
   }
 
   @Test
-  public void parseAdditionalWhitespace() throws Exception {
+  public void parseAdditionalWhitespace() {
     List<Entry> result = OptionParserUtil.parseOptionString( "\tfoo : true  ,\n\t bar  : false  " );
 
     assertEquals( 2, result.size() );
@@ -68,7 +68,7 @@ public class OptionParserUtil_Test {
 
   // TODO check for illegal names
   @Test
-  public void parseWhitespaceInName() throws Exception {
+  public void parseWhitespaceInName() {
     List<Entry> result = OptionParserUtil.parseOptionString( "foo bar: true" );
 
     assertEquals( 1, result.size() );
@@ -77,7 +77,7 @@ public class OptionParserUtil_Test {
   }
 
   @Test
-  public void parseNonBooleanValue() throws Exception {
+  public void parseNonBooleanValue() {
     List<Entry> result = OptionParserUtil.parseOptionString( "foo: bar" );
 
     assertEquals( 1, result.size() );

@@ -48,7 +48,7 @@ public class JSHint_Test {
   }
 
   @Test( expected = IllegalStateException.class )
-  public void checkWithoutLoad() throws Exception {
+  public void checkWithoutLoad() {
     JSHint jsHint = new JSHint();
     jsHint.check( "hmpf!", handler );
   }
@@ -64,18 +64,18 @@ public class JSHint_Test {
   }
 
   @Test( expected = NullPointerException.class )
-  public void checkWithNullCode() throws Exception {
+  public void checkWithNullCode() {
     jsHint.check( null, handler );
   }
 
   @Test
-  public void checkWithNullHandler() throws Exception {
+  public void checkWithNullHandler() {
     assertTrue( jsHint.check( "var a = 23;", null ) );
     assertFalse( jsHint.check( "HMPF!", null ) );
   }
 
   @Test( expected = NullPointerException.class )
-  public void configWithNull() throws Exception {
+  public void configWithNull() {
     jsHint.configure( null );
   }
 
@@ -146,21 +146,21 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkEmpty() throws Exception {
+  public void checkEmpty() {
     jsHint.check( "", handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
-  public void checkOk() throws Exception {
+  public void checkOk() {
     jsHint.check( "var foo = 23;", handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
-  public void checkErrors() throws Exception {
+  public void checkErrors() {
     jsHint.check( "cheese!", handler );
 
     assertFalse( problems.isEmpty() );
@@ -181,14 +181,14 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkUndefWithoutConfig() throws Exception {
+  public void checkUndefWithoutConfig() {
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
-  public void checkUndefWithEmptyConfig() throws Exception {
+  public void checkUndefWithEmptyConfig() {
     jsHint.configure( new Configuration() );
 
     jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
@@ -197,7 +197,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkUndefWithConfig() throws Exception {
+  public void checkUndefWithConfig() {
     Configuration configuration = new Configuration();
     configuration.addOption( "undef", true );
     jsHint.configure( configuration );
@@ -208,7 +208,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkUndefWithConfigAndGlobal() throws Exception {
+  public void checkUndefWithConfigAndGlobal() {
     Configuration configuration = new Configuration();
     configuration.addOption( "undef", true );
     configuration.addPredefined( "org", true );
@@ -220,7 +220,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkUndefWithConfigAndReadonlyGlobal() throws Exception {
+  public void checkUndefWithConfigAndReadonlyGlobal() {
     Configuration configuration = new Configuration();
     configuration.addOption( "undef", true );
     configuration.addPredefined( "org", false );
@@ -232,14 +232,14 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkEqNullWithoutConfig() throws Exception {
+  public void checkEqNullWithoutConfig() {
     jsHint.check( CODE_WITH_EQNULL, handler );
 
     assertThat( problems.get( 0 ).getMessage(), containsString( WARN_EQNULL ) );
   }
 
   @Test
-  public void checkEqNullWithEmptyConfig() throws Exception {
+  public void checkEqNullWithEmptyConfig() {
     jsHint.configure( new Configuration() );
 
     jsHint.check( CODE_WITH_EQNULL, handler );
@@ -248,7 +248,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkEqNullWithConfig() throws Exception {
+  public void checkEqNullWithConfig() {
     Configuration configuration = new Configuration();
     configuration.addOption( "eqnull", true );
     jsHint.configure( configuration );
@@ -258,7 +258,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void testPosition() throws Exception {
+  public void testPosition() {
     jsHint.configure( new Configuration() );
     jsHint.check( "var a = x == null ? null : 1;", handler );
 
@@ -266,7 +266,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void testPositionWithLeadingSpace() throws Exception {
+  public void testPositionWithLeadingSpace() {
     jsHint.configure( new Configuration() );
     jsHint.check( " var a = x == null ? null : 1;", handler );
 
@@ -274,7 +274,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void testPositionWithLeadingTab() throws Exception {
+  public void testPositionWithLeadingTab() {
     jsHint.configure( new Configuration() );
     jsHint.check( "\tvar a = x == null ? null : 1;", handler );
 

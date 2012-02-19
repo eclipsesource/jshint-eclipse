@@ -26,19 +26,19 @@ public class Configuration_Test {
   }
 
   @Test
-  public void emptyAfterCreation() throws Exception {
+  public void emptyAfterCreation() {
     assertEquals( "{\"indent\": 1}", configuration.getOptionsString() );
   }
 
   @Test
-  public void addOneOption() throws Exception {
+  public void addOneOption() {
     configuration.addOption( "foo", true );
 
     assertEquals( "{\"indent\": 1, \"foo\": true}", configuration.getOptionsString() );
   }
 
   @Test
-  public void addSeparateOptions() throws Exception {
+  public void addSeparateOptions() {
     configuration.addOption( "foo", true );
     configuration.addOption( "bar", false );
 
@@ -47,7 +47,7 @@ public class Configuration_Test {
   }
 
   @Test
-  public void addSameOptionTwice() throws Exception {
+  public void addSameOptionTwice() {
     configuration.addOption( "foo", true );
     configuration.addOption( "foo", false );
 
@@ -55,7 +55,7 @@ public class Configuration_Test {
   }
 
   @Test
-  public void addSamePredefTwice() throws Exception {
+  public void addSamePredefTwice() {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "foo", false );
 
@@ -63,14 +63,14 @@ public class Configuration_Test {
   }
 
   @Test
-  public void addOnePredef() throws Exception {
+  public void addOnePredef() {
     configuration.addPredefined( "foo", true );
 
     assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.getOptionsString() );
   }
 
   @Test
-  public void addSeparatePredefs() throws Exception {
+  public void addSeparatePredefs() {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "bar", false );
 
@@ -79,7 +79,7 @@ public class Configuration_Test {
   }
 
   @Test
-  public void addPredefAndOption() throws Exception {
+  public void addPredefAndOption() {
     configuration.addPredefined( "foo", true );
     configuration.addOption( "bar", false );
 

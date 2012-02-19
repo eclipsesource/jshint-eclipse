@@ -62,14 +62,9 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = createMainComposite( parent );
-    try {
-      ProjectPreferences preferences = getProjectPreferences();
-      addEnablementSection( composite, preferences );
-      addConfigSection( composite, preferences );
-    } catch( CoreException exception ) {
-      Activator.logError( "Failed to load preferences", exception );
-      setErrorMessage( "Failed to load preferences" );
-    }
+    ProjectPreferences preferences = getProjectPreferences();
+    addEnablementSection( composite, preferences );
+    addConfigSection( composite, preferences );
     return composite;
   }
 

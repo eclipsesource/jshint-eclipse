@@ -49,7 +49,7 @@ public class JSHintRunner_Test {
   }
 
   @Test
-  public void emptyArgs() throws Exception {
+  public void emptyArgs() {
     JSHintRunner runner = new JSHintRunner();
 
     runner.run();
@@ -59,7 +59,7 @@ public class JSHintRunner_Test {
   }
 
   @Test
-  public void onlyOptionArgs() throws Exception {
+  public void onlyOptionArgs() {
     JSHintRunner runner = new JSHintRunner();
 
     runner.run( "--charset" );

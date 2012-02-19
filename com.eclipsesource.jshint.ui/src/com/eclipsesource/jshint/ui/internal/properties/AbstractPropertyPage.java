@@ -11,7 +11,6 @@
 package com.eclipsesource.jshint.ui.internal.properties;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -65,7 +64,7 @@ public abstract class AbstractPropertyPage extends PropertyPage {
     getApplyButton().setVisible( false );
   }
 
-  protected ProjectPreferences getProjectPreferences() throws CoreException {
+  protected ProjectPreferences getProjectPreferences() {
     if( projectPreferences == null ) {
       projectPreferences = new ProjectPreferences( getResource().getProject() );
     }

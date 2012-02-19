@@ -40,7 +40,7 @@ public class ProjectPreferences {
   private final IEclipsePreferences node;
   private boolean changed;
 
-  public ProjectPreferences( IProject project ) throws CoreException {
+  public ProjectPreferences( IProject project ) {
     node = new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
     changed = false;
   }

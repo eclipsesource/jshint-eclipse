@@ -50,7 +50,7 @@ public class ProjectPreferences_Test {
   }
 
   @Test
-  public void defaultPrefsForEmptyProject() throws Exception {
+  public void defaultPrefsForEmptyProject() {
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     assertFalse( prefs.getEnabled() );

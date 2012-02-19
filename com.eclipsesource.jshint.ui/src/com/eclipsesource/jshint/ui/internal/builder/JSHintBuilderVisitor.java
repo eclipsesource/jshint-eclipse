@@ -28,8 +28,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 
 import com.eclipsesource.jshint.Configuration;
-import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.JSHint;
+import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
@@ -93,7 +93,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     }
   }
 
-  private boolean considerContainer( IResource resource ) throws CoreException {
+  private boolean considerContainer( IResource resource ) {
     if( preferences.getExcluded( resource ) ) {
       return false;
     }
@@ -104,7 +104,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     return true;
   }
 
-  private boolean considerFile( IResource resource ) throws CoreException {
+  private boolean considerFile( IResource resource ) {
     if( !"js".equals( resource.getFileExtension() ) ) {
       return false;
     }
