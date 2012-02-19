@@ -32,7 +32,7 @@ public class ProjectPreferences {
   private static final String KEY_GLOBALS = "globals";
   private static final String KEY_OPTIONS = "options";
   private static final String KEY_EXCLUDED = "excluded";
-  private static final String DEF_ENABLED = "false";
+  private static final boolean DEF_ENABLED = false;
   private static final String DEF_GLOBALS = "";
   private static final String DEF_OPTIONS = "";
   private static final String DEF_EXCLUDED = "";
@@ -45,24 +45,19 @@ public class ProjectPreferences {
     changed = false;
   }
 
-  public IEclipsePreferences getNode() {
-    return node;
-  }
-
   public void setEnabled( boolean enabled ) {
-    String value = Boolean.toString( enabled );
-    if( !value.equals( node.get( KEY_ENABLED, DEF_ENABLED ) ) ) {
-      if( DEF_ENABLED.equals( value ) ) {
+    if( enabled != node.getBoolean( KEY_ENABLED, DEF_ENABLED ) ) {
+      if( enabled == DEF_ENABLED ) {
         node.remove( KEY_ENABLED );
       } else {
-        node.put( KEY_ENABLED, value );
+        node.putBoolean( KEY_ENABLED, enabled );
       }
       changed = true;
     }
   }
 
   public boolean getEnabled() {
-    return Boolean.parseBoolean( node.get( KEY_ENABLED, DEF_ENABLED ) );
+    return node.getBoolean( KEY_ENABLED, DEF_ENABLED );
   }
 
   public void setExcluded( IResource resource, boolean exclude ) {
