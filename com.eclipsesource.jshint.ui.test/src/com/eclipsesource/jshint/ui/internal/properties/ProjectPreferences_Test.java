@@ -10,10 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 
 import org.eclipse.core.resources.IFile;
@@ -26,6 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.eclipsesource.jshint.ui.test.TestUtil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class ProjectPreferences_Test {
@@ -53,8 +53,8 @@ public class ProjectPreferences_Test {
   public void defaultPrefsForEmptyProject() throws Exception {
     ProjectPreferences prefs = new ProjectPreferences( project );
 
-    assertEquals( false, prefs.getEnabled() );
-    assertEquals( false, prefs.getExcluded( project.getFile( "js/test.js" ) ) );
+    assertFalse( prefs.getEnabled() );
+    assertFalse( prefs.getExcluded( project.getFile( "js/test.js" ) ) );
     assertEquals( "", prefs.getGlobals() );
     assertEquals( "", prefs.getOptions() );
   }
@@ -65,9 +65,9 @@ public class ProjectPreferences_Test {
 
     ProjectPreferences prefs = new ProjectPreferences( project );
 
-    assertEquals( true, prefs.getEnabled() );
-    assertEquals( true, prefs.getExcluded( project.getFile( "js/test.js" ) ) );
-    assertEquals( false, prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
+    assertTrue( prefs.getEnabled() );
+    assertTrue( prefs.getExcluded( project.getFile( "js/test.js" ) ) );
+    assertFalse( prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
     assertEquals( "org: true, com: false", prefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", prefs.getOptions() );
     assertFalse( prefs.hasChanged() );
@@ -82,7 +82,7 @@ public class ProjectPreferences_Test {
 
     assertFalse( prefs.getEnabled() );
     assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getEnabled(), new ProjectPreferences( project ).getEnabled() );
+    assertFalse( new ProjectPreferences( project ).getEnabled() );
   }
 
   @Test

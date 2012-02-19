@@ -10,10 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -27,6 +23,10 @@ import org.junit.Test;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 import com.eclipsesource.jshint.ui.test.TestUtil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 
 public class CompatibilityUtil_Test {
@@ -79,9 +79,9 @@ public class CompatibilityUtil_Test {
     CompatibilityUtil.fixObsoleteMetadataInProjects();
 
     ProjectPreferences prefs = new ProjectPreferences( project );
-    assertEquals( true, prefs.getEnabled() );
-    assertEquals( true, prefs.getExcluded( project.getFile( "js/test.js" ) ) );
-    assertEquals( false, prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
+    assertTrue( prefs.getEnabled() );
+    assertTrue( prefs.getExcluded( project.getFile( "js/test.js" ) ) );
+    assertFalse( prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
     assertEquals( "org: true, com: false", prefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", prefs.getOptions() );
   }
