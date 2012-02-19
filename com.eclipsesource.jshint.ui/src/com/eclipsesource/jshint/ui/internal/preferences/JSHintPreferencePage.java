@@ -37,20 +37,24 @@ import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 
 public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
+  private final JSHintPreferences preferences;
   private Button defaultLibButton;
   private Button customLibButton;
   private Text customLibPathText;
   private Button customLibPathButton;
-  private boolean useCustomJSHint;
-  private String customLibPath;
 
   public JSHintPreferencePage() {
     setPreferenceStore( Activator.getDefault().getPreferenceStore() );
     setDescription( "General settings for JSHint" );
+    preferences = new JSHintPreferences();
   }
 
   public void init( IWorkbench workbench ) {
-    loadPreferences();
+  }
+
+  @Override
+  protected IPreferenceStore doGetPreferenceStore() {
+    return null;
   }
 
   @Override
@@ -67,23 +71,21 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   @Override
   public boolean performOk() {
     updateValuesFromControls();
-    boolean dirty = savePreferences();
-    if( dirty ) {
-      try {
+    try {
+      if( preferences.hasChanged() ) {
+        preferences.save();
         triggerRebuild();
-      } catch( CoreException exception ) {
-        Activator.logError( "Failed to rebuild workspace", exception );
-        return false;
       }
+    } catch( CoreException exception ) {
+      Activator.logError( "Failed to save preferences", exception );
+      return false;
     }
     return true;
   }
 
   @Override
   protected void performDefaults() {
-    IPreferenceStore store = getPreferenceStore();
-    useCustomJSHint = store.getBoolean( PreferencesConstants.PREF_USE_CUSTOM_JSHINT );
-    customLibPath = store.getString( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH );
+    preferences.resetToDefaults();
     updateControls();
     super.performDefaults();
   }
@@ -125,49 +127,30 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   private void selectFile() {
     FileDialog fileDialog = new FileDialog( getShell(), SWT.OPEN );
     fileDialog.setText( "Select JSHint library file" );
-    File file = new File( customLibPath );
+    File file = new File( preferences.getCustomLibPath() );
     fileDialog.setFileName( file.getName() );
     fileDialog.setFilterPath( file.getParent() );
     fileDialog.setFilterNames( new String[] { "JavaScript files" } );
     fileDialog.setFilterExtensions( new String[] { "*.js", "" } );
     String selectedPath = fileDialog.open();
     if( selectedPath != null ) {
-      customLibPath = selectedPath;
+      preferences.setCustomLibPath( selectedPath );
       updateControls();
     }
   }
 
   private void updateValuesFromControls() {
-    useCustomJSHint = customLibButton.getSelection();
-    customLibPath = customLibPathText.getText();
+    preferences.setUseCustomLib( customLibButton.getSelection() );
+    preferences.setCustomLibPath( customLibPathText.getText() );
   }
 
   private void updateControls() {
-    defaultLibButton.setSelection( !useCustomJSHint );
-    customLibButton.setSelection( useCustomJSHint );
-    customLibPathText.setText( customLibPath );
-    customLibPathText.setEnabled( useCustomJSHint );
-    customLibPathButton.setEnabled( useCustomJSHint );
-  }
-
-  private void loadPreferences() {
-    IPreferenceStore store = getPreferenceStore();
-    useCustomJSHint = store.getBoolean( PreferencesConstants.PREF_USE_CUSTOM_JSHINT );
-    customLibPath = store.getString( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH );
-  }
-
-  private boolean savePreferences() {
-    boolean dirty = false;
-    IPreferenceStore store = getPreferenceStore();
-    if( useCustomJSHint != store.getBoolean( PreferencesConstants.PREF_USE_CUSTOM_JSHINT ) ) {
-      store.setValue( PreferencesConstants.PREF_USE_CUSTOM_JSHINT, useCustomJSHint );
-      dirty = true;
-    }
-    if( !customLibPath.equals( store.getString( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH ) ) ) {
-      store.setValue( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH, customLibPath );
-      dirty = true;
-    }
-    return dirty;
+    boolean useCustomLib = preferences.getUseCustomLib();
+    defaultLibButton.setSelection( !useCustomLib );
+    customLibButton.setSelection( useCustomLib );
+    customLibPathText.setText( preferences.getCustomLibPath() );
+    customLibPathText.setEnabled( useCustomLib );
+    customLibPathButton.setEnabled( useCustomLib );
   }
 
   private void triggerRebuild() throws CoreException {
