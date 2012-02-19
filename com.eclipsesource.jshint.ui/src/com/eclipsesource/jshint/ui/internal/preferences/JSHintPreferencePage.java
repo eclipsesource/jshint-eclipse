@@ -12,6 +12,9 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -28,6 +31,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
+import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 
 
 public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
@@ -45,9 +50,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   }
 
   public void init( IWorkbench workbench ) {
-    IPreferenceStore store = getPreferenceStore();
-    useCustomJSHint = store.getBoolean( PreferencesConstants.PREF_USE_CUSTOM_JSHINT );
-    customLibPath = store.getString( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH );
+    loadPreferences();
   }
 
   @Override
@@ -64,10 +67,15 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   @Override
   public boolean performOk() {
     updateValuesFromControls();
-    IPreferenceStore store = getPreferenceStore();
-    store.setValue( PreferencesConstants.PREF_USE_CUSTOM_JSHINT, useCustomJSHint );
-    store.setValue( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH, customLibPath );
-    // TODO rebuild all enabled projects
+    boolean dirty = savePreferences();
+    if( dirty ) {
+      try {
+        triggerRebuild();
+      } catch( CoreException exception ) {
+        Activator.logError( "Failed to rebuild workspace", exception );
+        return false;
+      }
+    }
     return true;
   }
 
@@ -140,6 +148,35 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     customLibPathText.setText( customLibPath );
     customLibPathText.setEnabled( useCustomJSHint );
     customLibPathButton.setEnabled( useCustomJSHint );
+  }
+
+  private void loadPreferences() {
+    IPreferenceStore store = getPreferenceStore();
+    useCustomJSHint = store.getBoolean( PreferencesConstants.PREF_USE_CUSTOM_JSHINT );
+    customLibPath = store.getString( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH );
+  }
+
+  private boolean savePreferences() {
+    boolean dirty = false;
+    IPreferenceStore store = getPreferenceStore();
+    if( useCustomJSHint != store.getBoolean( PreferencesConstants.PREF_USE_CUSTOM_JSHINT ) ) {
+      store.setValue( PreferencesConstants.PREF_USE_CUSTOM_JSHINT, useCustomJSHint );
+      dirty = true;
+    }
+    if( !customLibPath.equals( store.getString( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH ) ) ) {
+      store.setValue( PreferencesConstants.PREF_CUSTOM_JSHINT_PATH, customLibPath );
+      dirty = true;
+    }
+    return dirty;
+  }
+
+  private void triggerRebuild() throws CoreException {
+    IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+    for( IProject project : projects ) {
+      if( project.isAccessible() ) {
+        BuilderUtil.triggerClean( project, JSHintBuilder.ID );
+      }
+    }
   }
 
   private static GridLayout createMainLayout() {
