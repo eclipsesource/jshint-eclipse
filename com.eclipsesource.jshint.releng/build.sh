@@ -1,6 +1,5 @@
 #!/bin/bash
 
-JAVA_HOME=$HOME/tools/jvm/sun-jdk-1.7.0
 MVN=$HOME/bin/mvn
 BUILD_TARGET_DIR=/tmp/jshint-eclipse
 
