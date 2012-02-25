@@ -92,10 +92,6 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     return jshint;
   }
 
-  private void clean( IResource resource ) throws CoreException {
-    new MarkerAdapter( resource ).removeMarkers();
-  }
-
   private void check( IFile file ) throws CoreException {
     Text code = readContent( file );
     ProblemHandler handler = new MarkerHandler( new MarkerAdapter( file ), code );
@@ -125,6 +121,10 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       return false;
     }
     return true;
+  }
+
+  private static void clean( IResource resource ) throws CoreException {
+    new MarkerAdapter( resource ).removeMarkers();
   }
 
   private static InputStream getCustomLib() throws FileNotFoundException {
