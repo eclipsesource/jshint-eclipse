@@ -119,13 +119,24 @@ public class JSHint_Test {
   }
 
   @Test
+  public void loadCustomWithEcmaException() throws Exception {
+    JSHint jsHint = new JSHint();
+    try {
+      jsHint.load( new ByteArrayInputStream( "JSHINT = foo;".getBytes() ) );
+      fail();
+    } catch( IllegalArgumentException exception ) {
+      assertEquals( "Could not evaluate JavaScript input", exception.getMessage() );
+    }
+  }
+
+  @Test
   public void loadCustomWithGarbage() throws Exception {
     JSHint jsHint = new JSHint();
     try {
       jsHint.load( new ByteArrayInputStream( "cheese! :D".getBytes() ) );
       fail();
     } catch( IllegalArgumentException exception ) {
-      assertEquals( "Could not parse input as JavaScript", exception.getMessage() );
+      assertEquals( "Could not evaluate JavaScript input", exception.getMessage() );
     }
   }
 

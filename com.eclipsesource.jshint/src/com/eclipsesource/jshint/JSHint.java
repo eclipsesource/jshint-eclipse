@@ -18,10 +18,10 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.ScriptableObject;
 
 import com.eclipsesource.jshint.internal.JSHintRunner;
@@ -139,8 +139,8 @@ public class JSHint {
       ScriptableObject scope = context.initStandardObjects();
       context.evaluateReader( scope, reader, "jshint library", 1, null );
       jshint = findJSHintFunction( scope );
-    } catch( EvaluatorException exception ) {
-      throw new IllegalArgumentException( "Could not parse input as JavaScript", exception );
+    } catch( RhinoException exception ) {
+      throw new IllegalArgumentException( "Could not evaluate JavaScript input", exception );
     } finally {
       Context.exit();
     }

@@ -164,7 +164,8 @@ public class JSHintRunner_Test {
 
     runner.run( "--custom", libraryFile.getAbsolutePath(), jsFile.getAbsolutePath() );
 
-    assertThat( getSysout(), startsWith( "Failed to load JSHint library: Could not parse input" ) );
+    String expected = "Failed to load JSHint library: Could not evaluate JavaScript input";
+    assertThat( getSysout(), startsWith( expected ) );
   }
 
   private String getSysout() {
