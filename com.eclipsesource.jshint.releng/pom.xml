@@ -34,7 +34,7 @@
     <repository>
       <id>target-repo</id>
       <layout>p2</layout>
-      <url>file://${targetRepo}</url>
+      <url>http://download.eclipse.org/releases/indigo/</url>
     </repository>
     <repository>
       <id>orbit-repo</id>

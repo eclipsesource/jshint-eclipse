@@ -2,7 +2,6 @@
 
 JAVA_HOME=$HOME/tools/jvm/sun-jdk-1.7.0
 MVN=$HOME/bin/mvn
-TARGET_PLATFORM_REPO=$HOME/eclipse/targets/eclipse-rcp-indigo-sr1
 BUILD_TARGET_DIR=/tmp/jshint-eclipse
 
 includePaths="com.eclipsesource.jshint com.eclipsesource.jshint.ui com.eclipsesource.jshint.feature"
@@ -32,7 +31,7 @@ fi
 
 cd "com.eclipsesource.jshint.releng" || exit 1
 
-$MVN -DtargetRepo=$TARGET_PLATFORM_REPO clean install || exit 1
+$MVN clean install || exit 1
 
 if [ -n "$commit_hash" ]; then
   # copy resulting repository
