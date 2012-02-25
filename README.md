@@ -17,7 +17,7 @@ Eclipse 3.6 (Helios) or newer.
 JSHint version
 --------------
 
-JSHint version r04 is included.
+JSHint version r06 is included.
 
 Installation
 ------------
@@ -29,4 +29,4 @@ License
 
 The code is published under the terms of the [Eclipse Public License, version 1.0](http://www.eclipse.org/legal/epl-v10.html).
 
-Includes code from [jshint](https://github.com/jshint/jshint/), version r05, which is published under the terms of the MIT license with the addition "The Software shall be used for Good, not Evil."
+Includes code from [jshint](https://github.com/jshint/jshint/), which is published under the terms of the MIT license with the addition "The Software shall be used for Good, not Evil."

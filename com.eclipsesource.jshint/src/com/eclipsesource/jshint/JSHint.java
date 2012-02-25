@@ -45,12 +45,13 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
  */
 public class JSHint {
 
-  private static final String JSHINT_JS = "com/jshint/jshint-r05.min.js";
+  private static final String DEFAULT_JSHINT_VERSION = "r06";
   private Function jshint;
   private Object opts;
 
   /**
    * Loads the default JSHint library.
+   * @see #getDefaultLibraryVersion()
    */
   public void load() throws IOException {
     Reader reader = getJsHintReader();
@@ -131,6 +132,16 @@ public class JSHint {
       Context.exit();
     }
     return result;
+  }
+
+  /**
+   * Returns the version of the built-in JSHint library that is used when <code>load()</code> is
+   * called without a parameter.
+   *
+   * @return the version name of the default JSHint version
+   */
+  public static String getDefaultLibraryVersion() {
+    return DEFAULT_JSHINT_VERSION;
   }
 
   private void load( Reader reader ) throws IOException {
@@ -216,7 +227,9 @@ public class JSHint {
 
   private static BufferedReader getJsHintReader() throws UnsupportedEncodingException {
     ClassLoader classLoader = JSHint.class.getClassLoader();
-    InputStream inputStream = classLoader.getResourceAsStream( JSHINT_JS );
+    // Include DEFAULT_JSHINT_VERSION in name to ensure the constant matches the actual version
+    String name = "com/jshint/jshint-" + DEFAULT_JSHINT_VERSION + ".min.js";
+    InputStream inputStream = classLoader.getResourceAsStream( name );
     return new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
   }
 

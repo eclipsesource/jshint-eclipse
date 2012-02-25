@@ -47,6 +47,13 @@ public class JSHint_Test {
     jsHint.load();
   }
 
+  @Test
+  public void getDefaultVersion() {
+    String version = JSHint.getDefaultLibraryVersion();
+
+    assertTrue( version.startsWith( "r" ) );
+  }
+
   @Test( expected = IllegalStateException.class )
   public void checkWithoutLoad() {
     JSHint jsHint = new JSHint();

@@ -100,7 +100,9 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
 
   private void createCustomJSHintArea( Composite parent ) {
     defaultLibButton = new Button( parent, SWT.RADIO );
-    defaultLibButton.setText( "Use the &built-in JSHint library (version r05)" );
+    defaultLibButton.setText( "Use the &built-in JSHint library (version "
+                              + JSHint.getDefaultLibraryVersion()
+                              + ")" );
     defaultLibButton.setLayoutData( createFillData( 3 ) );
     customLibButton = new Button( parent, SWT.RADIO );
     customLibButton.setText( "Provide a &custom JSHint library file (JSLint is also supported)" );
