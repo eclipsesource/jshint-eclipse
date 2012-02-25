@@ -11,6 +11,9 @@
 package com.eclipsesource.jshint.ui.internal.builder;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,6 +36,7 @@ import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 
 
@@ -70,7 +74,16 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
   private JSHint createJSHint( Configuration configuration ) throws CoreException {
     JSHint jshint = new JSHint();
     try {
-      jshint.load();
+      InputStream inputStream = getCustomLib();
+      if( inputStream != null ) {
+        try {
+          jshint.load( inputStream );
+        } finally {
+          inputStream.close();
+        }
+      } else {
+        jshint.load();
+      }
       jshint.configure( configuration );
     } catch( IOException exception ) {
       String message = "Failed to intialize JSHint";
@@ -112,6 +125,15 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       return false;
     }
     return true;
+  }
+
+  private static InputStream getCustomLib() throws FileNotFoundException {
+    JSHintPreferences globalPrefs = new JSHintPreferences();
+    if( globalPrefs.getUseCustomLib() ) {
+      File file = new File( globalPrefs.getCustomLibPath() );
+      return new FileInputStream( file );
+    }
+    return null;
   }
 
   private static Text readContent( IFile file ) throws CoreException {
