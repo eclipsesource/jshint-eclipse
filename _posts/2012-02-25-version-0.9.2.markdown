@@ -1,0 +1,13 @@
+---
+layout: post
+title: Version 0.9.2 published
+---
+
+The JSHint Eclipse integration can now be used with a custom version of JSHint.
+A preference page has been added that allows to select a `jshint.js` file from disk.
+The original JSLint is also supported.
+
+The built-in default library has been upgraded to the latest JSHint version (r06).
+
+The Mozilla Rhino library is no longer contained in the core plug-in, but included as a separate
+plug-in.
