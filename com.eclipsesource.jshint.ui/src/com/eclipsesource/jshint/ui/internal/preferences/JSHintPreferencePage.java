@@ -11,13 +11,20 @@
 package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -25,11 +32,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
@@ -70,7 +79,6 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
 
   @Override
   public boolean performOk() {
-    updateValuesFromControls();
     try {
       if( preferences.hasChanged() ) {
         preferences.save();
@@ -108,6 +116,11 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     GridData textData = createFillData( 2 );
     textData.horizontalIndent = 25;
     customLibPathText.setLayoutData( textData );
+    customLibPathText.addModifyListener( new ModifyListener() {
+      public void modifyText( ModifyEvent e ) {
+        updateValuesFromControls();
+      }
+    } );
     customLibPathButton = new Button( parent, SWT.PUSH );
     customLibPathButton.setText( "Select" );
     customLibPathButton.addSelectionListener( new SelectionAdapter() {
@@ -142,6 +155,65 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   private void updateValuesFromControls() {
     preferences.setUseCustomLib( customLibButton.getSelection() );
     preferences.setCustomLibPath( customLibPathText.getText() );
+    validate();
+  }
+
+  private void validate() {
+    setErrorMessage( null );
+    setValid( false );
+    final Display display = getShell().getDisplay();
+    Job validator = new Job( "JSHint preferences validation" ) {
+      @Override
+      protected IStatus run( IProgressMonitor monitor ) {
+        try {
+          monitor.beginTask( "checking preferences", 1 );
+          validatePrefs();
+          display.asyncExec( new Runnable() {
+            public void run() {
+              setValid( true );
+            }
+          } );
+        } catch( final IllegalArgumentException exception ) {
+          display.asyncExec( new Runnable() {
+            public void run() {
+              setErrorMessage( exception.getMessage() );
+            }
+          } );
+        } finally {
+          monitor.done();
+        }
+        return Status.OK_STATUS;
+      }
+    };
+    validator.schedule();
+  }
+
+  private void validatePrefs() {
+    if( preferences.getUseCustomLib() ) {
+      String path = preferences.getCustomLibPath();
+      File file = new File( path );
+      validateFile( file );
+    }
+  }
+
+  private static void validateFile( File file ) throws IllegalArgumentException {
+    if( !file.isFile() ) {
+      throw new IllegalArgumentException( "File does not exist" );
+    }
+    if( !file.canRead() ) {
+      throw new IllegalArgumentException( "File is not readable" );
+    }
+    try {
+      FileInputStream inputStream = new FileInputStream( file );
+      try {
+        JSHint jsHint = new JSHint();
+        jsHint.load( inputStream );
+      } finally {
+        inputStream.close();
+      }
+    } catch( Exception exception ) {
+      throw new IllegalArgumentException( "File is not a valid JSHint library" );
+    }
   }
 
   private void updateControls() {
