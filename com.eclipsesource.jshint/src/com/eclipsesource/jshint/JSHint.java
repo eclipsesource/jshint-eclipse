@@ -174,7 +174,9 @@ public class JSHint {
 
   private void handleProblems( ProblemHandler handler ) {
     NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
-    for( Object object : errors ) {
+    long length = errors.getLength();
+    for( int i = 0; i < length; i++ ) {
+      Object object = errors.get( i, errors );
       ScriptableObject error = (ScriptableObject)object;
       if( error != null ) {
         Problem problem = createProblem( error );

@@ -36,6 +36,11 @@
       <layout>p2</layout>
       <url>file://${targetRepo}</url>
     </repository>
+    <repository>
+      <id>orbit-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/S20120123151124/repository/</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>

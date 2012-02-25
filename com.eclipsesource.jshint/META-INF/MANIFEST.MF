@@ -5,8 +5,7 @@ Bundle-SymbolicName: com.eclipsesource.jshint
 Bundle-Version: 0.9.1.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: EclipseSource
-Bundle-ClassPath: lib/rhino1_7R3-js.jar,
- .
 Bundle-ActivationPolicy: lazy
 Export-Package: com.eclipsesource.jshint;version="0.9.1",
  com.eclipsesource.jshint.internal;x-friends:="com.eclipsesource.jshint.test"
+Import-Package: org.mozilla.javascript
