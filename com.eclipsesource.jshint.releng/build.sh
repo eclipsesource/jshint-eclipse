@@ -8,8 +8,10 @@ BUILD_TARGET_DIR=/tmp/jshint-eclipse
 includePaths="com.eclipsesource.jshint com.eclipsesource.jshint.ui com.eclipsesource.jshint.feature"
 
 # make sure we're in the git repository root
+GIT_ROOT="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+cd $GIT_ROOT
 if [ ! -d ".git" ]; then
-  echo "must be run from the repository root"
+  echo "git root directory not found"
   exit 1
 fi
 
