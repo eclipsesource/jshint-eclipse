@@ -53,8 +53,7 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = createMainComposite( parent );
-    State state = readState();
-    addEnablementSection( composite, state );
+    addEnablementSection( composite );
     return composite;
   }
 
@@ -81,33 +80,19 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
     }
   }
 
-  private void addEnablementSection( Composite parent, State state ) {
+  private void addEnablementSection( Composite parent ) {
+    ProjectPreferences preferences = getProjectPreferences();
+    IResource resource = getResource();
     Composite composite = createDefaultComposite( parent );
     Label label = new Label( composite, SWT.NONE );
     label.setLayoutData( createSpanGridData() );
-    label.setText( "The project has JSHint " + ( state.projectEnabled ? "enabled" : "disabled" ) );
+    boolean enabled = preferences.getEnabled();
+    label.setText( "The project has JSHint " + ( enabled ? "enabled" : "disabled" ) );
     excludeCheckbox = new Button( composite, SWT.CHECK );
     String fileOrFolder = getResource().getType() == IResource.FILE ? "file" : "folder";
     excludeCheckbox.setText( "Exclude this " + fileOrFolder + " from jshint validation" );
-    excludeCheckbox.setSelection( state.fileExcluded );
-    excludeCheckbox.setEnabled( state.projectEnabled );
-  }
-
-  private State readState() {
-    ProjectPreferences preferences = getProjectPreferences();
-    boolean projectEnabled = preferences.getEnabled();
-    boolean fileExcluded = preferences.getExcluded( getResource() );
-    return new State( projectEnabled, fileExcluded );
-  }
-
-  static class State {
-    public final boolean projectEnabled;
-    public final boolean fileExcluded;
-
-    public State( boolean projectEnabled, boolean fileExcluded ) {
-      this.projectEnabled = projectEnabled;
-      this.fileExcluded = fileExcluded;
-    }
+    excludeCheckbox.setSelection( preferences.getExcluded( resource ) );
+    excludeCheckbox.setEnabled( enabled );
   }
 
 }
