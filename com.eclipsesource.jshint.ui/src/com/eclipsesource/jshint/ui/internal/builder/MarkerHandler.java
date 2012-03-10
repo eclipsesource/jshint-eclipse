@@ -31,14 +31,25 @@ final class MarkerHandler implements ProblemHandler {
   public void handleProblem( Problem problem ) {
     int line = problem.getLine();
     int character = problem.getCharacter();
-    int start = code.getLineOffset( line - 1 ) + character - 1;
-    int end = start;
     String message = problem.getMessage();
+    if( isValidLine( line ) ) {
+      int start = code.getLineOffset( line - 1 ) + character;
+      createMarker( line, start, message );
+    } else {
+      createMarker( -1, -1, message );
+    }
+  }
+
+  private void createMarker( int line, int start, String message ) throws CoreExceptionWrapper {
     try {
-      markerAdapter.createMarker( line, start, end, message );
+      markerAdapter.createMarker( line, start, start, message );
     } catch( CoreException ce ) {
       throw new CoreExceptionWrapper( ce );
     }
+  }
+
+  private boolean isValidLine( int line ) {
+    return line >= 1 && line <= code.getLineCount();
   }
 
 }
