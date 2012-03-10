@@ -74,6 +74,30 @@ public class ProjectPreferences_Test {
   }
 
   @Test
+  public void setExcluded() throws Exception {
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
+    ProjectPreferences prefs = new ProjectPreferences( project );
+
+    prefs.setExcluded( file, true );
+
+    assertTrue( prefs.getExcluded( file ) );
+    assertTrue( prefs.hasChanged() );
+    assertTrue( new ProjectPreferences( project ).getExcluded( file ) );
+  }
+
+  @Test
+  public void setExcluded_unchanged() throws Exception {
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
+    ProjectPreferences prefs = new ProjectPreferences( project );
+
+    prefs.setExcluded( file, false );
+
+    assertFalse( prefs.getExcluded( file ) );
+    assertFalse( prefs.hasChanged() );
+    assertFalse( new ProjectPreferences( project ).getExcluded( file ) );
+  }
+
+  @Test
   public void setEnabled() throws Exception {
     TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
     ProjectPreferences prefs = new ProjectPreferences( project );

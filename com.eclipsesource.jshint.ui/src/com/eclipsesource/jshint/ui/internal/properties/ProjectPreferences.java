@@ -81,12 +81,12 @@ public class ProjectPreferences {
     return excludedFiles.contains( resourcePath );
   }
 
-  List<String> getExcluded() {
+  private List<String> getExcluded() {
     String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
     return decodePath( value );
   }
 
-  void setExcluded( List<String> excluded ) {
+  private void setExcluded( List<String> excluded ) {
     String value = encodePath( excluded );
     if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
       if( DEF_EXCLUDED.equals( value ) ) {
