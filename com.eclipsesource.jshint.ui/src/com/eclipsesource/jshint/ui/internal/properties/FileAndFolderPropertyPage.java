@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
+import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 
 
 public class FileAndFolderPropertyPage extends AbstractPropertyPage {
@@ -28,11 +30,10 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
   @Override
   public boolean performOk() {
     try {
-      IResource resource = getResource();
-      ProjectPreferences preferences = getProjectPreferences();
-      preferences.setExcluded( resource, excludeCheckbox.getSelection() );
-      preferences.save();
-      resource.touch( null );
+      boolean changed = storePreferences();
+      if( changed ) {
+        triggerRebuild();
+      }
     } catch( CoreException exception ) {
       String message = "Failed to store settings";
       Activator.logError( message, exception );
@@ -55,6 +56,29 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
     State state = readState();
     addEnablementSection( composite, state );
     return composite;
+  }
+
+  private boolean storePreferences() throws CoreException {
+    ProjectPreferences preferences = getProjectPreferences();
+    IResource resource = getResource();
+    preferences.setExcluded( resource, excludeCheckbox.getSelection() );
+    boolean changed = preferences.hasChanged();
+    if( changed ) {
+      preferences.save();
+    }
+    return changed;
+  }
+
+  private void triggerRebuild() throws CoreException {
+    IResource resource = getResource();
+    if( resource.getType() == IResource.FILE ) {
+      // Files can be rebuilt by touching them
+      resource.touch( null );
+    } else {
+      // For folders, we have to rebuild the project
+      // TODO: find a more efficient way to rebuild only the excluded / included folder
+      BuilderUtil.triggerClean( resource.getProject(), JSHintBuilder.ID );
+    }
   }
 
   private void addEnablementSection( Composite parent, State state ) {

@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 
-
 public abstract class AbstractPropertyPage extends PropertyPage {
 
   private ProjectPreferences projectPreferences;
