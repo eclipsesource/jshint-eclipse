@@ -30,14 +30,20 @@ public class MarkerAdapter {
     resource.deleteMarkers( TYPE_PROBLEM_OLD, true, IResource.DEPTH_INFINITE );
   }
 
-  public void createMarker( int lineNr, int start, int end, String message ) throws CoreException {
+  public void createMarker( int line, int start, int end, String message ) throws CoreException {
+    if( message == null ) {
+      throw new NullPointerException( "message is null" );
+    }
     IMarker marker = resource.createMarker( TYPE_PROBLEM );
     marker.setAttribute( IMarker.SEVERITY, new Integer( IMarker.SEVERITY_WARNING ) );
     marker.setAttribute( IMarker.MESSAGE, message );
-    marker.setAttribute( IMarker.LINE_NUMBER, new Integer( lineNr ) );
+    if( line >= 1 ) {
+      // needed to display line number in problems view location column
+      marker.setAttribute( IMarker.LINE_NUMBER, line );
+    }
     if( start >= 0 ) {
       marker.setAttribute( IMarker.CHAR_START, new Integer( start ) );
-      marker.setAttribute( IMarker.CHAR_END, new Integer( end >= 0 ? end : start ) );
+      marker.setAttribute( IMarker.CHAR_END, new Integer( end >= start ? end : start ) );
     }
   }
 
