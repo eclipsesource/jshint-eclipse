@@ -15,15 +15,15 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.ui.internal.Activator;
+import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
 
 public class ProjectPreferences {
@@ -37,11 +37,11 @@ public class ProjectPreferences {
   private static final String DEF_OPTIONS = "";
   private static final String DEF_EXCLUDED = "";
 
-  private final IEclipsePreferences node;
+  private final Preferences node;
   private boolean changed;
 
   public ProjectPreferences( IProject project ) {
-    node = new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
+    node = PreferencesFactory.getProjectPreferences( project );
     changed = false;
   }
 

@@ -17,8 +17,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
@@ -52,11 +52,11 @@ class CompatibilityUtil {
 
   private static void updateObsoleteProperties( IProject project ) throws CoreException {
     ProjectScope projectScope = new ProjectScope( project );
-    IEclipsePreferences oldNode = projectScope.getNode( OLD_PLUGIN_ID );
+    Preferences oldNode = projectScope.getNode( OLD_PLUGIN_ID );
     try {
       String[] keys = oldNode.keys();
       if( keys.length > 0 ) {
-        IEclipsePreferences newNode = projectScope.getNode( Activator.PLUGIN_ID );
+        Preferences newNode = projectScope.getNode( Activator.PLUGIN_ID );
         for( String key : keys ) {
           newNode.put( key, oldNode.get( key, "" ) );
           oldNode.remove( key );

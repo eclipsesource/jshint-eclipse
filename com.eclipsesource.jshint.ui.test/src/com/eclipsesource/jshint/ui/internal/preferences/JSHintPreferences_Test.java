@@ -10,13 +10,10 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.BackingStoreException;
-
-import com.eclipsesource.jshint.ui.internal.Activator;
+import org.osgi.service.prefs.Preferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -27,7 +24,7 @@ public class JSHintPreferences_Test {
 
   @Before
   public void setUp() throws BackingStoreException {
-    IEclipsePreferences node = InstanceScope.INSTANCE.getNode( Activator.PLUGIN_ID );
+    Preferences node = PreferencesFactory.getWorkspacePreferences();
     node.clear();
   }
 

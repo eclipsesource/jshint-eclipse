@@ -17,9 +17,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
 
@@ -43,7 +42,7 @@ public class JSHintPreferences {
 
   private final Lock readLock;
   private final Lock writeLock;
-  private final IEclipsePreferences node;
+  private final Preferences node;
   private boolean useCustomLib;
   private String customLibPath;
   private boolean dirty;
@@ -52,7 +51,7 @@ public class JSHintPreferences {
     ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     readLock = readWriteLock.readLock();
     writeLock = readWriteLock.writeLock();
-    node = InstanceScope.INSTANCE.getNode( Activator.PLUGIN_ID );
+    node = PreferencesFactory.getWorkspacePreferences();
     useCustomLib = node.getBoolean( KEY_USE_CUSTOM_LIB, DEF_USE_CUSTOM_LIB );
     customLibPath = node.get( KEY_CUSTOM_LIB_PATH, DEF_CUSTOM_LIB_PATH );
     dirty = false;
