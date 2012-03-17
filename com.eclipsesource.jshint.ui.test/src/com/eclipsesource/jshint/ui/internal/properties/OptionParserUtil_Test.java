@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.ui.internal.properties.OptionParserUtil.Entry;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +23,32 @@ import static org.junit.Assert.assertTrue;
 
 
 public class OptionParserUtil_Test {
+
+  @Test
+  public void createConfiguration() {
+    Configuration result = OptionParserUtil.createConfiguration( "opt1: true", "predef1: false" );
+
+    String expected = "{\"predef\": {\"predef1\": false}, \"indent\": 1, \"opt1\": true}";
+    assertEquals( expected, result.toJson() );
+  }
+
+  @Test
+  public void createConfiguration_withEmptyParameters() {
+    Configuration result = OptionParserUtil.createConfiguration( "", "" );
+
+    String expected = "{\"indent\": 1}";
+    assertEquals( expected, result.toJson() );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void createConfiguration_withOptionsNull() {
+    OptionParserUtil.createConfiguration( null, "" );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void createConfiguration_withGlobalsNull() {
+    OptionParserUtil.createConfiguration( "", null );
+  }
 
   @Test( expected = NullPointerException.class )
   public void parseNull() {
@@ -84,4 +111,5 @@ public class OptionParserUtil_Test {
     assertEquals( "foo", result.get( 0 ).name );
     assertFalse( result.get( 0 ).value );
   }
+
 }

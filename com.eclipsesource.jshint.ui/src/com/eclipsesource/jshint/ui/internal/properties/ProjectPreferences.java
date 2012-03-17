@@ -144,14 +144,9 @@ public class ProjectPreferences {
   }
 
   public Configuration getConfiguration() {
-    Configuration configuration = new Configuration();
-    for( OptionParserUtil.Entry entry : OptionParserUtil.parseOptionString( getGlobals() ) ) {
-      configuration.addPredefined( entry.name, entry.value );
-    }
-    for( OptionParserUtil.Entry entry : OptionParserUtil.parseOptionString( getOptions() ) ) {
-      configuration.addOption( entry.name, entry.value );
-    }
-    return configuration;
+    String options = getOptions();
+    String globals = getGlobals();
+    return OptionParserUtil.createConfiguration( options, globals );
   }
 
   private static String getResourcePath( IResource resource ) {

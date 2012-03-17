@@ -13,11 +13,24 @@ package com.eclipsesource.jshint.ui.internal.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eclipsesource.jshint.Configuration;
 
-class OptionParserUtil {
+
+public class OptionParserUtil {
 
   private OptionParserUtil() {
     // prevent instantiation
+  }
+
+  public static Configuration createConfiguration( String options, String globals ) {
+    Configuration configuration = new Configuration();
+    for( Entry entry : parseOptionString( globals ) ) {
+      configuration.addPredefined( entry.name, entry.value );
+    }
+    for( Entry entry : parseOptionString( options ) ) {
+      configuration.addOption( entry.name, entry.value );
+    }
+    return configuration;
   }
 
   static List<Entry> parseOptionString( String input ) {
