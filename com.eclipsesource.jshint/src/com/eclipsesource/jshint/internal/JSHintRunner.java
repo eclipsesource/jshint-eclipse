@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 EclipseSource.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Ralf Sternberg - initial implementation and API
+ ******************************************************************************/
 package com.eclipsesource.jshint.internal;
 
 import java.io.BufferedReader;
@@ -128,14 +138,18 @@ public class JSHintRunner {
   private String readFileContents( File file ) throws FileNotFoundException, IOException {
     FileInputStream inputStream = new FileInputStream( file );
     BufferedReader reader = new BufferedReader( new InputStreamReader( inputStream, charset ) );
-    StringBuilder builder = new StringBuilder();
-    String line = reader.readLine();
-    while( line != null ) {
-      builder.append( line );
-      builder.append( '\n' );
-      line = reader.readLine();
+    try {
+      StringBuilder builder = new StringBuilder();
+      String line = reader.readLine();
+      while( line != null ) {
+        builder.append( line );
+        builder.append( '\n' );
+        line = reader.readLine();
+      }
+      return builder.toString();
+    } finally {
+      reader.close();
     }
-    return builder.toString();
   }
 
   private static final class SysoutProblemHandler implements ProblemHandler {
