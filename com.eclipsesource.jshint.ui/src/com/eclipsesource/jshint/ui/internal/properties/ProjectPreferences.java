@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
-import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
@@ -29,12 +28,8 @@ import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 public class ProjectPreferences {
 
   private static final String KEY_ENABLED = "enabled";
-  private static final String KEY_GLOBALS = "globals";
-  private static final String KEY_OPTIONS = "options";
   private static final String KEY_EXCLUDED = "excluded";
   private static final boolean DEF_ENABLED = false;
-  private static final String DEF_GLOBALS = "";
-  private static final String DEF_OPTIONS = "";
   private static final String DEF_EXCLUDED = "";
 
   private final Preferences node;
@@ -98,36 +93,6 @@ public class ProjectPreferences {
     }
   }
 
-  public String getGlobals() {
-    return node.get( KEY_GLOBALS, DEF_GLOBALS );
-  }
-
-  public void setGlobals( String value ) {
-    if( !value.equals( node.get( KEY_GLOBALS, DEF_GLOBALS ) ) ) {
-      if( DEF_GLOBALS.equals( value ) ) {
-        node.remove( KEY_GLOBALS );
-      } else {
-        node.put( KEY_GLOBALS, value );
-      }
-      changed = true;
-    }
-  }
-
-  public String getOptions() {
-    return node.get( KEY_OPTIONS, DEF_OPTIONS );
-  }
-
-  public void setOptions( String value ) {
-    if( !value.equals( node.get( KEY_OPTIONS, DEF_OPTIONS ) ) ) {
-      if( value.equals( DEF_OPTIONS ) ) {
-        node.remove( KEY_OPTIONS );
-      } else {
-        node.put( KEY_OPTIONS, value );
-      }
-      changed = true;
-    }
-  }
-
   public boolean hasChanged() {
     return changed;
   }
@@ -141,12 +106,6 @@ public class ProjectPreferences {
       Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
       throw new CoreException( status );
     }
-  }
-
-  public Configuration getConfiguration() {
-    String options = getOptions();
-    String globals = getGlobals();
-    return OptionParserUtil.createConfiguration( options, globals );
   }
 
   private static String getResourcePath( IResource resource ) {

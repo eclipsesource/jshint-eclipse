@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -36,6 +35,9 @@ public class ProjectPreferences_Test {
   public void setUp() throws CoreException {
     IWorkspace workspace = ResourcesPlugin.getWorkspace();
     project = workspace.getRoot().getProject( "test" );
+    if( project.exists() ) {
+      project.delete( true, null );
+    }
     project.create( null );
     project.open( null );
     file = project.getFile( "/test.js" );
@@ -55,8 +57,6 @@ public class ProjectPreferences_Test {
 
     assertFalse( prefs.getEnabled() );
     assertFalse( prefs.getExcluded( project.getFile( "js/test.js" ) ) );
-    assertEquals( "", prefs.getGlobals() );
-    assertEquals( "", prefs.getOptions() );
   }
 
   @Test
@@ -68,8 +68,6 @@ public class ProjectPreferences_Test {
     assertTrue( prefs.getEnabled() );
     assertTrue( prefs.getExcluded( project.getFile( "js/test.js" ) ) );
     assertFalse( prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
-    assertEquals( "org: true, com: false", prefs.getGlobals() );
-    assertEquals( "bitwise: true, curly: true, eqnull: true", prefs.getOptions() );
     assertFalse( prefs.hasChanged() );
   }
 
@@ -115,50 +113,6 @@ public class ProjectPreferences_Test {
     ProjectPreferences prefs = new ProjectPreferences( project );
 
     prefs.setEnabled( prefs.getEnabled() );
-
-    assertFalse( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setGlobals() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
-    ProjectPreferences prefs = new ProjectPreferences( project );
-
-    prefs.setGlobals( "foo" );
-
-    assertEquals( "foo", prefs.getGlobals() );
-    assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getGlobals(), new ProjectPreferences( project ).getGlobals() );
-  }
-
-  @Test
-  public void setGlobals_unchanged() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
-    ProjectPreferences prefs = new ProjectPreferences( project );
-
-    prefs.setGlobals( prefs.getGlobals() );
-
-    assertFalse( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setOptions() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
-    ProjectPreferences prefs = new ProjectPreferences( project );
-
-    prefs.setOptions( "foo" );
-
-    assertEquals( "foo", prefs.getOptions() );
-    assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getOptions(), new ProjectPreferences( project ).getOptions() );
-  }
-
-  @Test
-  public void setOptions_unchanged() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
-    ProjectPreferences prefs = new ProjectPreferences( project );
-
-    prefs.setOptions( prefs.getOptions() );
 
     assertFalse( prefs.hasChanged() );
   }

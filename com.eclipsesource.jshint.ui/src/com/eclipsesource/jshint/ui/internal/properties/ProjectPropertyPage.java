@@ -16,24 +16,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigView;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {
 
   private Button enablementCheckbox;
-  private Text predefinedText;
-  private Text optionsText;
-  private Composite configSection;
+  private JSHintConfigView configView;
 
   @Override
   public boolean performOk() {
@@ -55,8 +52,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   protected void performDefaults() {
     super.performDefaults();
     enablementCheckbox.setSelection( false );
-    predefinedText.setText( "" );
-    optionsText.setText( "" );
+    configView.loadDefaults();
   }
 
   @Override
@@ -64,7 +60,10 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     Composite composite = createMainComposite( parent );
     ProjectPreferences preferences = getProjectPreferences();
     addEnablementSection( composite, preferences );
-    addConfigSection( composite, preferences );
+    JSHintConfigPreferences jsHintPreferences = new JSHintConfigPreferences( getPreferences() );
+    configView = new JSHintConfigView( composite, SWT.NONE );
+    configView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    configView.loadPreferences( jsHintPreferences );
     return composite;
   }
 
@@ -76,56 +75,18 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     enablementCheckbox.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        configSection.setEnabled( enablementCheckbox.getSelection() );
+        configView.setEnabled( enablementCheckbox.getSelection() );
       }
     } );
-  }
-
-  private void addConfigSection( Composite parent, ProjectPreferences preferences ) {
-    configSection = new Composite( parent, SWT.NONE );
-    configSection.setLayout( new GridLayout() );
-    configSection.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    configSection.setEnabled( preferences.getEnabled() );
-
-    Label predefinedLabel = new Label( configSection, SWT.NONE );
-    predefinedLabel.setText( "Predefined globals:" );
-
-    predefinedText = new Text( configSection, SWT.BORDER | SWT.MULTI | SWT.WRAP );
-    predefinedText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    predefinedText.setText( preferences.getGlobals() );
-
-    Text predefinedSubLabel = new Text( configSection, SWT.READ_ONLY | SWT.WRAP );
-    predefinedSubLabel.setText( "Example: \"org: true, com: true, ...\"\n"
-                                + "use false for read-only identifiers" );
-    predefinedSubLabel.setLayoutData( createGridDataWithIndent( 20 ) );
-    predefinedSubLabel.setBackground( configSection.getBackground() );
-
-    Label optionsLabel = new Label( configSection, SWT.NONE );
-    optionsLabel.setText( "JSHint Options:" );
-
-    optionsText = new Text( configSection, SWT.BORDER | SWT.MULTI | SWT.WRAP );
-    optionsText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    optionsText.setText( preferences.getOptions() );
-
-    Text optionsSubLabel = new Text( configSection, SWT.READ_ONLY | SWT.WRAP );
-    optionsSubLabel.setText( "Example: \"strict: false, sub: true, ...\"\n"
-                             + "see http://www.jshint.com/options/" );
-    optionsSubLabel.setLayoutData( createGridDataWithIndent( 20 ) );
-    optionsSubLabel.setBackground( configSection.getBackground() );
-  }
-
-  private GridData createGridDataWithIndent( int indent ) {
-    GridData predefinedSubData = new GridData();
-    predefinedSubData.horizontalIndent = indent;
-    return predefinedSubData;
   }
 
   private boolean storePreferences() throws CoreException {
     ProjectPreferences preferences = getProjectPreferences();
     preferences.setEnabled( enablementCheckbox.getSelection() );
-    preferences.setGlobals( predefinedText.getText() );
-    preferences.setOptions( optionsText.getText() );
-    boolean changed = preferences.hasChanged();
+    boolean changed1 = preferences.hasChanged();
+    JSHintConfigPreferences jsHintPreferences = new JSHintConfigPreferences( getPreferences() );
+    boolean changed2 = configView.storePreferences( jsHintPreferences );
+    boolean changed = changed1 || changed2;
     if( changed ) {
       preferences.save();
     }

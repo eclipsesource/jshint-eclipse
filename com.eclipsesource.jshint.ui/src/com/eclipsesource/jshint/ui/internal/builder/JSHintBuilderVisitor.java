@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.JSHint;
@@ -36,7 +37,9 @@ import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 
 
@@ -47,7 +50,9 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   public JSHintBuilderVisitor( IProject project ) throws CoreException {
     preferences = new ProjectPreferences( project );
-    checker = preferences.getEnabled() ? createJSHint( preferences.getConfiguration() ) : null;
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    JSHintConfigPreferences configPreferences = new JSHintConfigPreferences( node );
+    checker = preferences.getEnabled() ? createJSHint( configPreferences.getConfiguration() ) : null;
   }
 
   public boolean visit( IResourceDelta delta ) throws CoreException {

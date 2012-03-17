@@ -19,8 +19,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
@@ -78,12 +81,14 @@ public class CompatibilityUtil_Test {
 
     CompatibilityUtil.fixObsoleteMetadataInProjects();
 
-    ProjectPreferences prefs = new ProjectPreferences( project );
-    assertTrue( prefs.getEnabled() );
-    assertTrue( prefs.getExcluded( project.getFile( "js/test.js" ) ) );
-    assertFalse( prefs.getExcluded( project.getFile( "js/foo.js" ) ) );
-    assertEquals( "org: true, com: false", prefs.getGlobals() );
-    assertEquals( "bitwise: true, curly: true, eqnull: true", prefs.getOptions() );
+    ProjectPreferences projPrefs = new ProjectPreferences( project );
+    assertTrue( projPrefs.getEnabled() );
+    assertTrue( projPrefs.getExcluded( project.getFile( "js/test.js" ) ) );
+    assertFalse( projPrefs.getExcluded( project.getFile( "js/foo.js" ) ) );
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    JSHintConfigPreferences configPrefs = new JSHintConfigPreferences( node );
+    assertEquals( "org: true, com: false", configPrefs.getGlobals() );
+    assertEquals( "bitwise: true, curly: true, eqnull: true", configPrefs.getOptions() );
   }
 
 }

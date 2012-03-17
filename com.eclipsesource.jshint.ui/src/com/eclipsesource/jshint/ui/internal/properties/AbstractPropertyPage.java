@@ -10,13 +10,18 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.properties;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.osgi.service.prefs.Preferences;
+
+import com.eclipsesource.jshint.ui.internal.Activator;
 
 
 public abstract class AbstractPropertyPage extends PropertyPage {
@@ -61,6 +66,11 @@ public abstract class AbstractPropertyPage extends PropertyPage {
   protected void hideButtons() {
     getDefaultsButton().setVisible( false );
     getApplyButton().setVisible( false );
+  }
+
+  protected Preferences getPreferences() {
+    IProject project = getResource().getProject();
+    return new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
   }
 
   protected ProjectPreferences getProjectPreferences() {
