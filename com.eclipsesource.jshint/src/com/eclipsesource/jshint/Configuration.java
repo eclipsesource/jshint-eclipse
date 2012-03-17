@@ -58,7 +58,7 @@ public class Configuration {
     predefs.put( identifier, Boolean.valueOf( overwrite ) );
   }
 
-  String getOptionsString() {
+  public String toJson() {
     StringBuilder builder = new StringBuilder();
     builder.append( "{" );
     if( !predefs.isEmpty() ) {

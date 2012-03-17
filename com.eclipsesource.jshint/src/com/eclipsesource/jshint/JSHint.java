@@ -98,7 +98,7 @@ public class JSHint {
     Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
-      String optionsString = configuration.getOptionsString();
+      String optionsString = configuration.toJson();
       opts = context.evaluateString( scope, "opts = " + optionsString + ";", "[options]", 1, null );
     } finally {
       Context.exit();

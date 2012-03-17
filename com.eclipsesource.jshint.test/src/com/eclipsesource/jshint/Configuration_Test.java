@@ -27,14 +27,14 @@ public class Configuration_Test {
 
   @Test
   public void emptyAfterCreation() {
-    assertEquals( "{\"indent\": 1}", configuration.getOptionsString() );
+    assertEquals( "{\"indent\": 1}", configuration.toJson() );
   }
 
   @Test
   public void addOneOption() {
     configuration.addOption( "foo", true );
 
-    assertEquals( "{\"indent\": 1, \"foo\": true}", configuration.getOptionsString() );
+    assertEquals( "{\"indent\": 1, \"foo\": true}", configuration.toJson() );
   }
 
   @Test
@@ -43,7 +43,7 @@ public class Configuration_Test {
     configuration.addOption( "bar", false );
 
     assertEquals( "{\"indent\": 1, \"foo\": true, \"bar\": false}",
-                  configuration.getOptionsString() );
+                  configuration.toJson() );
   }
 
   @Test
@@ -51,7 +51,7 @@ public class Configuration_Test {
     configuration.addOption( "foo", true );
     configuration.addOption( "foo", false );
 
-    assertEquals( "{\"indent\": 1, \"foo\": false}", configuration.getOptionsString() );
+    assertEquals( "{\"indent\": 1, \"foo\": false}", configuration.toJson() );
   }
 
   @Test
@@ -59,14 +59,14 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "foo", false );
 
-    assertEquals( "{\"predef\": {\"foo\": false}, \"indent\": 1}", configuration.getOptionsString() );
+    assertEquals( "{\"predef\": {\"foo\": false}, \"indent\": 1}", configuration.toJson() );
   }
 
   @Test
   public void addOnePredef() {
     configuration.addPredefined( "foo", true );
 
-    assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.getOptionsString() );
+    assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.toJson() );
   }
 
   @Test
@@ -75,7 +75,7 @@ public class Configuration_Test {
     configuration.addPredefined( "bar", false );
 
     assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}, \"indent\": 1}",
-                  configuration.getOptionsString() );
+                  configuration.toJson() );
   }
 
   @Test
@@ -84,7 +84,7 @@ public class Configuration_Test {
     configuration.addOption( "bar", false );
 
     assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1, \"bar\": false}",
-                  configuration.getOptionsString() );
+                  configuration.toJson() );
   }
 
 }
