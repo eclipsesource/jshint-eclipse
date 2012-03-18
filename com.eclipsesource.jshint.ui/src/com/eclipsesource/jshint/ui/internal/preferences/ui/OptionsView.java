@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.ui.internal.preferences;
+package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -17,6 +17,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
+
+import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 
 
 public class OptionsView extends Composite {

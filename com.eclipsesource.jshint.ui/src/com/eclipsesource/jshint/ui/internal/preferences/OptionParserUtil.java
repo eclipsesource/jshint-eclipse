@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.ui.internal.properties;
+package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -18,7 +18,6 @@ import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.ui.internal.Activator;
-import com.eclipsesource.jshint.ui.internal.properties.OptionParserUtil;
 
 
 public class OptionsPreferences {

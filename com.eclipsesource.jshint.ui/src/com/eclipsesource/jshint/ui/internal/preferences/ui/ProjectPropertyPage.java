@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.ui.internal.properties;
+package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -25,7 +25,6 @@ import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.OptionsView;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {

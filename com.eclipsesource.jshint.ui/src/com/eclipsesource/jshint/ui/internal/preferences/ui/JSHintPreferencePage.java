@@ -8,7 +8,7 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.ui.internal.preferences;
+package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +42,7 @@ import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 
 
 public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {

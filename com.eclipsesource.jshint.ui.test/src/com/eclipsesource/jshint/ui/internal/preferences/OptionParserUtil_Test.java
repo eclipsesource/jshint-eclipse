@@ -8,14 +8,15 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.ui.internal.properties;
+package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.util.List;
 
 import org.junit.Test;
 
 import com.eclipsesource.jshint.Configuration;
-import com.eclipsesource.jshint.ui.internal.properties.OptionParserUtil.Entry;
+import com.eclipsesource.jshint.ui.internal.preferences.OptionParserUtil;
+import com.eclipsesource.jshint.ui.internal.preferences.OptionParserUtil.Entry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
