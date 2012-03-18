@@ -24,14 +24,14 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigView;
+import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.OptionsView;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {
 
   private Button enablementCheckbox;
-  private JSHintConfigView configView;
+  private OptionsView configView;
 
   @Override
   public boolean performOk() {
@@ -61,10 +61,10 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     Composite composite = createMainComposite( parent );
     EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
     addEnablementSection( composite, preferences );
-    JSHintConfigPreferences jsHintPreferences = new JSHintConfigPreferences( getPreferences() );
-    configView = new JSHintConfigView( composite, SWT.NONE );
+    OptionsPreferences optionsPreferences = new OptionsPreferences( getPreferences() );
+    configView = new OptionsView( composite, SWT.NONE );
     configView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    configView.loadPreferences( jsHintPreferences );
+    configView.loadPreferences( optionsPreferences );
     return composite;
   }
 
@@ -85,7 +85,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
     preferences.setEnabled( enablementCheckbox.getSelection() );
     boolean changed1 = preferences.hasChanged();
-    JSHintConfigPreferences jsHintPreferences = new JSHintConfigPreferences( getPreferences() );
+    OptionsPreferences jsHintPreferences = new OptionsPreferences( getPreferences() );
     boolean changed2 = configView.storePreferences( jsHintPreferences );
     boolean changed = changed1 || changed2;
     if( changed ) {

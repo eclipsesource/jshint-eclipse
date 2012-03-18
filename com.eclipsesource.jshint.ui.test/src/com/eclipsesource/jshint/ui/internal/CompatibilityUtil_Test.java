@@ -23,7 +23,7 @@ import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
@@ -86,9 +86,9 @@ public class CompatibilityUtil_Test {
     assertTrue( enablePrefs.getEnabled() );
     assertTrue( enablePrefs.getExcluded( "js/test.js" ) );
     assertFalse( enablePrefs.getExcluded( "js/foo.js" ) );
-    JSHintConfigPreferences configPrefs = new JSHintConfigPreferences( node );
-    assertEquals( "org: true, com: false", configPrefs.getGlobals() );
-    assertEquals( "bitwise: true, curly: true, eqnull: true", configPrefs.getOptions() );
+    OptionsPreferences optionsPrefs = new OptionsPreferences( node );
+    assertEquals( "org: true, com: false", optionsPrefs.getGlobals() );
+    assertEquals( "bitwise: true, curly: true, eqnull: true", optionsPrefs.getOptions() );
   }
 
 }

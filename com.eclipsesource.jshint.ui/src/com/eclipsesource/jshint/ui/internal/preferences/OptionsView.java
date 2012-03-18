@@ -19,12 +19,12 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Text;
 
 
-public class JSHintConfigView extends Composite {
+public class OptionsView extends Composite {
 
   private Text predefinedText;
   private Text optionsText;
 
-  public JSHintConfigView( Composite parent, int style ) {
+  public OptionsView( Composite parent, int style ) {
     super( parent, style );
     super.setLayout( createGridLayout( 1, false ) );
     createPredefControls();
@@ -36,12 +36,12 @@ public class JSHintConfigView extends Composite {
     optionsText.setText( "" );
   }
 
-  public void loadPreferences( JSHintConfigPreferences preferences ) {
+  public void loadPreferences( OptionsPreferences preferences ) {
     predefinedText.setText( preferences.getGlobals() );
     optionsText.setText( preferences.getOptions() );
   }
 
-  public boolean storePreferences( JSHintConfigPreferences preferences ) {
+  public boolean storePreferences( OptionsPreferences preferences ) {
     preferences.setGlobals( predefinedText.getText() );
     preferences.setOptions( optionsText.getText() );
     return preferences.hasChanged();

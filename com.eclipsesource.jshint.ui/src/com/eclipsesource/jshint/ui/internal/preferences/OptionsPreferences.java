@@ -21,7 +21,7 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.properties.OptionParserUtil;
 
 
-public class JSHintConfigPreferences {
+public class OptionsPreferences {
 
   private static final String KEY_GLOBALS = "globals";
   private static final String KEY_OPTIONS = "options";
@@ -31,7 +31,7 @@ public class JSHintConfigPreferences {
   private final Preferences node;
   private boolean changed;
 
-  public JSHintConfigPreferences( Preferences node ) {
+  public OptionsPreferences( Preferences node ) {
     this.node = node;
   }
 

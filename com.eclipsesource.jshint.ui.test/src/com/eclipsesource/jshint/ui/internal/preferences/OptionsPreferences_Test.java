@@ -28,7 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
-public class JSHintConfigPreferences_Test {
+public class OptionsPreferences_Test {
 
   private PreferencesMock node;
 
@@ -39,7 +39,7 @@ public class JSHintConfigPreferences_Test {
 
   @Test
   public void defaultPrefsForEmptyProject() {
-    JSHintConfigPreferences prefs = new JSHintConfigPreferences( node );
+    OptionsPreferences prefs = new OptionsPreferences( node );
 
     assertEquals( "", prefs.getGlobals() );
     assertEquals( "", prefs.getOptions() );
@@ -47,18 +47,18 @@ public class JSHintConfigPreferences_Test {
 
   @Test
   public void setGlobals() {
-    JSHintConfigPreferences prefs = new JSHintConfigPreferences( node );
+    OptionsPreferences prefs = new OptionsPreferences( node );
 
     prefs.setGlobals( "foo" );
 
     assertEquals( "foo", prefs.getGlobals() );
     assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getGlobals(), new JSHintConfigPreferences( node ).getGlobals() );
+    assertEquals( prefs.getGlobals(), new OptionsPreferences( node ).getGlobals() );
   }
 
   @Test
   public void setGlobals_unchanged() {
-    JSHintConfigPreferences prefs = new JSHintConfigPreferences( node );
+    OptionsPreferences prefs = new OptionsPreferences( node );
 
     prefs.setGlobals( prefs.getGlobals() );
 
@@ -67,18 +67,18 @@ public class JSHintConfigPreferences_Test {
 
   @Test
   public void setOptions() {
-    JSHintConfigPreferences prefs = new JSHintConfigPreferences( node );
+    OptionsPreferences prefs = new OptionsPreferences( node );
 
     prefs.setOptions( "foo" );
 
     assertEquals( "foo", prefs.getOptions() );
     assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getOptions(), new JSHintConfigPreferences( node ).getOptions() );
+    assertEquals( prefs.getOptions(), new OptionsPreferences( node ).getOptions() );
   }
 
   @Test
   public void setOptions_unchanged() {
-    JSHintConfigPreferences prefs = new JSHintConfigPreferences( node );
+    OptionsPreferences prefs = new OptionsPreferences( node );
 
     prefs.setOptions( prefs.getOptions() );
 
@@ -91,7 +91,7 @@ public class JSHintConfigPreferences_Test {
     TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
 
     Preferences node = PreferencesFactory.getProjectPreferences( project );
-    JSHintConfigPreferences prefs = new JSHintConfigPreferences( node );
+    OptionsPreferences prefs = new OptionsPreferences( node );
 
     assertEquals( "org: true, com: false", prefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", prefs.getOptions() );
