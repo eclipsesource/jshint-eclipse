@@ -85,9 +85,9 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
 
   private void addEnablementSection( Composite parent ) {
     EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
-    Composite composite = createDefaultComposite( parent );
+    Composite composite = LayoutUtil.createDefaultComposite( parent );
     Label label = new Label( composite, SWT.NONE );
-    label.setLayoutData( createSpanGridData() );
+    label.setLayoutData( LayoutUtil.createSpanGridData() );
     boolean enabled = preferences.getEnabled();
     label.setText( "The project has JSHint " + ( enabled ? "enabled" : "disabled" ) );
     excludeCheckbox = new Button( composite, SWT.CHECK );

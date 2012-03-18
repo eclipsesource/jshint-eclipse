@@ -25,11 +25,24 @@ public class LayoutUtil {
     return composite;
   }
 
+  public static Composite createDefaultComposite( Composite parent ) {
+    Composite composite = new Composite( parent, SWT.NONE );
+    composite.setLayout( createGridLayout( 1, false ) );
+    composite.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
+    return composite;
+  }
+
   public static GridLayout createGridLayout( int numColumns, boolean makeColumnsEqualWidth ) {
     GridLayout layout = new GridLayout( numColumns, makeColumnsEqualWidth );
     layout.marginHeight = 0;
     layout.marginWidth = 0;
     return layout;
+  }
+
+  public static GridData createSpanGridData() {
+    GridData labelData = new GridData( SWT.FILL, SWT.TOP, true, false );
+    labelData.horizontalSpan = 2;
+    return labelData;
   }
 
 }

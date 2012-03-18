@@ -16,10 +16,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -29,19 +25,6 @@ import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
 
 public abstract class AbstractPropertyPage extends PropertyPage {
-
-  protected static Composite createDefaultComposite( Composite parent ) {
-    Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( new GridLayout( 2, false ) );
-    composite.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
-    return composite;
-  }
-
-  protected GridData createSpanGridData() {
-    GridData labelData = new GridData( SWT.FILL, SWT.TOP, true, false );
-    labelData.horizontalSpan = 2;
-    return labelData;
-  }
 
   protected IResource getResource() {
     IAdaptable element = getElement();
