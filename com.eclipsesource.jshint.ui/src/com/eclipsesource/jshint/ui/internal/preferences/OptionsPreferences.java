@@ -17,8 +17,10 @@ import com.eclipsesource.jshint.Configuration;
 
 public class OptionsPreferences {
 
+  private static final String KEY_SPECIFIC_OPTIONS = "projectSpecificOptions";
   private static final String KEY_GLOBALS = "globals";
   private static final String KEY_OPTIONS = "options";
+  private static final boolean DEF_SPECIFIC_OPTIONS = false;
   private static final String DEF_GLOBALS = "";
   private static final String DEF_OPTIONS = "";
 
@@ -27,6 +29,21 @@ public class OptionsPreferences {
 
   public OptionsPreferences( Preferences node ) {
     this.node = node;
+  }
+
+  public boolean getProjectSpecific() {
+    return node.getBoolean( KEY_SPECIFIC_OPTIONS, DEF_SPECIFIC_OPTIONS );
+  }
+
+  public void setProjectSpecific( boolean value ) {
+    if( value != node.getBoolean( KEY_SPECIFIC_OPTIONS, DEF_SPECIFIC_OPTIONS ) ) {
+      if( value == DEF_SPECIFIC_OPTIONS ) {
+        node.remove( KEY_SPECIFIC_OPTIONS );
+      } else {
+        node.putBoolean( KEY_SPECIFIC_OPTIONS, value );
+      }
+      changed = true;
+    }
   }
 
   public String getGlobals() {

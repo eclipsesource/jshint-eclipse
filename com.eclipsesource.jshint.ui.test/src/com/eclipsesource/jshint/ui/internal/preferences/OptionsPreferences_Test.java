@@ -19,6 +19,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.test.TestUtil;
@@ -41,8 +42,41 @@ public class OptionsPreferences_Test {
   public void defaultPrefsForEmptyProject() {
     OptionsPreferences prefs = new OptionsPreferences( node );
 
+    assertFalse( prefs.getProjectSpecific() );
     assertEquals( "", prefs.getGlobals() );
     assertEquals( "", prefs.getOptions() );
+  }
+
+  @Test
+  public void setProjectSpecificOptions() {
+    OptionsPreferences prefs = new OptionsPreferences( node );
+
+    prefs.setProjectSpecific( true );
+
+    assertTrue( prefs.getProjectSpecific() );
+    assertTrue( prefs.hasChanged() );
+    assertTrue( new OptionsPreferences( node ).getProjectSpecific() );
+  }
+
+  @Test
+  public void setProjectSpecificOptions_unchanged() {
+    OptionsPreferences prefs = new OptionsPreferences( node );
+
+    prefs.setProjectSpecific( false );
+
+    assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setProjectSpecificOptions_reset() throws BackingStoreException {
+    OptionsPreferences prefs = new OptionsPreferences( node );
+    prefs.setProjectSpecific( true );
+    prefs.clearChanged();
+
+    prefs.setProjectSpecific( false );
+
+    assertTrue( prefs.hasChanged() );
+    assertEquals( 0, node.keys().length );
   }
 
   @Test
@@ -66,6 +100,18 @@ public class OptionsPreferences_Test {
   }
 
   @Test
+  public void setGlobals_reset() throws BackingStoreException {
+    OptionsPreferences prefs = new OptionsPreferences( node );
+    prefs.setGlobals( "foo" );
+    prefs.clearChanged();
+
+    prefs.setGlobals( "" );
+
+    assertTrue( prefs.hasChanged() );
+    assertEquals( 0, node.keys().length );
+  }
+
+  @Test
   public void setOptions() {
     OptionsPreferences prefs = new OptionsPreferences( node );
 
@@ -83,6 +129,18 @@ public class OptionsPreferences_Test {
     prefs.setOptions( prefs.getOptions() );
 
     assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setOptions_reset() throws BackingStoreException {
+    OptionsPreferences prefs = new OptionsPreferences( node );
+    prefs.setOptions( "foo" );
+    prefs.clearChanged();
+
+    prefs.setOptions( "" );
+
+    assertTrue( prefs.hasChanged() );
+    assertEquals( 0, node.keys().length );
   }
 
   @Test
