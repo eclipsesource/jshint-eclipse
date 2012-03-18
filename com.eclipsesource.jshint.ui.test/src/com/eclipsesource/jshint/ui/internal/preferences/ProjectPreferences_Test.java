@@ -56,7 +56,7 @@ public class ProjectPreferences_Test {
   }
 
   @Test
-  public void prefsFromExampleSettingsFile() throws Exception {
+  public void enablementPrefsFromExampleSettingsFile() throws Exception {
     TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
 
     EnablementPreferences prefs = new EnablementPreferences( node );
@@ -65,6 +65,17 @@ public class ProjectPreferences_Test {
     assertTrue( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
     assertFalse( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/foo.js" ) ) ) );
     assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void optionPrefsFromExampleSettingsFile() throws Exception {
+    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
+
+    OptionsPreferences optionPrefs = new OptionsPreferences( node );
+
+    assertEquals( "org: true, com: false", optionPrefs.getGlobals() );
+    assertEquals( "bitwise: true, curly: true, eqnull: true", optionPrefs.getOptions() );
+    assertFalse( optionPrefs.hasChanged() );
   }
 
   @Test
