@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
+import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigView;
 
@@ -58,7 +59,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = createMainComposite( parent );
-    ProjectPreferences preferences = getProjectPreferences();
+    EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
     addEnablementSection( composite, preferences );
     JSHintConfigPreferences jsHintPreferences = new JSHintConfigPreferences( getPreferences() );
     configView = new JSHintConfigView( composite, SWT.NONE );
@@ -67,7 +68,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     return composite;
   }
 
-  private void addEnablementSection( Composite parent, ProjectPreferences preferences ) {
+  private void addEnablementSection( Composite parent, EnablementPreferences preferences ) {
     Composite composite = createDefaultComposite( parent );
     enablementCheckbox = new Button( composite, SWT.CHECK );
     enablementCheckbox.setText( "Enable JSHint for this project" );
@@ -81,7 +82,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   }
 
   private boolean storePreferences() throws CoreException {
-    ProjectPreferences preferences = getProjectPreferences();
+    EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
     preferences.setEnabled( enablementCheckbox.getSelection() );
     boolean changed1 = preferences.hasChanged();
     JSHintConfigPreferences jsHintPreferences = new JSHintConfigPreferences( getPreferences() );

@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
+import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 
 
 public class FileAndFolderPropertyPage extends AbstractPropertyPage {
@@ -58,9 +59,9 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
   }
 
   private boolean storePreferences() throws CoreException {
-    ProjectPreferences preferences = getProjectPreferences();
-    IResource resource = getResource();
-    preferences.setExcluded( resource, excludeCheckbox.getSelection() );
+    EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
+    String resourcePath = getResourcePath();
+    preferences.setExcluded( resourcePath, excludeCheckbox.getSelection() );
     boolean changed = preferences.hasChanged();
     if( changed ) {
       preferences.save();
@@ -81,8 +82,7 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
   }
 
   private void addEnablementSection( Composite parent ) {
-    ProjectPreferences preferences = getProjectPreferences();
-    IResource resource = getResource();
+    EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
     Composite composite = createDefaultComposite( parent );
     Label label = new Label( composite, SWT.NONE );
     label.setLayoutData( createSpanGridData() );
@@ -91,8 +91,13 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
     excludeCheckbox = new Button( composite, SWT.CHECK );
     String fileOrFolder = getResource().getType() == IResource.FILE ? "file" : "folder";
     excludeCheckbox.setText( "Exclude this " + fileOrFolder + " from jshint validation" );
-    excludeCheckbox.setSelection( preferences.getExcluded( resource ) );
+    excludeCheckbox.setSelection( preferences.getExcluded( getResourcePath() ) );
     excludeCheckbox.setEnabled( enabled );
+  }
+
+  private String getResourcePath() {
+    IResource resource = getResource();
+    return EnablementPreferences.getResourcePath( resource );
   }
 
 }

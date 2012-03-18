@@ -22,9 +22,9 @@ import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
-import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
@@ -81,11 +81,11 @@ public class CompatibilityUtil_Test {
 
     CompatibilityUtil.fixObsoleteMetadataInProjects();
 
-    ProjectPreferences projPrefs = new ProjectPreferences( project );
-    assertTrue( projPrefs.getEnabled() );
-    assertTrue( projPrefs.getExcluded( project.getFile( "js/test.js" ) ) );
-    assertFalse( projPrefs.getExcluded( project.getFile( "js/foo.js" ) ) );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    assertTrue( enablePrefs.getEnabled() );
+    assertTrue( enablePrefs.getExcluded( "js/test.js" ) );
+    assertFalse( enablePrefs.getExcluded( "js/foo.js" ) );
     JSHintConfigPreferences configPrefs = new JSHintConfigPreferences( node );
     assertEquals( "org: true, com: false", configPrefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", configPrefs.getOptions() );

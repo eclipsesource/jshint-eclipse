@@ -37,20 +37,20 @@ import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
+import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintConfigPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
-import com.eclipsesource.jshint.ui.internal.properties.ProjectPreferences;
 
 
 class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private final JSHint checker;
-  private final ProjectPreferences preferences;
+  private final EnablementPreferences preferences;
 
   public JSHintBuilderVisitor( IProject project ) throws CoreException {
-    preferences = new ProjectPreferences( project );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
+    preferences = new EnablementPreferences( node );
     JSHintConfigPreferences configPreferences = new JSHintConfigPreferences( node );
     checker = preferences.getEnabled() ? createJSHint( configPreferences.getConfiguration() ) : null;
   }
@@ -108,7 +108,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
   }
 
   private boolean considerContainer( IResource resource ) {
-    if( preferences.getExcluded( resource ) ) {
+    if( preferences.getExcluded( EnablementPreferences.getResourcePath( resource ) ) ) {
       return false;
     }
     Path binPath = new Path( "bin" );
@@ -122,7 +122,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     if( !"js".equals( resource.getFileExtension() ) ) {
       return false;
     }
-    if( preferences.getExcluded( resource ) ) {
+    if( preferences.getExcluded( EnablementPreferences.getResourcePath( resource ) ) ) {
       return false;
     }
     return true;

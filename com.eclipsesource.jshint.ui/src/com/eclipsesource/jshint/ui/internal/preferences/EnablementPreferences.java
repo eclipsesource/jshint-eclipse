@@ -8,12 +8,11 @@
  * Contributors:
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
-package com.eclipsesource.jshint.ui.internal.properties;
+package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -22,10 +21,9 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
-import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
 
-public class ProjectPreferences {
+public class EnablementPreferences {
 
   private static final String KEY_ENABLED = "enabled";
   private static final String KEY_EXCLUDED = "excluded";
@@ -35,8 +33,8 @@ public class ProjectPreferences {
   private final Preferences node;
   private boolean changed;
 
-  public ProjectPreferences( IProject project ) {
-    node = PreferencesFactory.getProjectPreferences( project );
+  public EnablementPreferences( Preferences node ) {
+    this.node = node;
     changed = false;
   }
 
@@ -55,8 +53,7 @@ public class ProjectPreferences {
     return node.getBoolean( KEY_ENABLED, DEF_ENABLED );
   }
 
-  public void setExcluded( IResource resource, boolean exclude ) {
-    String resourcePath = getResourcePath( resource );
+  public void setExcluded( String resourcePath, boolean exclude ) {
     List<String> excluded = getExcluded();
     if( exclude && !excluded.contains( resourcePath ) ) {
       excluded.add( resourcePath );
@@ -66,8 +63,7 @@ public class ProjectPreferences {
     setExcluded( excluded );
   }
 
-  public boolean getExcluded( IResource resource ) {
-    String resourcePath = getResourcePath( resource );
+  public boolean getExcluded( String resourcePath ) {
     // projects have resource path == "", they can be disabled but not excluded
     if( "".equals( resourcePath ) ) {
       return false;
@@ -78,11 +74,11 @@ public class ProjectPreferences {
 
   private List<String> getExcluded() {
     String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
-    return decodePath( value );
+    return decodePaths( value );
   }
 
   private void setExcluded( List<String> excluded ) {
-    String value = encodePath( excluded );
+    String value = encodePaths( excluded );
     if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
       if( DEF_EXCLUDED.equals( value ) ) {
         node.remove( KEY_EXCLUDED );
@@ -108,13 +104,13 @@ public class ProjectPreferences {
     }
   }
 
-  private static String getResourcePath( IResource resource ) {
+  public static String getResourcePath( IResource resource ) {
     return resource.getProjectRelativePath().toPortableString();
   }
 
-  private static String encodePath( List<String> excluded ) {
+  private static String encodePaths( List<String> paths ) {
     StringBuilder builder = new StringBuilder();
-    for( String path : excluded ) {
+    for( String path : paths ) {
       if( builder.length() > 0 ) {
         builder.append( ':' );
       }
@@ -123,9 +119,9 @@ public class ProjectPreferences {
     return builder.toString();
   }
 
-  private static ArrayList<String> decodePath( String value ) {
+  private static ArrayList<String> decodePaths( String encodedPaths ) {
     ArrayList<String> list = new ArrayList<String>();
-    for( String path : value.split( ":" ) ) {
+    for( String path : encodedPaths.split( ":" ) ) {
       list.add( path );
     }
     return list;
