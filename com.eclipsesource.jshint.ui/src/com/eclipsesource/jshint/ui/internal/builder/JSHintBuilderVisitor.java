@@ -38,8 +38,8 @@ import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
 
@@ -51,8 +51,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
   public JSHintBuilderVisitor( IProject project ) throws CoreException {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     preferences = new EnablementPreferences( node );
-    OptionsPreferences optionsPreferences = new OptionsPreferences( node );
-    checker = preferences.getEnabled() ? createJSHint( optionsPreferences.getConfiguration() ) : null;
+    checker = preferences.getEnabled() ? createJSHint( getConfiguration( project ) ) : null;
   }
 
   public boolean visit( IResourceDelta delta ) throws CoreException {
@@ -126,6 +125,20 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       return false;
     }
     return true;
+  }
+
+  private static Configuration getConfiguration( IProject project ) {
+    Configuration configuration;
+    Preferences projectNode = PreferencesFactory.getProjectPreferences( project );
+    OptionsPreferences projectPreferences = new OptionsPreferences( projectNode );
+    if( projectPreferences.getProjectSpecific() ) {
+      configuration = projectPreferences.getConfiguration();
+    } else {
+      Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
+      OptionsPreferences workspacePreferences = new OptionsPreferences( workspaceNode );
+      configuration = workspacePreferences.getConfiguration();
+    }
+    return configuration;
   }
 
   private static void clean( IResource resource ) throws CoreException {
