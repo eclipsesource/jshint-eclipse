@@ -12,14 +12,19 @@ package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
+import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
 
@@ -68,6 +73,17 @@ public abstract class AbstractPropertyPage extends PropertyPage {
   protected Preferences getPreferences() {
     IProject project = getResource().getProject();
     return PreferencesFactory.getProjectPreferences( project );
+  }
+
+  protected void savePreferences() throws CoreException {
+    Preferences node = getPreferences();
+    try {
+      node.flush();
+    } catch( BackingStoreException exception ) {
+      String message = "Failed to store preferences";
+      Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
+      throw new CoreException( status );
+    }
   }
 
 }

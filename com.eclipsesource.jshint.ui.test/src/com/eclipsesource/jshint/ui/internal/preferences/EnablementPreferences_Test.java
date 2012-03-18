@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
-import org.eclipse.core.runtime.CoreException;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.BackingStoreException;
@@ -61,10 +60,10 @@ public class EnablementPreferences_Test {
   }
 
   @Test
-  public void setEnabled_reset() throws BackingStoreException, CoreException {
+  public void setEnabled_reset() throws BackingStoreException {
     EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setEnabled( true );
-    prefs.save();
+    prefs.clearChanged();
 
     prefs.setEnabled( false );
 
@@ -106,10 +105,10 @@ public class EnablementPreferences_Test {
   }
 
   @Test
-  public void setExcluded_reset() throws BackingStoreException, CoreException {
+  public void setExcluded_reset() throws BackingStoreException {
     EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setExcluded( "/test", true );
-    prefs.save();
+    prefs.clearChanged();
 
     prefs.setExcluded( "/test", false );
 
@@ -128,11 +127,11 @@ public class EnablementPreferences_Test {
   }
 
   @Test
-  public void save_clearsChangedState() throws CoreException {
+  public void clearChanged() {
     EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setExcluded( "", true );
 
-    prefs.save();
+    prefs.clearChanged();
 
     assertFalse( prefs.hasChanged() );
   }

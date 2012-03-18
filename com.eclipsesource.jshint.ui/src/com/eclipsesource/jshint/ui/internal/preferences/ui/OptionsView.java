@@ -43,10 +43,9 @@ public class OptionsView extends Composite {
     optionsText.setText( preferences.getOptions() );
   }
 
-  public boolean storePreferences( OptionsPreferences preferences ) {
+  public void storePreferences( OptionsPreferences preferences ) {
     preferences.setGlobals( predefinedText.getText() );
     preferences.setOptions( optionsText.getText() );
-    return preferences.hasChanged();
   }
 
   @Override

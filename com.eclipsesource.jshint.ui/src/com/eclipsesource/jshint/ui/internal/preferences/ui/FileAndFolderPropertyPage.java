@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
@@ -59,12 +60,13 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
   }
 
   private boolean storePreferences() throws CoreException {
-    EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
+    Preferences node = getPreferences();
+    EnablementPreferences preferences = new EnablementPreferences( node );
     String resourcePath = getResourcePath();
     preferences.setExcluded( resourcePath, excludeCheckbox.getSelection() );
     boolean changed = preferences.hasChanged();
     if( changed ) {
-      preferences.save();
+      savePreferences();
     }
     return changed;
   }

@@ -14,13 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
-
-import com.eclipsesource.jshint.ui.internal.Activator;
 
 
 public class EnablementPreferences {
@@ -93,15 +87,8 @@ public class EnablementPreferences {
     return changed;
   }
 
-  public void save() throws CoreException {
-    try {
-      node.flush();
-      changed = false;
-    } catch( BackingStoreException exception ) {
-      String message = "Failed to store preferences";
-      Status status = new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception );
-      throw new CoreException( status );
-    }
+  public void clearChanged() {
+    changed = false;
   }
 
   public static String getResourcePath( IResource resource ) {

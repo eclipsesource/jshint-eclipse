@@ -19,6 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
@@ -81,14 +82,14 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   }
 
   private boolean storePreferences() throws CoreException {
-    EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
-    preferences.setEnabled( enablementCheckbox.getSelection() );
-    boolean changed1 = preferences.hasChanged();
-    OptionsPreferences jsHintPreferences = new OptionsPreferences( getPreferences() );
-    boolean changed2 = configView.storePreferences( jsHintPreferences );
-    boolean changed = changed1 || changed2;
+    Preferences node = getPreferences();
+    EnablementPreferences enablePreferences = new EnablementPreferences( node );
+    enablePreferences.setEnabled( enablementCheckbox.getSelection() );
+    OptionsPreferences optionsPreferences = new OptionsPreferences( node );
+    configView.storePreferences( optionsPreferences );
+    boolean changed = enablePreferences.hasChanged() || optionsPreferences.hasChanged();
     if( changed ) {
-      preferences.save();
+      savePreferences();
     }
     return changed;
   }

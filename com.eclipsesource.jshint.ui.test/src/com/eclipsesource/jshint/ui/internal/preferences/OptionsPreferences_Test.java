@@ -86,6 +86,16 @@ public class OptionsPreferences_Test {
   }
 
   @Test
+  public void clearChanges() {
+    OptionsPreferences prefs = new OptionsPreferences( node );
+    prefs.setOptions( "foo" );
+
+    prefs.clearChanged();
+
+    assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
   public void prefsFromExampleSettingsFile() throws Exception {
     IProject project = createTestProject();
     TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
