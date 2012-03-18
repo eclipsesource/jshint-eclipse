@@ -1,0 +1,18 @@
+---
+layout: post
+title: Version 0.9.3 published
+---
+
+The options for JSHint can now be shared among all projects in the workspace.
+A new preference page "Options" has been added for the shared options.
+It's still possible to have project-specific options, but (following the established
+pattern in Eclipse) that's not the default anymore.
+
+If you've already defined options for certain projects and want to keep them in the projects,
+you'll have to check the new checkbox "Enable project specific settings" in the project's
+property pages.
+A full rebuild of the workspace is recommended after updating jshint-eclipse to ensure that all
+markers are up-to-date: `Project > Clean... > Clean all projects`.
+
+A [bug](https://github.com/eclipsesource/jshint-eclipse/issues/10) has been fixed that prevented
+JSHint from succeeding and lead to annoying error messages.
