@@ -30,20 +30,6 @@ import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
 public abstract class AbstractPropertyPage extends PropertyPage {
 
-  protected static Composite createMainComposite( Composite parent ) {
-    Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( createGridLayout( 1, false ) );
-    composite.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
-    return composite;
-  }
-
-  protected static GridLayout createGridLayout( int numColumns, boolean makeColumnsEqualWidth ) {
-    GridLayout layout = new GridLayout( numColumns, makeColumnsEqualWidth );
-    layout.marginHeight = 0;
-    layout.marginWidth = 0;
-    return layout;
-  }
-
   protected static Composite createDefaultComposite( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
     composite.setLayout( new GridLayout( 2, false ) );

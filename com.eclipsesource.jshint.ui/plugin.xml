@@ -48,9 +48,15 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            id="com.eclipsesource.jshint.ui.preferences.preferencePage"
             class="com.eclipsesource.jshint.ui.internal.preferences.ui.JSHintPreferencePage"
+            id="com.eclipsesource.jshint.ui.mainPreferencePage"
             name="JSHint">
+      </page>
+      <page
+            category="com.eclipsesource.jshint.ui.mainPreferencePage"
+            class="com.eclipsesource.jshint.ui.internal.preferences.ui.OptionsPreferencePage"
+            id="com.eclipsesource.jshint.ui.optionsPreferencePage"
+            name="Options">
       </page>
    </extension>
    <extension

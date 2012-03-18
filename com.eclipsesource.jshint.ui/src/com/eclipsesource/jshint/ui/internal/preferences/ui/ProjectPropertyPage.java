@@ -31,7 +31,7 @@ import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 public class ProjectPropertyPage extends AbstractPropertyPage {
 
   private Button enablementCheckbox;
-  private OptionsView configView;
+  private OptionsView optionsView;
 
   @Override
   public boolean performOk() {
@@ -53,18 +53,18 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   protected void performDefaults() {
     super.performDefaults();
     enablementCheckbox.setSelection( false );
-    configView.loadDefaults();
+    optionsView.loadDefaults();
   }
 
   @Override
   protected Control createContents( Composite parent ) {
-    Composite composite = createMainComposite( parent );
+    Composite composite = LayoutUtil.createMainComposite( parent );
     EnablementPreferences preferences = new EnablementPreferences( getPreferences() );
     addEnablementSection( composite, preferences );
     OptionsPreferences optionsPreferences = new OptionsPreferences( getPreferences() );
-    configView = new OptionsView( composite, SWT.NONE );
-    configView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    configView.loadPreferences( optionsPreferences );
+    optionsView = new OptionsView( composite, SWT.NONE );
+    optionsView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    optionsView.loadPreferences( optionsPreferences );
     return composite;
   }
 
@@ -76,7 +76,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     enablementCheckbox.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
-        configView.setEnabled( enablementCheckbox.getSelection() );
+        optionsView.setEnabled( enablementCheckbox.getSelection() );
       }
     } );
   }
@@ -86,7 +86,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     EnablementPreferences enablePreferences = new EnablementPreferences( node );
     enablePreferences.setEnabled( enablementCheckbox.getSelection() );
     OptionsPreferences optionsPreferences = new OptionsPreferences( node );
-    configView.storePreferences( optionsPreferences );
+    optionsView.storePreferences( optionsPreferences );
     boolean changed = enablePreferences.hasChanged() || optionsPreferences.hasChanged();
     if( changed ) {
       savePreferences();

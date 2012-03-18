@@ -54,7 +54,7 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
 
   @Override
   protected Control createContents( Composite parent ) {
-    Composite composite = createMainComposite( parent );
+    Composite composite = LayoutUtil.createMainComposite( parent );
     addEnablementSection( composite );
     return composite;
   }
