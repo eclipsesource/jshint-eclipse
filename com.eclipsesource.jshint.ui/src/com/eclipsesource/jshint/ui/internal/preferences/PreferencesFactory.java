@@ -24,8 +24,10 @@ public class PreferencesFactory {
     return new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
   }
 
+  @SuppressWarnings( "deprecation" )
   public static Preferences getWorkspacePreferences() {
-    return InstanceScope.INSTANCE.getNode( Activator.PLUGIN_ID );
+    // InstanceScope.INSTANCE does not yet exist in Eclipse 3.6
+    return new InstanceScope().getNode( Activator.PLUGIN_ID );
   }
 
 }
