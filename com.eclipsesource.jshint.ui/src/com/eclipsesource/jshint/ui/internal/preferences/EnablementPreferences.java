@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
@@ -57,18 +56,8 @@ public class EnablementPreferences {
     setExcluded( excluded );
   }
 
-  public boolean getExcluded( String resourcePath ) {
-    List<String> excludedFiles = getExcluded();
-    return excludedFiles.contains( resourcePath );
-  }
-
-  public List<String> getExcluded() {
-    String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
-    return decodePaths( value );
-  }
-
   public void setExcluded( List<String> excluded ) {
-    String value = encodePaths( excluded );
+    String value = PathEncoder.encodePaths( excluded );
     if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
       if( DEF_EXCLUDED.equals( value ) ) {
         node.remove( KEY_EXCLUDED );
@@ -77,6 +66,16 @@ public class EnablementPreferences {
       }
       changed = true;
     }
+  }
+
+  public boolean getExcluded( String resourcePath ) {
+    List<String> excludedFiles = getExcluded();
+    return excludedFiles.contains( resourcePath );
+  }
+
+  public List<String> getExcluded() {
+    String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
+    return PathEncoder.decodePaths( value );
   }
 
   public boolean hasChanged() {
@@ -89,27 +88,6 @@ public class EnablementPreferences {
 
   public static String getResourcePath( IResource resource ) {
     return resource.getProjectRelativePath().toPortableString();
-  }
-
-  private static String encodePaths( List<String> paths ) {
-    StringBuilder builder = new StringBuilder();
-    for( String path : paths ) {
-      if( builder.length() > 0 ) {
-        builder.append( ':' );
-      }
-      builder.append( path );
-    }
-    return builder.toString();
-  }
-
-  private static ArrayList<String> decodePaths( String encodedPaths ) {
-    ArrayList<String> list = new ArrayList<String>();
-    for( String path : encodedPaths.split( ":" ) ) {
-      if( !path.isEmpty() ) {
-        list.add( path );
-      }
-    }
-    return list;
   }
 
 }

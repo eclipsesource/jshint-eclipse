@@ -11,6 +11,7 @@
 package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,16 +26,16 @@ import static org.junit.Assert.assertTrue;
 public class EnablementPreferences_Test {
 
   private Preferences node;
+  private EnablementPreferences prefs;
 
   @Before
   public void setUp() {
     node = new PreferencesMock( "test" );
+    prefs = new EnablementPreferences( node );
   }
 
   @Test
   public void defaults() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
-
     assertFalse( prefs.getEnabled() );
     assertTrue( prefs.getExcluded().isEmpty() );
     assertFalse( prefs.hasChanged() );
@@ -42,8 +43,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setEnabled() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
-
     prefs.setEnabled( true );
 
     assertTrue( prefs.getEnabled() );
@@ -53,8 +52,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setEnabled_unchanged() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
-
     prefs.setEnabled( false );
 
     assertFalse( prefs.getEnabled() );
@@ -63,7 +60,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setEnabled_reset() throws BackingStoreException {
-    EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setEnabled( true );
     prefs.clearChanged();
 
@@ -75,8 +71,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setExcluded() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
-
     prefs.setExcluded( "/test", true );
 
     assertTrue( prefs.getExcluded( "/test" ) );
@@ -86,7 +80,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setExcluded_emptyList() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setExcluded( "/foo", true );
     prefs.clearChanged();
 
@@ -98,8 +91,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setExcluded_multiplePaths() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
-
     prefs.setExcluded( "/foo", true );
     prefs.setExcluded( "/bar", true );
 
@@ -110,8 +101,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setExcluded_unchanged() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
-
     prefs.setExcluded( "/test", false );
 
     assertFalse( prefs.getExcluded( "/test" ) );
@@ -120,7 +109,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void setExcluded_reset() throws BackingStoreException {
-    EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setExcluded( "/test", true );
     prefs.clearChanged();
 
@@ -132,7 +120,6 @@ public class EnablementPreferences_Test {
 
   @Test
   public void getExcluded_emptyPathIsAlwaysFalse() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setExcluded( "", true );
 
     boolean excluded = prefs.getExcluded( "" );
@@ -141,8 +128,26 @@ public class EnablementPreferences_Test {
   }
 
   @Test
+  public void getExcluded_emptyPathIsAlwaysFalse1() {
+    prefs.setExcluded( "", true );
+
+    List<String> excluded = prefs.getExcluded();
+
+    assertTrue( excluded.isEmpty() );
+  }
+
+  @Test
+  public void getExcluded_emptyPathIsAlwaysFalse2() {
+    prefs.setExcluded( "", true );
+    prefs.setExcluded( "/foo", true );
+
+    List<String> excluded = prefs.getExcluded();
+
+    assertEquals( 1, excluded.size() );
+  }
+
+  @Test
   public void clearChanged() {
-    EnablementPreferences prefs = new EnablementPreferences( node );
     prefs.setExcluded( "", true );
 
     prefs.clearChanged();
