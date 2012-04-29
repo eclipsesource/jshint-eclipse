@@ -10,6 +10,8 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.BackingStoreException;
@@ -34,7 +36,7 @@ public class EnablementPreferences_Test {
     EnablementPreferences prefs = new EnablementPreferences( node );
 
     assertFalse( prefs.getEnabled() );
-    assertFalse( prefs.getExcluded( "/test" ) );
+    assertTrue( prefs.getExcluded().isEmpty() );
     assertFalse( prefs.hasChanged() );
   }
 
@@ -80,6 +82,18 @@ public class EnablementPreferences_Test {
     assertTrue( prefs.getExcluded( "/test" ) );
     assertTrue( prefs.hasChanged() );
     assertTrue( new EnablementPreferences( node ).getExcluded( "/test" ) );
+  }
+
+  @Test
+  public void setExcluded_emptyList() {
+    EnablementPreferences prefs = new EnablementPreferences( node );
+    prefs.setExcluded( "/foo", true );
+    prefs.clearChanged();
+
+    prefs.setExcluded( Collections.<String>emptyList() );
+
+    assertTrue( prefs.getExcluded().isEmpty() );
+    assertTrue( prefs.hasChanged() );
   }
 
   @Test

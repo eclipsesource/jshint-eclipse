@@ -58,20 +58,16 @@ public class EnablementPreferences {
   }
 
   public boolean getExcluded( String resourcePath ) {
-    // projects have resource path == "", they can be disabled but not excluded
-    if( "".equals( resourcePath ) ) {
-      return false;
-    }
     List<String> excludedFiles = getExcluded();
     return excludedFiles.contains( resourcePath );
   }
 
-  private List<String> getExcluded() {
+  public List<String> getExcluded() {
     String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
     return decodePaths( value );
   }
 
-  private void setExcluded( List<String> excluded ) {
+  public void setExcluded( List<String> excluded ) {
     String value = encodePaths( excluded );
     if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
       if( DEF_EXCLUDED.equals( value ) ) {
@@ -109,7 +105,9 @@ public class EnablementPreferences {
   private static ArrayList<String> decodePaths( String encodedPaths ) {
     ArrayList<String> list = new ArrayList<String>();
     for( String path : encodedPaths.split( ":" ) ) {
-      list.add( path );
+      if( !path.isEmpty() ) {
+        list.add( path );
+      }
     }
     return list;
   }
