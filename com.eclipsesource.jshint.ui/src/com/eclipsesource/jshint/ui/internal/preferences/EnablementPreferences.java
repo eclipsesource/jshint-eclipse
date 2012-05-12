@@ -20,8 +20,10 @@ public class EnablementPreferences {
 
   private static final String KEY_ENABLED = "enabled";
   private static final String KEY_EXCLUDED = "excluded";
+  private static final String KEY_INCLUDED = "included";
   private static final boolean DEF_ENABLED = false;
   private static final String DEF_EXCLUDED = "";
+  private static final String DEF_INCLUDED = "";
 
   private final Preferences node;
   private boolean changed;
@@ -46,17 +48,54 @@ public class EnablementPreferences {
     return node.getBoolean( KEY_ENABLED, DEF_ENABLED );
   }
 
-  public void setExcluded( String resourcePath, boolean exclude ) {
-    List<String> excluded = getExcluded();
-    if( exclude && !excluded.contains( resourcePath ) ) {
-      excluded.add( resourcePath );
-    } else if( !exclude && excluded.contains( resourcePath ) ) {
-      excluded.remove( resourcePath );
+  public void setIncluded( String resourcePath, boolean included ) {
+    List<String> includedPaths = getIncludedPaths();
+    if( included && !includedPaths.contains( resourcePath ) ) {
+      includedPaths.add( resourcePath );
+    } else if( !included && includedPaths.contains( resourcePath ) ) {
+      includedPaths.remove( resourcePath );
     }
-    setExcluded( excluded );
+    setIncludedPaths( includedPaths );
   }
 
-  public void setExcluded( List<String> excluded ) {
+  public boolean getIncluded( String resourcePath ) {
+    List<String> enabledPaths = getIncludedPaths();
+    return enabledPaths.contains( resourcePath );
+  }
+
+  public void setIncludedPaths( List<String> includedPaths ) {
+    String value = PathEncoder.encodePaths( includedPaths );
+    if( !value.equals( node.get( KEY_INCLUDED, DEF_INCLUDED ) ) ) {
+      if( DEF_INCLUDED.equals( value ) ) {
+        node.remove( KEY_INCLUDED );
+      } else {
+        node.put( KEY_INCLUDED, value );
+      }
+      changed = true;
+    }
+  }
+
+  public List<String> getIncludedPaths() {
+    String value = node.get( KEY_INCLUDED, DEF_INCLUDED );
+    return PathEncoder.decodePaths( value );
+  }
+
+  public void setExcluded( String resourcePath, boolean excluded ) {
+    List<String> excludedPaths = getExcludedPaths();
+    if( excluded && !excludedPaths.contains( resourcePath ) ) {
+      excludedPaths.add( resourcePath );
+    } else if( !excluded && excludedPaths.contains( resourcePath ) ) {
+      excludedPaths.remove( resourcePath );
+    }
+    setExcludedPaths( excludedPaths );
+  }
+
+  public boolean getExcluded( String resourcePath ) {
+    List<String> excludedFiles = getExcludedPaths();
+    return excludedFiles.contains( resourcePath );
+  }
+
+  public void setExcludedPaths( List<String> excluded ) {
     String value = PathEncoder.encodePaths( excluded );
     if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
       if( DEF_EXCLUDED.equals( value ) ) {
@@ -68,12 +107,7 @@ public class EnablementPreferences {
     }
   }
 
-  public boolean getExcluded( String resourcePath ) {
-    List<String> excludedFiles = getExcluded();
-    return excludedFiles.contains( resourcePath );
-  }
-
-  public List<String> getExcluded() {
+  public List<String> getExcludedPaths() {
     String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
     return PathEncoder.decodePaths( value );
   }
