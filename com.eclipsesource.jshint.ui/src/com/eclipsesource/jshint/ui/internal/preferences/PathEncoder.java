@@ -19,7 +19,7 @@ public class PathEncoder {
   public static String encodePaths( List<String> paths ) {
     StringBuilder builder = new StringBuilder();
     for( String path : paths ) {
-      if( !path.isEmpty() ) {
+      if( path.length() > 0 ) {
         if( builder.length() > 0 ) {
           builder.append( ':' );
         }
@@ -32,7 +32,7 @@ public class PathEncoder {
   public static ArrayList<String> decodePaths( String encodedPaths ) {
     ArrayList<String> list = new ArrayList<String>();
     for( String path : encodedPaths.split( ":" ) ) {
-      if( !path.isEmpty() ) {
+      if( path.length() > 0 ) {
         list.add( path );
       }
     }
