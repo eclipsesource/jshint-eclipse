@@ -13,10 +13,7 @@ package com.eclipsesource.jshint.ui.internal.preferences.ui;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.osgi.service.prefs.Preferences;
@@ -25,21 +22,18 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {
 
-  private Button enablementCheckbox;
-  private Button projectSpecificCheckbox;
-  private OptionsView optionsView;
+  private IncludesView includesView;
 
   @Override
   public boolean performOk() {
     try {
-      boolean preferencesChanged = storePreferences();
-      boolean builderChanged = setBuilderEnablement();
-      if( preferencesChanged || builderChanged ) {
+      if( storePreferences() ) {
+        boolean enabled = new EnablementPreferences( getPreferences() ).getEnabled();
+        setBuilderEnabled( enabled );
         triggerRebuild();
       }
     } catch( CoreException exception ) {
@@ -53,76 +47,33 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   @Override
   protected void performDefaults() {
     super.performDefaults();
-    enablementCheckbox.setSelection( false );
-    projectSpecificCheckbox.setSelection( false );
-    optionsView.loadDefaults();
+    includesView.loadDefaults();
   }
 
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = LayoutUtil.createMainComposite( parent );
-    addEnablementSection( composite );
-    optionsView = new OptionsView( composite, SWT.NONE );
-    optionsView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    includesView = new IncludesView( composite, SWT.NONE, getResource().getProject() );
+    includesView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
     loadPreferences();
-    updateEnablement();
     return composite;
   }
 
   private void loadPreferences() {
     Preferences node = getPreferences();
     EnablementPreferences enablePreferences = new EnablementPreferences( node );
-    OptionsPreferences optionsPreferences = new OptionsPreferences( node );
-    enablementCheckbox.setSelection( enablePreferences.getEnabled() );
-    projectSpecificCheckbox.setSelection( optionsPreferences.getProjectSpecific() );
-    optionsView.loadPreferences( optionsPreferences );
-  }
-
-  private void addEnablementSection( Composite parent ) {
-    Composite composite = LayoutUtil.createDefaultComposite( parent );
-    enablementCheckbox = new Button( composite, SWT.CHECK );
-    enablementCheckbox.setText( "Enable JSHint for this project" );
-    enablementCheckbox.setLayoutData( createGridDataForCheckbox() );
-    enablementCheckbox.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        updateEnablement();
-      }
-    } );
-    projectSpecificCheckbox = new Button( composite, SWT.CHECK );
-    projectSpecificCheckbox.setText( "Enable project specific settings" );
-    projectSpecificCheckbox.setLayoutData( createGridDataForCheckbox() );
-    projectSpecificCheckbox.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        updateEnablement();
-      }
-    } );
-  }
-
-  private void updateEnablement() {
-    boolean enabled = enablementCheckbox.getSelection();
-    boolean specific = projectSpecificCheckbox.getSelection();
-    projectSpecificCheckbox.setEnabled( enabled );
-    optionsView.setEnabled( enabled && specific );
+    includesView.loadPreferences( enablePreferences );
   }
 
   private boolean storePreferences() throws CoreException {
     Preferences node = getPreferences();
     EnablementPreferences enablePreferences = new EnablementPreferences( node );
-    enablePreferences.setEnabled( enablementCheckbox.getSelection() );
-    OptionsPreferences optionsPreferences = new OptionsPreferences( node );
-    optionsPreferences.setProjectSpecific( projectSpecificCheckbox.getSelection() );
-    optionsView.storePreferences( optionsPreferences );
-    boolean changed = enablePreferences.hasChanged() || optionsPreferences.hasChanged();
-    if( changed ) {
+    includesView.storePreferences( enablePreferences );
+    if( enablePreferences.hasChanged() ) {
       savePreferences();
+      return true;
     }
-    return changed;
-  }
-
-  private boolean setBuilderEnablement() throws CoreException {
-    return setBuilderEnabled( enablementCheckbox.getSelection() );
+    return false;
   }
 
   private boolean setBuilderEnabled( boolean enabled ) throws CoreException {
@@ -137,10 +88,6 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   private void triggerRebuild() throws CoreException {
     IProject project = getResource().getProject();
     BuilderUtil.triggerClean( project, JSHintBuilder.ID );
-  }
-
-  private static GridData createGridDataForCheckbox() {
-    return new GridData( SWT.FILL, SWT.CENTER, true, false );
   }
 
 }
