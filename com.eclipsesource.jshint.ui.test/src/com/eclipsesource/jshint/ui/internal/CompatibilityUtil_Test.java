@@ -75,7 +75,6 @@ public class CompatibilityUtil_Test {
 
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
-    assertTrue( enablePrefs.getEnabled() );
     assertTrue( enablePrefs.getExcluded( "js/test.js" ) );
     assertFalse( enablePrefs.getExcluded( "js/foo.js" ) );
     OptionsPreferences optionsPrefs = new OptionsPreferences( node );

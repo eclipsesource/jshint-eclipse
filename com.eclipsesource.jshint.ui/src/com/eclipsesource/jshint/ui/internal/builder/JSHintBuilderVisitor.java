@@ -41,17 +41,20 @@ import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
+import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
 
 
 class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private final JSHint checker;
   private final EnablementPreferences preferences;
+  private final ResourceSelector selector;
 
   public JSHintBuilderVisitor( IProject project ) throws CoreException {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     preferences = new EnablementPreferences( node );
-    checker = preferences.getEnabled() ? createJSHint( getConfiguration( project ) ) : null;
+    selector = new ResourceSelector( project );
+    checker = selector.includeProject() ? createJSHint( getConfiguration( project ) ) : null;
   }
 
   public boolean visit( IResourceDelta delta ) throws CoreException {
@@ -61,7 +64,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   public boolean visit( IResource resource ) throws CoreException {
     boolean descend = false;
-    if( resource.exists() && preferences.getEnabled() ) {
+    if( resource.exists() && selector.includeProject() ) {
       if( resource.getType() != IResource.FILE ) {
         descend = considerContainer( resource );
       } else {

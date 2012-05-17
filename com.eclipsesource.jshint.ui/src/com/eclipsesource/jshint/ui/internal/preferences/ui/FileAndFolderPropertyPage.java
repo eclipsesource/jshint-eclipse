@@ -23,6 +23,7 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
 
 
 public class FileAndFolderPropertyPage extends AbstractPropertyPage {
@@ -88,8 +89,8 @@ public class FileAndFolderPropertyPage extends AbstractPropertyPage {
     Composite composite = LayoutUtil.createDefaultComposite( parent );
     Label label = new Label( composite, SWT.NONE );
     label.setLayoutData( LayoutUtil.createSpanGridData() );
-    boolean enabled = preferences.getEnabled();
-    label.setText( "The project has JSHint " + ( enabled ? "enabled" : "disabled" ) );
+    boolean enabled = new ResourceSelector( getResource().getProject() ).includeProject();
+    label.setText( "JSHint is " + ( enabled ? "enabled" : "disabled" ) + " for this project" );
     excludeCheckbox = new Button( composite, SWT.CHECK );
     String fileOrFolder = getResource().getType() == IResource.FILE ? "file" : "folder";
     excludeCheckbox.setText( "Exclude this " + fileOrFolder + " from jshint validation" );

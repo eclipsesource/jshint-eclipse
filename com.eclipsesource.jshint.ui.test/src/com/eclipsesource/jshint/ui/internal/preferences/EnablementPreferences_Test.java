@@ -36,44 +36,9 @@ public class EnablementPreferences_Test {
 
   @Test
   public void defaults() {
-    assertFalse( prefs.getEnabled() );
     assertTrue( prefs.getIncludedPaths().isEmpty() );
     assertTrue( prefs.getExcludedPaths().isEmpty() );
     assertFalse( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setEnabled() {
-    prefs.setEnabled( true );
-
-    assertTrue( prefs.getEnabled() );
-    assertTrue( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setEnabled_unchanged() {
-    prefs.setEnabled( false );
-
-    assertFalse( prefs.getEnabled() );
-    assertFalse( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setEnabled_writeThrough() {
-    prefs.setEnabled( true );
-
-    assertTrue( new EnablementPreferences( node ).getEnabled() );
-  }
-
-  @Test
-  public void setEnabled_reset() {
-    prefs.setEnabled( true );
-    prefs.clearChanged();
-
-    prefs.setEnabled( false );
-
-    assertTrue( prefs.hasChanged() );
-    assertTrue( isEmpty( node ) );
   }
 
   @Test

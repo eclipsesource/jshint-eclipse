@@ -18,10 +18,8 @@ import org.osgi.service.prefs.Preferences;
 
 public class EnablementPreferences {
 
-  private static final String KEY_ENABLED = "enabled";
   private static final String KEY_EXCLUDED = "excluded";
   private static final String KEY_INCLUDED = "included";
-  private static final boolean DEF_ENABLED = false;
   private static final String DEF_EXCLUDED = "";
   private static final String DEF_INCLUDED = "";
 
@@ -31,21 +29,6 @@ public class EnablementPreferences {
   public EnablementPreferences( Preferences node ) {
     this.node = node;
     changed = false;
-  }
-
-  public void setEnabled( boolean enabled ) {
-    if( enabled != node.getBoolean( KEY_ENABLED, DEF_ENABLED ) ) {
-      if( enabled == DEF_ENABLED ) {
-        node.remove( KEY_ENABLED );
-      } else {
-        node.putBoolean( KEY_ENABLED, enabled );
-      }
-      changed = true;
-    }
-  }
-
-  public boolean getEnabled() {
-    return node.getBoolean( KEY_ENABLED, DEF_ENABLED );
   }
 
   public void setIncluded( String resourcePath, boolean included ) {
