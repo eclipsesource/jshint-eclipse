@@ -31,33 +31,6 @@
             </adapt>
          </enabledWhen>
       </page>
-      <page
-            id="com.eclipsesource.jshint.ui.properties.filePropertyPage"
-            class="com.eclipsesource.jshint.ui.internal.preferences.ui.FileAndFolderPropertyPage"
-            name="JSHint"
-            nameFilter="*.js">
-         <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IResource">
-               <instanceof
-                     value="org.eclipse.core.resources.IFile">
-               </instanceof>
-            </adapt>
-         </enabledWhen>
-      </page>
-      <page
-            id="com.eclipsesource.jshint.ui.properties.folderPropertyPage"
-            class="com.eclipsesource.jshint.ui.internal.preferences.ui.FileAndFolderPropertyPage"
-            name="JSHint">
-         <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IResource">
-               <instanceof
-                     value="org.eclipse.core.resources.IFolder">
-               </instanceof>
-            </adapt>
-         </enabledWhen>
-      </page>
    </extension>
    <extension
          point="org.eclipse.ui.preferencePages">

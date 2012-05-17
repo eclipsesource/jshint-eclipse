@@ -33,7 +33,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   public boolean performOk() {
     try {
       if( storePreferences() ) {
-        boolean enabled = new ResourceSelector( getResource().getProject() ).includeProject();
+        boolean enabled = new ResourceSelector( getResource().getProject() ).isProjectIncluded();
         setBuilderEnabled( enabled );
         triggerRebuild();
       }

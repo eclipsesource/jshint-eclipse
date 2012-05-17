@@ -27,7 +27,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.Preferences;
 
@@ -47,14 +46,13 @@ import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
 class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private final JSHint checker;
-  private final EnablementPreferences preferences;
   private final ResourceSelector selector;
 
   public JSHintBuilderVisitor( IProject project ) throws CoreException {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
-    preferences = new EnablementPreferences( node );
+    new EnablementPreferences( node );
     selector = new ResourceSelector( project );
-    checker = selector.includeProject() ? createJSHint( getConfiguration( project ) ) : null;
+    checker = selector.isProjectIncluded() ? createJSHint( getConfiguration( project ) ) : null;
   }
 
   public boolean visit( IResourceDelta delta ) throws CoreException {
@@ -64,12 +62,12 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   public boolean visit( IResource resource ) throws CoreException {
     boolean descend = false;
-    if( resource.exists() && selector.includeProject() ) {
+    if( resource.exists() && selector.isProjectIncluded() ) {
       if( resource.getType() != IResource.FILE ) {
-        descend = considerContainer( resource );
+        descend = selector.isIncluded( resource );
       } else {
         clean( resource );
-        if( considerFile( resource ) ) {
+        if( selector.isIncluded( resource ) ) {
           check( (IFile)resource );
         }
         descend = true;
@@ -107,27 +105,6 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     } catch( CoreExceptionWrapper wrapper ) {
       throw (CoreException)wrapper.getCause();
     }
-  }
-
-  private boolean considerContainer( IResource resource ) {
-    if( preferences.getExcluded( EnablementPreferences.getResourcePath( resource ) ) ) {
-      return false;
-    }
-    Path binPath = new Path( "bin" );
-    if( binPath.isPrefixOf( resource.getProjectRelativePath() ) ) {
-      return false;
-    }
-    return true;
-  }
-
-  private boolean considerFile( IResource resource ) {
-    if( !"js".equals( resource.getFileExtension() ) ) {
-      return false;
-    }
-    if( preferences.getExcluded( EnablementPreferences.getResourcePath( resource ) ) ) {
-      return false;
-    }
-    return true;
   }
 
   private static Configuration getConfiguration( IProject project ) {

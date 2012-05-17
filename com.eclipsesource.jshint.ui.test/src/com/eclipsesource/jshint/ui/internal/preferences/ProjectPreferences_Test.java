@@ -13,7 +13,6 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +31,7 @@ public class ProjectPreferences_Test {
   private Preferences node;
 
   @Before
-  public void setUp() throws CoreException {
+  public void setUp() {
     project = TestUtil.createProject( "test" );
     file = TestUtil.createFile( project, "/test.js", "test content" );
     node = PreferencesFactory.getProjectPreferences( project );
@@ -47,7 +46,7 @@ public class ProjectPreferences_Test {
   public void defaultPrefsForEmptyProject() {
     EnablementPreferences prefs = new EnablementPreferences( node );
 
-    assertFalse( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
+    assertFalse( prefs.getIncluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
   }
 
   @Test
@@ -56,8 +55,8 @@ public class ProjectPreferences_Test {
 
     EnablementPreferences prefs = new EnablementPreferences( node );
 
-    assertTrue( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
-    assertFalse( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/foo.js" ) ) ) );
+    assertTrue( prefs.getIncluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
+    assertFalse( prefs.getIncluded( EnablementPreferences.getResourcePath( project.getFile( "js/foo.js" ) ) ) );
     assertFalse( prefs.hasChanged() );
   }
 
