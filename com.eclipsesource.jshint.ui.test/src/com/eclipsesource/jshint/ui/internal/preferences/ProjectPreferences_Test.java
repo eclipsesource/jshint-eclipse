@@ -10,13 +10,11 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
-import java.io.ByteArrayInputStream;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
@@ -35,16 +33,14 @@ public class ProjectPreferences_Test {
 
   @Before
   public void setUp() throws CoreException {
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    project = workspace.getRoot().getProject( "test" );
-    if( project.exists() ) {
-      project.delete( true, null );
-    }
-    project.create( null );
-    project.open( null );
-    file = project.getFile( "/test.js" );
-    file.create( new ByteArrayInputStream( "test".getBytes() ), true, null );
+    project = TestUtil.createProject( "test" );
+    file = TestUtil.createFile( project, "/test.js", "test content" );
     node = PreferencesFactory.getProjectPreferences( project );
+  }
+
+  @After
+  public void tearDown() {
+    TestUtil.deleteProject( project );
   }
 
   @Test

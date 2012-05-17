@@ -13,9 +13,6 @@ package com.eclipsesource.jshint.ui.internal;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,18 +33,13 @@ public class CompatibilityUtil_Test {
   private IProject project;
 
   @Before
-  public void setUp() throws CoreException {
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    project = workspace.getRoot().getProject( "test" );
-    project.create( null );
-    project.open( null );
+  public void setUp() {
+    project = TestUtil.createProject( "test" );
   }
 
   @After
-  public void tearDown() throws CoreException {
-    if( project.exists() ) {
-      project.delete( true, null );
-    }
+  public void tearDown() {
+    TestUtil.deleteProject( project );
   }
 
   @Test

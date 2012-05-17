@@ -11,6 +11,7 @@
 package com.eclipsesource.jshint.ui.test;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 
@@ -31,6 +34,46 @@ public class TestUtil {
   public static final String NEW_SETTINGS_FILE = "com.eclipsesource.jshint.ui.prefs";
 
   private TestUtil() {
+  }
+
+  public static IProject createProject( String name ) {
+    IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    IProject project = workspace.getRoot().getProject( name );
+    try {
+      project.create( null );
+      project.open( null );
+    } catch( CoreException exception ) {
+      throw new RuntimeException( exception );
+    }
+    return project;
+  }
+
+  public static void deleteProject( IProject project ) {
+    if( project != null && project.exists() ) {
+      try {
+        project.delete( true, null );
+      } catch( CoreException exception ) {
+        throw new RuntimeException( exception );
+      }
+    }
+  }
+
+  public static IFolder createFolder( IProject project, String path ) {
+    IFolder folder = project.getFolder( path );
+    try {
+      folder.create( false, false, null );
+    } catch( CoreException exception ) {
+      throw new RuntimeException( exception );
+    }
+    return folder;
+  }
+
+  public static IFile createFile( IProject project, String name, String content )
+      throws CoreException
+  {
+    IFile file = project.getFile( name );
+    file.create( new ByteArrayInputStream( content.getBytes() ), true, null );
+    return file;
   }
 
   public static String readContent( IFile resource ) throws CoreException, IOException {

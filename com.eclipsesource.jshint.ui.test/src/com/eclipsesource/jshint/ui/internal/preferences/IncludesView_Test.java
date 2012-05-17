@@ -12,11 +12,7 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 
 import java.util.List;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -29,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.eclipsesource.jshint.ui.internal.preferences.ui.IncludesView;
+import com.eclipsesource.jshint.ui.test.TestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -44,13 +41,13 @@ public class IncludesView_Test {
   public void setUp() {
     Display display = Display.getDefault();
     parent = new Shell( display );
-    project = createProject( "test" );
+    project = TestUtil.createProject( "test" );
     preferences = new EnablementPreferences( new PreferencesMock( "test" ) );
   }
 
   @After
   public void tearDown() {
-    deleteProject( project );
+    TestUtil.deleteProject( project );
     parent.dispose();
   }
 
@@ -165,12 +162,12 @@ public class IncludesView_Test {
   }
 
   private void createSampleFolders() {
-    createFolder( project, "/a" );
-    createFolder( project, "/a/1" );
-    createFolder( project, "/a/2" );
-    createFolder( project, "/b" );
-    createFolder( project, "/b/1" );
-    createFolder( project, "/b/2" );
+    TestUtil.createFolder( project, "/a" );
+    TestUtil.createFolder( project, "/a/1" );
+    TestUtil.createFolder( project, "/a/2" );
+    TestUtil.createFolder( project, "/b" );
+    TestUtil.createFolder( project, "/b/1" );
+    TestUtil.createFolder( project, "/b/2" );
   }
 
   private static Tree findTree( Composite parent ) {
@@ -194,38 +191,6 @@ public class IncludesView_Test {
     } else {
       return "[ ]";
     }
-  }
-
-  private static IProject createProject( String name ) {
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    IProject project = workspace.getRoot().getProject( name );
-    try {
-      project.create( null );
-      project.open( null );
-    } catch( CoreException exception ) {
-      throw new RuntimeException( exception );
-    }
-    return project;
-  }
-
-  private static void deleteProject( IProject project ) {
-    if( project != null && project.exists() ) {
-      try {
-        project.delete( true, null );
-      } catch( CoreException exception ) {
-        throw new RuntimeException( exception );
-      }
-    }
-  }
-
-  private static IFolder createFolder( IProject project, String path ) {
-    IFolder folder = project.getFolder( path );
-    try {
-      folder.create( false, false, null );
-    } catch( CoreException exception ) {
-      throw new RuntimeException( exception );
-    }
-    return folder;
   }
 
 }
