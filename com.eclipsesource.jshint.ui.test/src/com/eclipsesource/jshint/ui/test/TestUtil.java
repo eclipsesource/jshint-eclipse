@@ -68,11 +68,13 @@ public class TestUtil {
     return folder;
   }
 
-  public static IFile createFile( IProject project, String name, String content )
-      throws CoreException
-  {
+  public static IFile createFile( IProject project, String name, String content ) {
     IFile file = project.getFile( name );
-    file.create( new ByteArrayInputStream( content.getBytes() ), true, null );
+    try {
+      file.create( new ByteArrayInputStream( content.getBytes() ), true, null );
+    } catch( CoreException exception ) {
+      throw new RuntimeException( exception );
+    }
     return file;
   }
 

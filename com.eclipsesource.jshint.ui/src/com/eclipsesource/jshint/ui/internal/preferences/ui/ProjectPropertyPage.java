@@ -22,6 +22,7 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {
@@ -32,7 +33,7 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
   public boolean performOk() {
     try {
       if( storePreferences() ) {
-        boolean enabled = new EnablementPreferences( getPreferences() ).getEnabled();
+        boolean enabled = new ResourceSelector( getResource().getProject() ).isProjectIncluded();
         setBuilderEnabled( enabled );
         triggerRebuild();
       }
