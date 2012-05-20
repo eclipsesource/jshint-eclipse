@@ -1,0 +1,14 @@
+---
+layout: post
+title: Coming soon … version 0.9.4
+---
+
+It has been quiet for some time, but the next version of jshin-eclipse is in the
+works and will be published shortly.
+
+JSHint 0.9.4 will provide a new way of selecting the files and folders to validate,
+based on include and exclude patterns.
+
+Of course, the built-in jshint will be updated to the newest jshint version r07.
+A fix for a [bug](https://github.com/eclipsesource/jshint-eclipse/issues/13) that
+prevented jshint-eclipse from running on Eclipse 3.6 is also included.
