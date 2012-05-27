@@ -31,23 +31,8 @@ public class EnablementPreferences {
     changed = false;
   }
 
-  public void setIncluded( String resourcePath, boolean included ) {
-    List<String> includedPaths = getIncludedPaths();
-    if( included && !includedPaths.contains( resourcePath ) ) {
-      includedPaths.add( resourcePath );
-    } else if( !included && includedPaths.contains( resourcePath ) ) {
-      includedPaths.remove( resourcePath );
-    }
-    setIncludedPaths( includedPaths );
-  }
-
-  public boolean getIncluded( String resourcePath ) {
-    List<String> enabledPaths = getIncludedPaths();
-    return enabledPaths.contains( resourcePath );
-  }
-
-  public void setIncludedPaths( List<String> includedPaths ) {
-    String value = PathEncoder.encodePaths( includedPaths );
+  public void setIncludePatterns( List<String> patterns ) {
+    String value = PathEncoder.encodePaths( patterns );
     if( !value.equals( node.get( KEY_INCLUDED, DEF_INCLUDED ) ) ) {
       if( DEF_INCLUDED.equals( value ) ) {
         node.remove( KEY_INCLUDED );
@@ -58,28 +43,13 @@ public class EnablementPreferences {
     }
   }
 
-  public List<String> getIncludedPaths() {
+  public List<String> getIncludePatterns() {
     String value = node.get( KEY_INCLUDED, DEF_INCLUDED );
     return PathEncoder.decodePaths( value );
   }
 
-  public void setExcluded( String resourcePath, boolean excluded ) {
-    List<String> excludedPaths = getExcludedPaths();
-    if( excluded && !excludedPaths.contains( resourcePath ) ) {
-      excludedPaths.add( resourcePath );
-    } else if( !excluded && excludedPaths.contains( resourcePath ) ) {
-      excludedPaths.remove( resourcePath );
-    }
-    setExcludedPaths( excludedPaths );
-  }
-
-  public boolean getExcluded( String resourcePath ) {
-    List<String> excludedFiles = getExcludedPaths();
-    return excludedFiles.contains( resourcePath );
-  }
-
-  public void setExcludedPaths( List<String> excluded ) {
-    String value = PathEncoder.encodePaths( excluded );
+  public void setExcludePatterns( List<String> patterns ) {
+    String value = PathEncoder.encodePaths( patterns );
     if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
       if( DEF_EXCLUDED.equals( value ) ) {
         node.remove( KEY_EXCLUDED );
@@ -90,7 +60,7 @@ public class EnablementPreferences {
     }
   }
 
-  public List<String> getExcludedPaths() {
+  public List<String> getExcludePatterns() {
     String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
     return PathEncoder.decodePaths( value );
   }

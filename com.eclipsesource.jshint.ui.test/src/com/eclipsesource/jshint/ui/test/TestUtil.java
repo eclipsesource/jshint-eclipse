@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -125,6 +127,18 @@ public class TestUtil {
       folder.create( true, true, null );
     }
     return folder;
+  }
+
+  public static String[] array( String ... strings ) {
+    return strings;
+  }
+
+  public static List<String> list( String ... strings ) {
+    ArrayList<String> list = new ArrayList<String>();
+    for( String string : strings ) {
+      list.add( string );
+    }
+    return list;
   }
 
   private static String readContent( InputStream inputStream, String charset )

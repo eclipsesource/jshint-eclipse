@@ -19,6 +19,9 @@ import org.junit.Test;
 
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
+import static com.eclipsesource.jshint.ui.test.TestUtil.array;
+import static com.eclipsesource.jshint.ui.test.TestUtil.list;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -48,7 +51,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void isProjectIncluded_trueWithIncludePaths() {
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertTrue( selector.isProjectIncluded() );
   }
@@ -60,7 +63,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void isIncluded_project_trueWithIncludePaths() {
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertTrue( selector.isIncluded( project ) );
   }
@@ -75,7 +78,7 @@ public class ResourceSelector_Test {
   @Test
   public void isIncluded_folder_directlyIncluded() {
     IFolder folder = TestUtil.createFolder( project, "foo" );
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertTrue( selector.isIncluded( folder ) );
   }
@@ -84,7 +87,7 @@ public class ResourceSelector_Test {
   public void isIncluded_folder_parentIncluded() {
     TestUtil.createFolder( project, "foo" );
     IFolder folder = TestUtil.createFolder( project, "foo/bar" );
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertTrue( selector.isIncluded( folder ) );
   }
@@ -93,7 +96,7 @@ public class ResourceSelector_Test {
   public void isIncluded_folder_childIncluded() {
     IFolder folder = TestUtil.createFolder( project, "foo" );
     TestUtil.createFolder( project, "foo/bar" );
-    preferences.setIncluded( "foo/bar", true );
+    preferences.setIncludePatterns( list( "foo/bar" ) );
 
     assertTrue( selector.isIncluded( folder ) );
   }
@@ -109,7 +112,7 @@ public class ResourceSelector_Test {
   public void isIncluded_file_parentIncluded() {
     TestUtil.createFolder( project, "foo" );
     IFile file = TestUtil.createFile( project, "foo/test.js", "content" );
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertTrue( selector.isIncluded( file ) );
   }
@@ -119,7 +122,7 @@ public class ResourceSelector_Test {
     TestUtil.createFolder( project, "foo" );
     TestUtil.createFolder( project, "foo/bar" );
     IFile file = TestUtil.createFile( project, "foo/bar/test.js", "content" );
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertTrue( selector.isIncluded( file ) );
   }
@@ -128,9 +131,19 @@ public class ResourceSelector_Test {
   public void isIncluded_file_wrongFileExtension() {
     TestUtil.createFolder( project, "foo" );
     IFile file = TestUtil.createFile( project, "foo/test.txt", "content" );
-    preferences.setIncluded( "foo", true );
+    preferences.setIncludePatterns( list( "foo" ) );
 
     assertFalse( selector.isIncluded( file ) );
+  }
+
+  @Test
+  public void understandPathSegments() {
+    TestUtil.createFolder( project, "foo" );
+    IFolder folder = TestUtil.createFolder( project, "foo/bar" );
+    IFile file = TestUtil.createFile( project, "foo/bar/test.txt", "content" );
+
+    assertArrayEquals( array( "foo", "bar" ), folder.getProjectRelativePath().segments() );
+    assertArrayEquals( array( "foo", "bar", "test.txt" ), file.getProjectRelativePath().segments() );
   }
 
 }

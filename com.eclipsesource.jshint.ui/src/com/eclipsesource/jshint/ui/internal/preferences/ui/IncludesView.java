@@ -50,13 +50,13 @@ public class IncludesView extends Composite {
   public void loadPreferences( EnablementPreferences preferences ) {
     treeViewer.refresh();
     uncheckAllElements();
-    List<String> includes = preferences.getIncludedPaths();
+    List<String> includes = preferences.getIncludePatterns();
     checkIncludedElements( includes );
   }
 
   public void storePreferences( EnablementPreferences preferences ) {
     List<String> selectedPaths = getSelectedPaths();
-    preferences.setIncludedPaths( selectedPaths );
+    preferences.setIncludePatterns( selectedPaths );
   }
 
   @Override

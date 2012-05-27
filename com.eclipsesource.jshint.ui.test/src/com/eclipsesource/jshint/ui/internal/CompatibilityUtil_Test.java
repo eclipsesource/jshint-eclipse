@@ -75,8 +75,8 @@ public class CompatibilityUtil_Test {
 
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
-    assertTrue( enablePrefs.getExcluded( "js/test.js" ) );
-    assertFalse( enablePrefs.getExcluded( "js/foo.js" ) );
+    assertTrue( enablePrefs.getExcludePatterns().contains( "js/test.js" ) );
+    assertTrue( enablePrefs.getExcludePatterns().contains( "target" ) );
     OptionsPreferences optionsPrefs = new OptionsPreferences( node );
     assertEquals( "org: true, com: false", optionsPrefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", optionsPrefs.getOptions() );

@@ -42,12 +42,12 @@ public class ResourceSelector {
   }
 
   public boolean isProjectIncluded() {
-    return !preferences.getIncludedPaths().isEmpty();
+    return !preferences.getIncludePatterns().isEmpty();
   }
 
   private boolean isPrefixPathIncluded( IResource resource ) {
     IPath projectRelativePath = resource.getProjectRelativePath();
-    List<String> includedPaths = preferences.getIncludedPaths();
+    List<String> includedPaths = preferences.getIncludePatterns();
     for( String path : includedPaths ) {
       if( new Path( path ).isPrefixOf( projectRelativePath ) ) {
         return true;
@@ -58,7 +58,7 @@ public class ResourceSelector {
 
   private boolean isChildPathIncluded( IResource resource ) {
     IPath projectRelativePath = resource.getProjectRelativePath();
-    List<String> includedPaths = preferences.getIncludedPaths();
+    List<String> includedPaths = preferences.getIncludePatterns();
     for( String path : includedPaths ) {
       if( projectRelativePath.isPrefixOf( new Path( path ) ) ) {
         return true;

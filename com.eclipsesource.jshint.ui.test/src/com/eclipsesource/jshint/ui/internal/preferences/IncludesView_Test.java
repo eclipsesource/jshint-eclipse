@@ -27,6 +27,7 @@ import org.junit.Test;
 import com.eclipsesource.jshint.ui.internal.preferences.ui.IncludesView;
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
+import static com.eclipsesource.jshint.ui.test.TestUtil.list;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -109,8 +110,7 @@ public class IncludesView_Test {
   @Test
   public void loadPreferences() {
     createSampleFolders();
-    preferences.setIncluded( "a", true );
-    preferences.setIncluded( "b/1", true );
+    preferences.setIncludePatterns( list( "a", "b/1" ) );
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
 
     view.loadPreferences( preferences );
@@ -128,13 +128,10 @@ public class IncludesView_Test {
   public void loadPreferences_changed() {
     createSampleFolders();
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
-    preferences.setIncluded( "a", true );
-    preferences.setIncluded( "b/1", true );
+    preferences.setIncludePatterns( list( "a", "b/1" ) );
     view.loadPreferences( preferences );
 
-    preferences.setIncluded( "a", false );
-    preferences.setIncluded( "b/1", false );
-    preferences.setIncluded( "a/1", true );
+    preferences.setIncludePatterns( list( "a/1" ) );
     view.loadPreferences( preferences );
 
     Tree tree = findTree( view );
@@ -156,7 +153,7 @@ public class IncludesView_Test {
 
     view.storePreferences( preferences );
 
-    List<String> includedPaths = preferences.getIncludedPaths();
+    List<String> includedPaths = preferences.getIncludePatterns();
     assertTrue( includedPaths.contains( "a" ) );
     assertTrue( includedPaths.contains( "b/1" ) );
   }
