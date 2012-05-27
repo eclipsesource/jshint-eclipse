@@ -45,7 +45,7 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "r06";
+  private static final String DEFAULT_JSHINT_VERSION = "r07";
   private Function jshint;
   private Object opts;
 
