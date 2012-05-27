@@ -11,52 +11,66 @@
 package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
-import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
+import com.eclipsesource.jshint.ui.internal.preferences.PathPattern;
 
 
 public class IncludesView extends Composite {
 
-  private ContainerCheckedTreeViewer treeViewer;
-  private final IProject project;
+  private Table includeTable;
+  private Table excludeTable;
+  private Image fileImage;
 
   public IncludesView( Composite parent, int style, IProject project ) {
     super( parent, style );
-    super.setLayout( createGridLayout( 1, false ) );
-    this.project = project;
+    super.setLayout( createGridLayout( 2, false ) );
+    createImages();
     createIncludeControls();
+    createExcludeControls();
   }
 
   public void loadDefaults() {
-    treeViewer.refresh();
-    uncheckAllElements();
+    setPatterns( includeTable, Collections.<String>emptyList() );
+    setPatterns( excludeTable, Collections.<String>emptyList() );
   }
 
   public void loadPreferences( EnablementPreferences preferences ) {
-    treeViewer.refresh();
-    uncheckAllElements();
-    List<String> includes = preferences.getIncludePatterns();
-    checkIncludedElements( includes );
+    List<String> includePatterns = preferences.getIncludePatterns();
+    List<String> excludePatterns = preferences.getExcludePatterns();
+    setPatterns( includeTable, includePatterns );
+    setPatterns( excludeTable, excludePatterns );
   }
 
   public void storePreferences( EnablementPreferences preferences ) {
-    List<String> selectedPaths = getSelectedPaths();
-    preferences.setIncludePatterns( selectedPaths );
+    ArrayList<String> includePatterns = getPatterns( includeTable );
+    preferences.setIncludePatterns( includePatterns );
+    ArrayList<String> excludePatterns = getPatterns( excludeTable );
+    preferences.setExcludePatterns( excludePatterns );
   }
 
   @Override
@@ -64,78 +78,196 @@ public class IncludesView extends Composite {
     // prevent changing the default layout
   }
 
+  private void createImages() {
+    Display display = getDisplay();
+    ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
+    fileImage = images.getImageDescriptor( ISharedImages.IMG_OBJ_FILE ).createImage( display );
+  }
+
   private void createIncludeControls() {
-    new Label( this, SWT.NONE ).setText( "Enable JSHint for the selected directories:" );
-    treeViewer = new ContainerCheckedTreeViewer( this, SWT.SINGLE | SWT.BORDER );
-    treeViewer.getTree().setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    treeViewer.setContentProvider( new FoldersWorkbenchContentProvider() );
-    treeViewer.setLabelProvider( new WorkbenchLabelProvider() );
-    treeViewer.setInput( project );
-    treeViewer.expandToLevel( 2 );
+    Label label = new Label( this, SWT.NONE );
+    label.setText( "Enable JSHint for these files and folders:" );
+    label.setLayoutData( createHorSpanData() );
+    includeTable = new Table( this, SWT.BORDER );
+    includeTable.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    createButtonsBar( includeTable );
+    addListeners( includeTable );
   }
 
-  private void uncheckAllElements() {
-    ITreeContentProvider contentProvider = getContentProvider();
-    for( Object element : contentProvider.getElements( project ) ) {
-      uncheckAllElements( contentProvider, element );
+  private void createExcludeControls() {
+    Label label = new Label( this, SWT.NONE );
+    label.setText( "But exclude these files and folders from validation:" );
+    label.setLayoutData( createHorSpanData() );
+    excludeTable = new Table( this, SWT.BORDER );
+    excludeTable.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    createButtonsBar( excludeTable );
+    addListeners( excludeTable );
+  }
+
+  private void addListeners( final Table table ) {
+    table.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetDefaultSelected( SelectionEvent e ) {
+        editSelectedPattern( table );
+      }
+    } );
+  }
+
+  private void createButtonsBar( final Table table ) {
+    Composite buttons = new Composite( this, SWT.NONE );
+    buttons.setLayout( createButtonsLayout() );
+    createAddButton( table, buttons );
+    createEditButton( table, buttons );
+    createRemoveButton( table, buttons );
+  }
+
+  private void createAddButton( final Table table, Composite buttons ) {
+    Button button = new Button( buttons, SWT.PUSH );
+    button.setText( "Add" );
+    button.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent event ) {
+        addPattern( table );
+      }
+    } );
+  }
+
+  private void createEditButton( final Table table, Composite buttons ) {
+    final Button button = new Button( buttons, SWT.PUSH );
+    button.setText( "Edit" );
+    button.setEnabled( false );
+    button.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent event ) {
+        editSelectedPattern( table );
+      }
+    } );
+    table.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        button.setEnabled( table.getSelectionCount() > 0 );
+      }
+    } );
+  }
+
+  private void createRemoveButton( final Table table, Composite buttons ) {
+    final Button button = new Button( buttons, SWT.PUSH );
+    button.setText( "Remove" );
+    button.setEnabled( false );
+    button.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent event ) {
+        removeSelectedPattern( table );
+      }
+    } );
+    table.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        button.setEnabled( table.getSelectionCount() > 0 );
+      }
+    } );
+  }
+
+  private void addPattern( Table table ) {
+    String pattern = editPattern( table.getShell(), "" );
+    if( pattern != null ) {
+      ArrayList<String> patterns = getPatterns( table );
+      if( !patterns.contains( pattern ) ) {
+        patterns.add( pattern );
+      }
+      setPatterns( table, patterns );
+      select( table, pattern );
     }
   }
 
-  private void uncheckAllElements( ITreeContentProvider contentProvider, Object element ) {
-    treeViewer.setChecked( element, false );
-    for( Object child : contentProvider.getChildren( element ) ) {
-      uncheckAllElements( contentProvider, child );
-    }
-  }
-
-  private void checkIncludedElements( List<String> includes ) {
-    ITreeContentProvider contentProvider = getContentProvider();
-    for( Object element : contentProvider.getElements( project ) ) {
-      checkIncludedElements( contentProvider, includes, element );
-    }
-  }
-
-  private void checkIncludedElements( ITreeContentProvider contentProvider,
-                                      List<String> includes,
-                                      Object element )
-  {
-    String path = getElementPath( element );
-    if( includes.contains( path ) ) {
-      treeViewer.setChecked( element, true );
-    }
-    for( Object child : contentProvider.getChildren( element ) ) {
-      checkIncludedElements( contentProvider, includes, child );
-    }
-  }
-
-  private List<String> getSelectedPaths() {
-    ITreeContentProvider contentProvider = getContentProvider();
-    ArrayList<String> selected = new ArrayList<String>();
-    for( Object element : contentProvider.getElements( project ) ) {
-      getSelectedPaths( contentProvider, selected, element );
-    }
-    return selected;
-  }
-
-  private void getSelectedPaths( ITreeContentProvider contentProvider,
-                                 ArrayList<String> selected,
-                                 Object element )
-  {
-    if( treeViewer.getChecked( element ) && !treeViewer.getGrayed( element ) ) {
-      selected.add( getElementPath( element ) );
-    } else {
-      for( Object child : contentProvider.getChildren( element ) ) {
-        getSelectedPaths( contentProvider, selected, child );
+  private void editSelectedPattern( Table table ) {
+    TableItem[] selection = table.getSelection();
+    if( selection.length != 0 ) {
+      String oldPattern = selection[ 0 ].getText();
+      String newPattern = editPattern( table.getShell(), oldPattern );
+      if( newPattern != null ) {
+        ArrayList<String> patterns = getPatterns( table );
+        patterns.remove( oldPattern );
+        patterns.add( newPattern );
+        setPatterns( table, patterns );
+        select( table, newPattern );
       }
     }
   }
 
-  private ITreeContentProvider getContentProvider() {
-    return (ITreeContentProvider)treeViewer.getContentProvider();
+  private void removeSelectedPattern( Table table ) {
+    int selection = table.getSelectionIndex();
+    if( selection != -1 ) {
+      String pattern = table.getItem( selection ).getText();
+      ArrayList<String> patterns = getPatterns( table );
+      patterns.remove( pattern );
+      setPatterns( table, patterns );
+      select( table, selection );
+    }
   }
 
-  private static String getElementPath( Object element ) {
-    return EnablementPreferences.getResourcePath( (IResource)element );
+  private static String editPattern( Shell parent, String pattern ) {
+    String title = pattern.length() == 0 ? "Add" : "Edit";
+    String message = pattern.length() == 0 ? "New path" : "Edit path";
+    IInputValidator validator = new IInputValidator() {
+
+      public String isValid( String newText ) {
+        try {
+          PathPattern.create( newText );
+        } catch( IllegalArgumentException e ) {
+          return "Invalid pattern: " + e.getMessage();
+        }
+        return null;
+      }
+    };
+    InputDialog dialog = new InputDialog( parent, title, message, pattern, validator );
+    if( dialog.open() == Dialog.OK ) {
+      return dialog.getValue();
+    }
+    return null;
+  }
+
+  private static void select( Table table, String pattern ) {
+    TableItem[] items = table.getItems();
+    for( int i = 0; i < items.length; i++ ) {
+      if( items[ i ].getText().equals( pattern ) ) {
+        table.select( i );
+      }
+    }
+  }
+
+  private static void select( Table table, int selection ) {
+    int itemCount = table.getItemCount();
+    if( selection < itemCount ) {
+      table.select( selection );
+    } else if( itemCount > 0 ) {
+      table.select( itemCount - 1 );
+    }
+  }
+
+  private void setPatterns( Table table, List<String> patterns ) {
+    Collections.sort( patterns );
+    table.removeAll();
+    for( String pattern : patterns ) {
+      TableItem item = new TableItem( table, SWT.NONE );
+      item.setText( pattern );
+      item.setImage( fileImage );
+    }
+  }
+
+  private static ArrayList<String> getPatterns( Table table ) {
+    TableItem[] items = table.getItems();
+    ArrayList<String> result = new ArrayList<String>();
+    for( TableItem item : items ) {
+      result.add( item.getText() );
+    }
+    return result;
+  }
+
+  private static RowLayout createButtonsLayout() {
+    RowLayout layout = new RowLayout( SWT.VERTICAL );
+    layout.fill = true;
+    return layout;
   }
 
   private static GridLayout createGridLayout( int numColumns, boolean makeColumnsEqualWidth ) {
@@ -145,19 +277,10 @@ public class IncludesView extends Composite {
     return layout;
   }
 
-  private final class FoldersWorkbenchContentProvider extends BaseWorkbenchContentProvider {
-
-    @Override
-    public Object[] getChildren( Object element ) {
-      List<Object> result = new ArrayList<Object>();
-      Object[] children = super.getChildren( element );
-      for( Object child : children ) {
-        if( child instanceof IFolder ) {
-          result.add( child );
-        }
-      }
-      return result.toArray();
-    }
+  private static GridData createHorSpanData() {
+    GridData labelData = new GridData();
+    labelData.horizontalSpan = 2;
+    return labelData;
   }
 
 }

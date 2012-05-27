@@ -10,16 +10,14 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
-import java.util.List;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,141 +51,88 @@ public class IncludesView_Test {
   }
 
   @Test
-  public void treeEmptyByDefault() {
+  public void tablesEmptyByDefault() {
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
 
-    Tree tree = findTree( view );
-    assertEquals( 0, tree.getItemCount() );
-  }
-
-  @Test
-  public void treeItemTexts() {
-    createSampleFolders();
-
-    IncludesView view = new IncludesView( parent, SWT.NONE, project );
-
-    Tree tree = findTree( view );
-    assertEquals( 2, tree.getItemCount() );
-    assertEquals( "a", tree.getItem( 0 ).getText() );
-    assertEquals( "1", tree.getItem( 0 ).getItem( 0 ).getText() );
-    assertEquals( "2", tree.getItem( 0 ).getItem( 1 ).getText() );
-    assertEquals( "b", tree.getItem( 1 ).getText() );
-  }
-
-  @Test
-  public void treeItemsUncheckedByDefault() {
-    createSampleFolders();
-
-    IncludesView view = new IncludesView( parent, SWT.NONE, project );
-
-    Tree tree = findTree( view );
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ).getItem( 1 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 1 ) ) );
+    Table includeTable = findIncludeTable( view );
+    Table excludeTable = findExcludeTable( view );
+    assertEquals( 0, includeTable.getItemCount() );
+    assertEquals( 0, excludeTable.getItemCount() );
   }
 
   @Test
   public void loadDefaults() {
-    createSampleFolders();
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
-    Tree tree = findTree( view );
-    tree.getItem( 0 ).setChecked( true );
-    tree.getItem( 1 ).getItem( 0 ).setChecked( true );
+    Table includeTable = findIncludeTable( view );
+    Table excludeTable = findExcludeTable( view );
+    new TableItem( includeTable, SWT.NONE ).setText( "/foo/" );
+    new TableItem( excludeTable, SWT.NONE ).setText( "/bar/" );
 
     view.loadDefaults();
 
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ).getItem( 1 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 1 ) ) );
+    assertEquals( 0, includeTable.getItemCount() );
+    assertEquals( 0, excludeTable.getItemCount() );
   }
 
   @Test
   public void loadPreferences() {
-    createSampleFolders();
-    preferences.setIncludePatterns( list( "a", "b/1" ) );
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
+    preferences.setIncludePatterns( list( "/foo/" ) );
+    preferences.setExcludePatterns( list( "/bar/" ) );
 
     view.loadPreferences( preferences );
 
-    Tree tree = findTree( view );
-    assertEquals( "[x]", getItemState( tree.getItem( 0 ) ) );
-    assertEquals( "[x]", getItemState( tree.getItem( 0 ).getItem( 0 ) ) );
-    assertEquals( "[x]", getItemState( tree.getItem( 0 ).getItem( 1 ) ) );
-    assertEquals( "[-]", getItemState( tree.getItem( 1 ) ) );
-    assertEquals( "[x]", getItemState( tree.getItem( 1 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 1 ) ) );
+    Table includeTable = findIncludeTable( view );
+    Table excludeTable = findExcludeTable( view );
+    assertEquals( 1, includeTable.getItemCount() );
+    assertEquals( 1, excludeTable.getItemCount() );
+    assertEquals( "/foo/", includeTable.getItem( 0 ).getText() );
+    assertEquals( "/bar/", excludeTable.getItem( 0 ).getText() );
   }
 
   @Test
   public void loadPreferences_changed() {
-    createSampleFolders();
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
-    preferences.setIncludePatterns( list( "a", "b/1" ) );
+    preferences.setIncludePatterns( list( "/foo/" ) );
     view.loadPreferences( preferences );
 
-    preferences.setIncludePatterns( list( "a/1" ) );
+    preferences.setIncludePatterns( list( "/bar/" ) );
     view.loadPreferences( preferences );
 
-    Tree tree = findTree( view );
-    assertEquals( "[-]", getItemState( tree.getItem( 0 ) ) );
-    assertEquals( "[x]", getItemState( tree.getItem( 0 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 0 ).getItem( 1 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 0 ) ) );
-    assertEquals( "[ ]", getItemState( tree.getItem( 1 ).getItem( 1 ) ) );
+    Table table = findIncludeTable( view );
+    assertEquals( 1, table.getItemCount() );
+    assertEquals( "/bar/", table.getItem( 0 ).getText() );
   }
 
   @Test
   public void storePreferences() {
-    createSampleFolders();
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
-    Tree tree = findTree( view );
-    tree.getItem( 0 ).setChecked( true );
-    tree.getItem( 1 ).getItem( 0 ).setChecked( true );
+    Table includeTable = findIncludeTable( view );
+    Table excludeTable = findExcludeTable( view );
+    new TableItem( includeTable, SWT.NONE ).setText( "/foo/" );
+    new TableItem( excludeTable, SWT.NONE ).setText( "/bar/" );
 
     view.storePreferences( preferences );
 
-    List<String> includedPaths = preferences.getIncludePatterns();
-    assertTrue( includedPaths.contains( "a" ) );
-    assertTrue( includedPaths.contains( "b/1" ) );
+    assertTrue( preferences.getIncludePatterns().contains( "/foo/" ) );
+    assertTrue( preferences.getExcludePatterns().contains( "/bar/" ) );
   }
 
-  private void createSampleFolders() {
-    TestUtil.createFolder( project, "/a" );
-    TestUtil.createFolder( project, "/a/1" );
-    TestUtil.createFolder( project, "/a/2" );
-    TestUtil.createFolder( project, "/b" );
-    TestUtil.createFolder( project, "/b/1" );
-    TestUtil.createFolder( project, "/b/2" );
+  private static Table findIncludeTable( Composite parent ) {
+    return findTable( parent, 0 );
   }
 
-  private static Tree findTree( Composite parent ) {
-    Control[] children = parent.getChildren();
-    for( Control child : children ) {
-      if( child instanceof Tree ) {
-        Tree tree = (Tree)child;
-        return tree;
+  private static Table findExcludeTable( Composite parent ) {
+    return findTable( parent, 1 );
+  }
+
+  private static Table findTable( Composite parent, int number ) {
+    for( Control child : parent.getChildren() ) {
+      if( child instanceof Table && number-- == 0 ) {
+        return (Table)child;
       }
     }
     return null;
-  }
-
-  private static String getItemState( TreeItem item ) {
-    if( item.getChecked() ) {
-      if( item.getGrayed() ) {
-        return "[-]";
-      } else {
-        return "[x]";
-      }
-    } else {
-      return "[ ]";
-    }
   }
 
 }
