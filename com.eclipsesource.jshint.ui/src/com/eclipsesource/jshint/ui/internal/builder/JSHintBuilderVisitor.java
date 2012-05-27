@@ -52,7 +52,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     new EnablementPreferences( node );
     selector = new ResourceSelector( project );
-    checker = selector.isProjectIncluded() ? createJSHint( getConfiguration( project ) ) : null;
+    checker = selector.allowVisitProject() ? createJSHint( getConfiguration( project ) ) : null;
   }
 
   public boolean visit( IResourceDelta delta ) throws CoreException {
@@ -62,12 +62,12 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   public boolean visit( IResource resource ) throws CoreException {
     boolean descend = false;
-    if( resource.exists() && selector.isProjectIncluded() ) {
+    if( resource.exists() && selector.allowVisitProject() ) {
       if( resource.getType() != IResource.FILE ) {
-        descend = selector.isIncluded( resource );
+        descend = selector.allowVisitFolder( resource );
       } else {
         clean( resource );
-        if( selector.isIncluded( resource ) ) {
+        if( selector.allowVisitFile( resource ) ) {
           check( (IFile)resource );
         }
         descend = true;

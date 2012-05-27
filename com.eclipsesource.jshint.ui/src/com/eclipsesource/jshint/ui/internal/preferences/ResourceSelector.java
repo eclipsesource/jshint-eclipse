@@ -10,61 +10,68 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.osgi.service.prefs.Preferences;
 
 
 public class ResourceSelector {
 
-  private final EnablementPreferences preferences;
+  private final List<PathPattern> includePatterns;
+  private final List<PathPattern> excludePatterns;
 
   public ResourceSelector( IProject project ) {
     Preferences preferenceNode = PreferencesFactory.getProjectPreferences( project );
-    this.preferences = new EnablementPreferences( preferenceNode );
+    EnablementPreferences preferences = new EnablementPreferences( preferenceNode );
+    includePatterns = createPatterns( preferences.getIncludePatterns() );
+    excludePatterns = createPatterns( preferences.getExcludePatterns() );
   }
 
-  public boolean isIncluded( IResource resource ) {
-    boolean result = false;
-    int type = resource.getType();
-    if( type == IResource.PROJECT ) {
-      result = isProjectIncluded();
-    } else if( type ==  IResource.FOLDER ) {
-      result = isPrefixPathIncluded( resource ) || isChildPathIncluded( resource );
-    } else if( type ==  IResource.FILE ) {
-      result = "js".equals( resource.getFileExtension() ) && isPrefixPathIncluded( resource );
-    }
-    return result;
+  public boolean allowVisitProject() {
+    return !includePatterns.isEmpty();
   }
 
-  public boolean isProjectIncluded() {
-    return !preferences.getIncludePatterns().isEmpty();
+  public boolean allowVisitFolder( IResource resource ) {
+    return !includePatterns.isEmpty();
   }
 
-  private boolean isPrefixPathIncluded( IResource resource ) {
-    IPath projectRelativePath = resource.getProjectRelativePath();
-    List<String> includedPaths = preferences.getIncludePatterns();
-    for( String path : includedPaths ) {
-      if( new Path( path ).isPrefixOf( projectRelativePath ) ) {
-        return true;
+  public boolean allowVisitFile( IResource resource ) {
+    String[] pathSegments = resource.getParent().getProjectRelativePath().segments();
+    String fileName = resource.getName();
+    return isFileIncluded( pathSegments, fileName ) && !isFileExcluded( pathSegments, fileName );
+  }
+
+  private boolean isFileIncluded( String[] parentSegments, String fileName ) {
+    for( PathPattern pattern : includePatterns ) {
+      if( pattern.matchesFolder( parentSegments ) ) {
+        if( pattern.matchesFile( fileName ) ) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-  private boolean isChildPathIncluded( IResource resource ) {
-    IPath projectRelativePath = resource.getProjectRelativePath();
-    List<String> includedPaths = preferences.getIncludePatterns();
-    for( String path : includedPaths ) {
-      if( projectRelativePath.isPrefixOf( new Path( path ) ) ) {
-        return true;
+  private boolean isFileExcluded( String[] parentSegments, String fileName ) {
+    for( PathPattern pattern : excludePatterns ) {
+      if( pattern.matchesFolder( parentSegments ) ) {
+        if( pattern.matchesFile( fileName ) ) {
+          return true;
+        }
       }
     }
     return false;
+  }
+
+  private static List<PathPattern> createPatterns( List<String> expressions ) {
+    List<PathPattern> patterns = new ArrayList<PathPattern>( expressions.size() );
+    for( String expression : expressions ) {
+      patterns.add( PathPattern.create( expression ) );
+    }
+    return patterns;
   }
 
 }

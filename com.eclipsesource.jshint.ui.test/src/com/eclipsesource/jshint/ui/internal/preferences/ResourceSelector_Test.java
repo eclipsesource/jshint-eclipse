@@ -30,13 +30,22 @@ public class ResourceSelector_Test {
 
   private IProject project;
   private EnablementPreferences preferences;
-  private ResourceSelector selector;
+  private IFolder src;
+  private IFile test_js;
+  private IFile test_txt;
+  private IFile src_test_js;
+  private IFile bin_test_js;
 
   @Before
   public void setUp() {
     project = TestUtil.createProject( "test" );
+    src = TestUtil.createFolder( project, "src" );
+    TestUtil.createFolder( project, "bin" );
+    test_js = TestUtil.createFile( project, "test.js", "content" );
+    test_txt = TestUtil.createFile( project, "test.txt", "content" );
+    src_test_js = TestUtil.createFile( project, "src/test.js", "content" );
+    bin_test_js = TestUtil.createFile( project, "bin/test.js", "content" );
     preferences = new EnablementPreferences( PreferencesFactory.getProjectPreferences( project ) );
-    selector = new ResourceSelector( project );
   }
 
   @After
@@ -45,95 +54,100 @@ public class ResourceSelector_Test {
   }
 
   @Test
-  public void isProjectIncluded_falseByDefault() {
-    assertFalse( selector.isProjectIncluded() );
+  public void allowVisitProject_falseByDefault() {
+    ResourceSelector selector = new ResourceSelector( project );
+
+    assertFalse( selector.allowVisitProject() );
   }
 
   @Test
-  public void isProjectIncluded_trueWithIncludePaths() {
+  public void allowVisitProject_trueWithIncludePaths() {
     preferences.setIncludePatterns( list( "foo" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertTrue( selector.isProjectIncluded() );
+    assertTrue( selector.allowVisitProject() );
   }
 
   @Test
-  public void isIncluded_project_falseByDefault() {
-    assertFalse( selector.isIncluded( project ) );
-  }
-
-  @Test
-  public void isIncluded_project_trueWithIncludePaths() {
-    preferences.setIncludePatterns( list( "foo" ) );
-
-    assertTrue( selector.isIncluded( project ) );
-  }
-
-  @Test
-  public void isIncluded_folder_falseByDefault() {
+  public void allowVisitFolder_falseByDefault() {
     IFolder folder = TestUtil.createFolder( project, "foo" );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertFalse( selector.isIncluded( folder ) );
+    assertFalse( selector.allowVisitFolder( folder ) );
   }
 
   @Test
-  public void isIncluded_folder_directlyIncluded() {
-    IFolder folder = TestUtil.createFolder( project, "foo" );
-    preferences.setIncludePatterns( list( "foo" ) );
+  public void allowVisitFolder_trueWhenDirectlyIncluded() {
+    preferences.setIncludePatterns( list( "/src/" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertTrue( selector.isIncluded( folder ) );
+    assertTrue( selector.allowVisitFolder( src ) );
   }
 
   @Test
-  public void isIncluded_folder_parentIncluded() {
-    TestUtil.createFolder( project, "foo" );
-    IFolder folder = TestUtil.createFolder( project, "foo/bar" );
-    preferences.setIncludePatterns( list( "foo" ) );
+  public void allowVisitFolder_trueWhenChildIncluded() {
+    preferences.setIncludePatterns( list( "/src/foo/" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertTrue( selector.isIncluded( folder ) );
+    assertTrue( selector.allowVisitFolder( src ) );
   }
 
   @Test
-  public void isIncluded_folder_childIncluded() {
-    IFolder folder = TestUtil.createFolder( project, "foo" );
-    TestUtil.createFolder( project, "foo/bar" );
-    preferences.setIncludePatterns( list( "foo/bar" ) );
+  public void allowVisitFolder_trueWhenExcluded() {
+    // true because sub-folders are not excluded
+    preferences.setIncludePatterns( list( "*" ) );
+    preferences.setExcludePatterns( list( "/src/" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertTrue( selector.isIncluded( folder ) );
+    assertTrue( selector.allowVisitFolder( src ) );
   }
 
   @Test
-  public void isIncluded_file_falseByDefault() {
-    IFile file = TestUtil.createFile( project, "test.js", "content" );
+  public void allowVisitFile_falseByDefault() {
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertFalse( selector.isIncluded( file ) );
+    assertFalse( selector.allowVisitFile( test_js ) );
+    assertFalse( selector.allowVisitFile( test_txt ) );
+    assertFalse( selector.allowVisitFile( src_test_js ) );
   }
 
   @Test
-  public void isIncluded_file_parentIncluded() {
-    TestUtil.createFolder( project, "foo" );
-    IFile file = TestUtil.createFile( project, "foo/test.js", "content" );
-    preferences.setIncludePatterns( list( "foo" ) );
+  public void allowVisitFile_parentIncluded() {
+    preferences.setIncludePatterns( list( "/src/" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertTrue( selector.isIncluded( file ) );
+    assertTrue( selector.allowVisitFile( src_test_js ) );
+    assertFalse( selector.allowVisitFile( test_js ) );
   }
 
   @Test
-  public void isIncluded_file_grandParentIncluded() {
-    TestUtil.createFolder( project, "foo" );
-    TestUtil.createFolder( project, "foo/bar" );
-    IFile file = TestUtil.createFile( project, "foo/bar/test.js", "content" );
-    preferences.setIncludePatterns( list( "foo" ) );
+  public void allowVisitFile_fileTypeIncluded() {
+    preferences.setIncludePatterns( list( "*.js" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertTrue( selector.isIncluded( file ) );
+    assertTrue( selector.allowVisitFile( test_js ) );
+    assertTrue( selector.allowVisitFile( src_test_js ) );
+    assertFalse( selector.allowVisitFile( test_txt ) );
   }
 
   @Test
-  public void isIncluded_file_wrongFileExtension() {
-    TestUtil.createFolder( project, "foo" );
-    IFile file = TestUtil.createFile( project, "foo/test.txt", "content" );
-    preferences.setIncludePatterns( list( "foo" ) );
+  public void allowVisitFile_directoryAndFileType() {
+    preferences.setIncludePatterns( list( "/src/*.js" ) );
+    ResourceSelector selector = new ResourceSelector( project );
 
-    assertFalse( selector.isIncluded( file ) );
+    assertTrue( selector.allowVisitFile( src_test_js ) );
+    assertFalse( selector.allowVisitFile( bin_test_js ) );
+    assertFalse( selector.allowVisitFile( test_js ) );
+  }
+
+  @Test
+  public void allowVisitFile_parentExcluded() {
+    preferences.setIncludePatterns( list( "*.js" ) );
+    preferences.setExcludePatterns( list( "/bin/" ) );
+    ResourceSelector selector = new ResourceSelector( project );
+
+    assertTrue( selector.allowVisitFile( src_test_js ) );
+    assertFalse( selector.allowVisitFile( bin_test_js ) );
   }
 
   @Test
