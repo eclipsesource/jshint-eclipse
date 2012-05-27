@@ -18,7 +18,9 @@ import org.osgi.service.prefs.Preferences;
 
 public class EnablementPreferences {
 
-  private static final String KEY_INCLUDED = "includedPaths";
+  private static final String KEY_EXCLUDED = "excluded";
+  private static final String KEY_INCLUDED = "included";
+  private static final String DEF_EXCLUDED = "";
   private static final String DEF_INCLUDED = "";
 
   private final Preferences node;
@@ -58,6 +60,38 @@ public class EnablementPreferences {
 
   public List<String> getIncludedPaths() {
     String value = node.get( KEY_INCLUDED, DEF_INCLUDED );
+    return PathEncoder.decodePaths( value );
+  }
+
+  public void setExcluded( String resourcePath, boolean excluded ) {
+    List<String> excludedPaths = getExcludedPaths();
+    if( excluded && !excludedPaths.contains( resourcePath ) ) {
+      excludedPaths.add( resourcePath );
+    } else if( !excluded && excludedPaths.contains( resourcePath ) ) {
+      excludedPaths.remove( resourcePath );
+    }
+    setExcludedPaths( excludedPaths );
+  }
+
+  public boolean getExcluded( String resourcePath ) {
+    List<String> excludedFiles = getExcludedPaths();
+    return excludedFiles.contains( resourcePath );
+  }
+
+  public void setExcludedPaths( List<String> excluded ) {
+    String value = PathEncoder.encodePaths( excluded );
+    if( !value.equals( node.get( KEY_EXCLUDED, DEF_EXCLUDED ) ) ) {
+      if( DEF_EXCLUDED.equals( value ) ) {
+        node.remove( KEY_EXCLUDED );
+      } else {
+        node.put( KEY_EXCLUDED, value );
+      }
+      changed = true;
+    }
+  }
+
+  public List<String> getExcludedPaths() {
+    String value = node.get( KEY_EXCLUDED, DEF_EXCLUDED );
     return PathEncoder.decodePaths( value );
   }
 

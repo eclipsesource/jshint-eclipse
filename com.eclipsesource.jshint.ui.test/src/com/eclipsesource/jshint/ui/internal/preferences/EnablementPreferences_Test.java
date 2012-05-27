@@ -37,7 +37,89 @@ public class EnablementPreferences_Test {
   @Test
   public void defaults() {
     assertTrue( prefs.getIncludedPaths().isEmpty() );
+    assertTrue( prefs.getExcludedPaths().isEmpty() );
     assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void getExcluded_allPathsFalseByDefault() {
+    assertFalse( prefs.getExcluded( "" ) );
+    assertFalse( prefs.getExcluded( "/foo" ) );
+  }
+
+  @Test
+  public void setExcluded() {
+    prefs.setExcluded( "/foo", true );
+
+    assertTrue( prefs.getExcluded( "/foo" ) );
+    assertTrue( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setExcluded_writeThrough() {
+    prefs.setExcluded( "/foo", true );
+
+    assertTrue( new EnablementPreferences( node ).getExcluded( "/foo" ) );
+  }
+
+  @Test
+  public void setExcluded_emptyPathIgnored() {
+    prefs.setExcluded( "", true );
+
+    assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setExcluded_multiplePaths() {
+    prefs.setExcluded( "/foo", true );
+    prefs.setExcluded( "/bar", true );
+
+    assertTrue( prefs.getExcluded( "/foo" ) );
+    assertTrue( prefs.getExcluded( "/bar" ) );
+    assertFalse( prefs.getExcluded( "/baz" ) );
+  }
+
+  @Test
+  public void setExcluded_unchanged() {
+    prefs.setExcluded( "/foo", false );
+
+    assertFalse( prefs.getExcluded( "/foo" ) );
+    assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setExcluded_reset() {
+    prefs.setExcluded( "/foo", true );
+    prefs.clearChanged();
+
+    prefs.setExcluded( "/foo", false );
+
+    assertTrue( prefs.hasChanged() );
+    assertTrue( isEmpty( node ) );
+  }
+
+  @Test
+  public void getExcludedPaths_default() {
+    assertTrue( prefs.getExcludedPaths().isEmpty() );
+  }
+
+  @Test
+  public void setExcludedPaths_unchanged() {
+    prefs.setExcludedPaths( Collections.<String>emptyList() );
+
+    assertTrue( prefs.getExcludedPaths().isEmpty() );
+    assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setExcludedPaths_emptyList() {
+    prefs.setExcluded( "/foo", true );
+    prefs.clearChanged();
+
+    prefs.setExcludedPaths( Collections.<String>emptyList() );
+
+    assertTrue( prefs.getExcludedPaths().isEmpty() );
+    assertTrue( prefs.hasChanged() );
   }
 
   @Test
@@ -157,7 +239,7 @@ public class EnablementPreferences_Test {
 
   @Test
   public void clearChanged() {
-    prefs.setIncluded( "/foo", true );
+    prefs.setExcluded( "/foo", true );
 
     prefs.clearChanged();
 

@@ -55,8 +55,8 @@ public class ProjectPreferences_Test {
 
     EnablementPreferences prefs = new EnablementPreferences( node );
 
-    assertTrue( prefs.getIncluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
-    assertFalse( prefs.getIncluded( EnablementPreferences.getResourcePath( project.getFile( "js/foo.js" ) ) ) );
+    assertTrue( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/test.js" ) ) ) );
+    assertFalse( prefs.getExcluded( EnablementPreferences.getResourcePath( project.getFile( "js/foo.js" ) ) ) );
     assertFalse( prefs.hasChanged() );
   }
 

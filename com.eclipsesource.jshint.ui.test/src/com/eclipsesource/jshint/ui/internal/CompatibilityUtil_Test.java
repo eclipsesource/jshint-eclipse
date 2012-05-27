@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
+import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.jshint.ui.test.TestUtil;
@@ -73,6 +74,9 @@ public class CompatibilityUtil_Test {
     CompatibilityUtil.fixObsoleteMetadataInProjects();
 
     Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    assertTrue( enablePrefs.getExcluded( "js/test.js" ) );
+    assertFalse( enablePrefs.getExcluded( "js/foo.js" ) );
     OptionsPreferences optionsPrefs = new OptionsPreferences( node );
     assertEquals( "org: true, com: false", optionsPrefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", optionsPrefs.getOptions() );
