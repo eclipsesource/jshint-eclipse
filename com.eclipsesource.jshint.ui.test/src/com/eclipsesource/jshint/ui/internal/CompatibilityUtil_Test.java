@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
@@ -33,7 +34,10 @@ public class CompatibilityUtil_Test {
   private IProject project;
 
   @Before
-  public void setUp() {
+  public void setUp() throws BackingStoreException {
+    Preferences workspacePreferences = PreferencesFactory.getWorkspacePreferences();
+    workspacePreferences.clear();
+    workspacePreferences.flush();
     project = TestUtil.createProject( "test" );
   }
 
@@ -46,7 +50,7 @@ public class CompatibilityUtil_Test {
   public void updateObsoleteBuilder() throws Exception {
     BuilderUtil.addBuilderToProject( project, TestUtil.OLD_BUILDER_ID );
 
-    CompatibilityUtil.fixObsoleteMetadataInProjects();
+    CompatibilityUtil.run();
 
     IFile projectFile = project.getFile( "/.project" );
     assertTrue( TestUtil.readContent( projectFile ).contains( TestUtil.BUILDER_ID ) );
@@ -57,7 +61,7 @@ public class CompatibilityUtil_Test {
   public void updateObsoletePrefs() throws Exception {
     TestUtil.createExampleSettingsFile( project, TestUtil.OLD_SETTINGS_FILE );
 
-    CompatibilityUtil.fixObsoleteMetadataInProjects();
+    CompatibilityUtil.run();
 
     IFolder settingsFolder = project.getFolder( TestUtil.SETTINGS_FOLDER_PATH );
     assertFalse( settingsFolder.getFile( TestUtil.OLD_SETTINGS_FILE ).exists() );
@@ -71,7 +75,7 @@ public class CompatibilityUtil_Test {
   public void fallbackToOldPrefs() throws Exception {
     TestUtil.createExampleSettingsFile( project, TestUtil.OLD_SETTINGS_FILE );
 
-    CompatibilityUtil.fixObsoleteMetadataInProjects();
+    CompatibilityUtil.run();
 
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
@@ -80,6 +84,20 @@ public class CompatibilityUtil_Test {
     OptionsPreferences optionsPrefs = new OptionsPreferences( node );
     assertEquals( "org: true, com: false", optionsPrefs.getGlobals() );
     assertEquals( "bitwise: true, curly: true, eqnull: true", optionsPrefs.getOptions() );
+  }
+
+  @Test
+  public void getPluginVersion() {
+    assertTrue( CompatibilityUtil.getPluginVersion().contains( "." ) );
+  }
+
+  @Test
+  public void addsVersionToPreferences() throws Exception {
+    CompatibilityUtil.run();
+
+    Preferences wsPrefs = PreferencesFactory.getWorkspacePreferences();
+    String currentVersion = CompatibilityUtil.getPluginVersion();
+    assertEquals( currentVersion, wsPrefs.get( CompatibilityUtil.KEY_PLUGIN_VERSION, null ) );
   }
 
 }
