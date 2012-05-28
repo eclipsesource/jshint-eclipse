@@ -104,6 +104,9 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       checker.check( code.getContent(), handler );
     } catch( CoreExceptionWrapper wrapper ) {
       throw (CoreException)wrapper.getCause();
+    } catch( RuntimeException exception ) {
+      String message = "Failed checking file " + file.getFullPath().toPortableString();
+      throw new RuntimeException( message, exception );
     }
   }
 
