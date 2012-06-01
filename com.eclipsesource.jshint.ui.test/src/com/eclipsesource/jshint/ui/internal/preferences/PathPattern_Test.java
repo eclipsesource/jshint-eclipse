@@ -32,12 +32,12 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void emptyPattern_matchesAllPaths() {
+  public void emptyPattern_matchesOnlyRoot() {
     PathPattern pattern = PathPattern.create( "" );
 
     assertTrue( pattern.matchesFolder() );
-    assertTrue( pattern.matchesFolder( "foo" ) );
-    assertTrue( pattern.matchesFolder( "foo", "bar" ) );
+
+    assertFalse( pattern.matchesFolder( "foo" ) );
   }
 
   @Test
@@ -70,12 +70,21 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void fileOnlyPattern_matchesAllPaths() {
+  public void fileOnlyPattern_matchesOnlyRoot() {
     PathPattern pattern = PathPattern.create( "*.js" );
 
-    assertTrue( pattern.matchesFolder( "" ) );
-    assertTrue( pattern.matchesFolder( "foo" ) );
-    assertTrue( pattern.matchesFolder( "foo", "bar" ) );
+    assertTrue( pattern.matchesFolder() );
+
+    assertFalse( pattern.matchesFolder( "foo" ) );
+  }
+
+  @Test
+  public void filePatternAtRootPath_matchesOnlyRoot() {
+    PathPattern pattern = PathPattern.create( "/*.js" );
+
+    assertTrue( pattern.matchesFolder() );
+
+    assertFalse( pattern.matchesFolder( "foo" ) );
   }
 
   @Test
@@ -88,20 +97,19 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void relativePathOnlyPattern_matchesAnyPrefixPath() {
+  public void relativePathOnlyPattern_matchesExactPath() {
     PathPattern pattern = PathPattern.create( "foo/" );
 
     assertTrue( pattern.matchesFolder( "foo" ) );
-    assertTrue( pattern.matchesFolder( "doo", "foo" ) );
-    assertTrue( pattern.matchesFolder( "woo", "doo", "foo" ) );
 
-    assertFalse( pattern.matchesFolder( "" ) );
+    assertFalse( pattern.matchesFolder() );
     assertFalse( pattern.matchesFolder( "bar" ) );
     assertFalse( pattern.matchesFolder( "foo", "bar" ) );
+    assertFalse( pattern.matchesFolder( "zoo", "foo" ) );
   }
 
   @Test
-  public void absolutePathOnlyPattern_matchesAnyPrefixPath() {
+  public void absolutePathOnlyPattern_matchesExactPath() {
     PathPattern pattern = PathPattern.create( "/foo/" );
 
     assertTrue( pattern.matchesFolder( "foo" ) );
@@ -113,14 +121,14 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void nestedPathOnlyPattern_matchesPath() {
+  public void nestedPathOnlyPattern_matchesExactPath() {
     PathPattern pattern = PathPattern.create( "foo/bar/" );
 
     assertTrue( pattern.matchesFolder( "foo", "bar" ) );
-    assertTrue( pattern.matchesFolder( "zoo", "foo", "bar" ) );
 
     assertFalse( pattern.matchesFolder( "foo" ) );
     assertFalse( pattern.matchesFolder( "bar" ) );
+    assertFalse( pattern.matchesFolder( "zoo", "foo", "bar" ) );
     assertFalse( pattern.matchesFolder( "foo", "bar", "baz" ) );
   }
 
@@ -161,6 +169,7 @@ public class PathPattern_Test {
     assertTrue( pattern.matchesFolder( "foo-bar" ) );
 
     assertFalse( pattern.matchesFolder( "foo", "bar" ) );
+    assertFalse( pattern.matchesFolder( "foo", "x", "bar" ) );
   }
 
   @Test
@@ -171,16 +180,6 @@ public class PathPattern_Test {
 
     assertFalse( pattern.matchesFolder( "foo", "bar" ) );
     assertFalse( pattern.matchesFolder( "foo", "zoo", "moo", "bar" ) );
-  }
-
-  @Test
-  public void filePatternAtRootPath() {
-    PathPattern pattern = PathPattern.create( "/*.foo" );
-
-    assertTrue( pattern.matchesFolder() );
-
-    assertFalse( pattern.matchesFolder( "x" ) );
-    assertFalse( pattern.matchesFolder( "foo" ) );
   }
 
   @Test

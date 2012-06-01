@@ -122,7 +122,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void allowVisitFile_fileTypeIncluded() {
-    preferences.setIncludePatterns( list( "*.js" ) );
+    preferences.setIncludePatterns( list( "//*.js" ) );
     ResourceSelector selector = new ResourceSelector( project );
 
     assertTrue( selector.allowVisitFile( test_js ) );
@@ -142,7 +142,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void allowVisitFile_parentExcluded() {
-    preferences.setIncludePatterns( list( "*.js" ) );
+    preferences.setIncludePatterns( list( "//*.js" ) );
     preferences.setExcludePatterns( list( "/bin/" ) );
     ResourceSelector selector = new ResourceSelector( project );
 

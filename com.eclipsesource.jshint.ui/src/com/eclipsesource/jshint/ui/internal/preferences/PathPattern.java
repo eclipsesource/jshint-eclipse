@@ -15,20 +15,21 @@ package com.eclipsesource.jshint.ui.internal.preferences;
  * A pattern to match folders and files. The following pattern constructs are supported:
  * <dl>
  * <dt><code>/</code></dt>
- * <dd>A slash separates path segments. A single leading slash matches the beginning of a path. A
+ * <dd>A slash separates path segments. A single leading slash stands for an absolute path. A
  * trailing slash denotes a folder.</dd>
  * <dt><code>//</code></dt>
- * <dd>A double slash matches zero or more path segments. At the beginning of a pattern, a double
- * slash is equivalent to no leading slash.</dd>
+ * <dd>A double slash matches zero or more path segments. Can also be used at the beginning and at
+ * the end of a pattern.</dd>
  * <dt><code>*</code></dt>
  * <dd>An asterisk stands for zero or more characters in a path segment.</dd>
  * <dt><code>?</code></dt>
  * <dd>A question tag matches a single character in a path segment.</dd>
  * </dl>
  * <p>
- * Patterns that start with a single slash match a path from the beginning. All other patterns also
- * match paths with a prefix. For example, <code>/foo/</code> matches only <code>/foo/</code>, but
- * <code>foo/</code> also matches <code>/lib/foo/</code> or <code>/src/org/example/foo/</code>.
+ * In the current implementation, relative and absolute path patterns are handled alike. Both match
+ * a path from the beginning. For example, both <code>/foo/</code> and <code>foo/</code> match only
+ * <code>/foo/</code>, but not <code>/lib/foo/</code> or <code>/src/org/example/foo/</code>. Future
+ * implementations may take a context directory into account when matching relative path patterns.
  * </p>
  * <p>
  * If a patterns ends with a slash, the last segment of the pattern matches a folder, otherwise it
@@ -122,8 +123,6 @@ public class PathPattern {
     String result = expression;
     if( expression.startsWith( "/" ) ) {
       result = expression.substring( 1 );
-    } else {
-      result = "/" + expression;
     }
     return result;
   }
