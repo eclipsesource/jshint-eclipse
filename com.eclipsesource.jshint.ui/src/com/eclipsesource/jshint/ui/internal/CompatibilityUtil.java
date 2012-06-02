@@ -38,7 +38,7 @@ class CompatibilityUtil {
   private CompatibilityUtil() {
   }
 
-  static void run() throws CoreException {
+  static void run() {
     Preferences preferences = PreferencesFactory.getWorkspacePreferences();
     Version previousVersion = getPreviousVersion( preferences );
     Version currentVersion = getCurrentVersion();
@@ -57,17 +57,28 @@ class CompatibilityUtil {
     return Activator.getDefault().getBundle().getVersion();
   }
 
-  private static void firstRun( Version previousVersion, Version currentVersion ) throws CoreException {
+  private static void firstRun( Version previousVersion, Version currentVersion ) {
     IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
     for( IProject project : projects ) {
       if( project.isAccessible() ) {
-        updateObsoleteBuilderId( project );
-        movePropertiesFromObsoleteNode( project );
-        turnEnabledToIncludes( project );
-        if( !isGreaterOrEqual( previousVersion, 0, 9, 4 ) ) {
-          fixPre09FolderExcludePatterns( project );
+        try {
+          updateProject( project, previousVersion, currentVersion );
+        } catch( CoreException exception ) {
+          Activator.logError( "Failed to update project metadata:" + project.getName(), exception );
         }
       }
+    }
+  }
+
+  private static void updateProject( IProject project,
+                                     Version previousVersion,
+                                     Version currentVersion ) throws CoreException
+  {
+    updateObsoleteBuilderId( project );
+    movePropertiesFromObsoleteNode( project );
+    turnEnabledToIncludes( project );
+    if( !isGreaterOrEqual( previousVersion, 0, 9, 4 ) ) {
+      fixPre09FolderExcludePatterns( project );
     }
   }
 
@@ -138,9 +149,13 @@ class CompatibilityUtil {
     return list;
   }
 
-  private static void setVersion( Preferences preferences, Version version ) throws CoreException {
+  private static void setVersion( Preferences preferences, Version version ) {
     preferences.put( KEY_PLUGIN_VERSION, version.toString() );
-    flushPreferences( preferences );
+    try {
+      flushPreferences( preferences );
+    } catch( CoreException exception ) {
+      Activator.logError( "Failed to store new jshint-eclipse version in workspace", exception );
+    }
   }
 
   private static String[] readPreferencesKeys( Preferences preferences ) throws CoreException {
