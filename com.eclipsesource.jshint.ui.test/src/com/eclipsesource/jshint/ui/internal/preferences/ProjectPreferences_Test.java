@@ -10,7 +10,6 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.junit.After;
@@ -18,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
 
-import com.eclipsesource.jshint.ui.test.TestUtil;
+import static com.eclipsesource.jshint.ui.test.TestUtil.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,14 +31,14 @@ public class ProjectPreferences_Test {
 
   @Before
   public void setUp() {
-    project = TestUtil.createProject( "test" );
-    file = TestUtil.createFile( project, "/test.js", "test content" );
+    project = createProject( "test" );
+    file = createFile( project, "/test.js", "test content" );
     node = PreferencesFactory.getProjectPreferences( project );
   }
 
   @After
   public void tearDown() {
-    TestUtil.deleteProject( project );
+    deleteProject( project );
   }
 
   @Test
@@ -51,7 +50,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void enablementPrefsFromExampleSettingsFile() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
+    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
 
     EnablementPreferences prefs = new EnablementPreferences( node );
 
@@ -62,7 +61,7 @@ public class ProjectPreferences_Test {
 
   @Test
   public void optionPrefsFromExampleSettingsFile() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.NEW_SETTINGS_FILE );
+    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
 
     OptionsPreferences optionPrefs = new OptionsPreferences( node );
 

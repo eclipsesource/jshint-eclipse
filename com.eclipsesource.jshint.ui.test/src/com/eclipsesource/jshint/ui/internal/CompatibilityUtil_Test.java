@@ -23,8 +23,17 @@ import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
-import com.eclipsesource.jshint.ui.test.TestUtil;
 
+import static com.eclipsesource.jshint.ui.test.TestUtil.BUILDER_ID;
+import static com.eclipsesource.jshint.ui.test.TestUtil.OLD_BUILDER_ID;
+import static com.eclipsesource.jshint.ui.test.TestUtil.OLD_SETTINGS_FILE_NAME;
+import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_FILE_NAME;
+import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_FOLDER_PATH;
+import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_TEMPLATE_0_9;
+import static com.eclipsesource.jshint.ui.test.TestUtil.createExampleSettingsFile;
+import static com.eclipsesource.jshint.ui.test.TestUtil.createProject;
+import static com.eclipsesource.jshint.ui.test.TestUtil.deleteProject;
+import static com.eclipsesource.jshint.ui.test.TestUtil.readContent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -38,42 +47,41 @@ public class CompatibilityUtil_Test {
     Preferences workspacePreferences = PreferencesFactory.getWorkspacePreferences();
     workspacePreferences.clear();
     workspacePreferences.flush();
-    project = TestUtil.createProject( "test" );
+    project = createProject( "test" );
   }
 
   @After
   public void tearDown() {
-    TestUtil.deleteProject( project );
+    deleteProject( project );
   }
 
   @Test
-  public void updateObsoleteBuilder() throws Exception {
-    BuilderUtil.addBuilderToProject( project, TestUtil.OLD_BUILDER_ID );
+  public void updatesObsoleteBuilderId() throws Exception {
+    BuilderUtil.addBuilderToProject( project, OLD_BUILDER_ID );
 
     CompatibilityUtil.run();
 
     IFile projectFile = project.getFile( "/.project" );
-    assertTrue( TestUtil.readContent( projectFile ).contains( TestUtil.BUILDER_ID ) );
-    assertFalse( TestUtil.readContent( projectFile ).contains( TestUtil.OLD_BUILDER_ID ) );
+    assertTrue( readContent( projectFile ).contains( BUILDER_ID ) );
+    assertFalse( readContent( projectFile ).contains( OLD_BUILDER_ID ) );
   }
 
   @Test
-  public void updateObsoletePrefs() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.OLD_SETTINGS_FILE );
+  public void movesObsoleteSettingsFile() throws Exception {
+    createExampleSettingsFile( project, OLD_SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
 
     CompatibilityUtil.run();
 
-    IFolder settingsFolder = project.getFolder( TestUtil.SETTINGS_FOLDER_PATH );
-    assertFalse( settingsFolder.getFile( TestUtil.OLD_SETTINGS_FILE ).exists() );
-    assertTrue( settingsFolder.getFile( TestUtil.NEW_SETTINGS_FILE ).exists() );
-    String newContent = TestUtil.readContent( settingsFolder.getFile( TestUtil.NEW_SETTINGS_FILE ) );
-    assertTrue( newContent.contains( "enabled=true" ) );
+    IFolder settingsFolder = project.getFolder( SETTINGS_FOLDER_PATH );
+    assertFalse( settingsFolder.getFile( OLD_SETTINGS_FILE_NAME ).exists() );
+    assertTrue( settingsFolder.getFile( SETTINGS_FILE_NAME ).exists() );
+    String newContent = readContent( settingsFolder.getFile( SETTINGS_FILE_NAME ) );
+    assertTrue( newContent.contains( "options=" ) );
   }
 
-
   @Test
-  public void fallbackToOldPrefs() throws Exception {
-    TestUtil.createExampleSettingsFile( project, TestUtil.OLD_SETTINGS_FILE );
+  public void movesPrefsFromObsoleteSettingsFile() throws Exception {
+    createExampleSettingsFile( project, OLD_SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
 
     CompatibilityUtil.run();
 

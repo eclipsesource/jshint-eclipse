@@ -32,8 +32,9 @@ public class TestUtil {
   public static final String BUILDER_ID = "com.eclipsesource.jshint.ui.builder";
   public static final String OLD_BUILDER_ID = "com.eclipsesource.jshint.builder";
   public static final String SETTINGS_FOLDER_PATH = "/.settings";
-  public static final String OLD_SETTINGS_FILE = "com.eclipsesource.jshint.prefs";
-  public static final String NEW_SETTINGS_FILE = "com.eclipsesource.jshint.ui.prefs";
+  public static final String OLD_SETTINGS_FILE_NAME = "com.eclipsesource.jshint.prefs";
+  public static final String SETTINGS_FILE_NAME = "com.eclipsesource.jshint.ui.prefs";
+  public static final String SETTINGS_TEMPLATE_0_9 = "jshint-0.9.prefs";
 
   private TestUtil() {
   }
@@ -106,12 +107,14 @@ public class TestUtil {
     return content;
   }
 
-  public static void createExampleSettingsFile( IProject project, String settingsFileName )
-      throws CoreException, IOException
+  public static void createExampleSettingsFile( IProject project,
+                                                String settingsFileName,
+                                                String templateFileName ) throws CoreException,
+      IOException
   {
     IFolder folder = createSettingsFolder( project );
     IFile settingsFile = folder.getFile( settingsFileName );
-    InputStream inputStream = TestUtil.class.getResourceAsStream( settingsFileName );
+    InputStream inputStream = TestUtil.class.getResourceAsStream( templateFileName );
     if( inputStream != null ) {
       try {
         settingsFile.create( inputStream, true, null );
