@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.Version;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -31,11 +32,16 @@ import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_FILE_NAME;
 import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_FOLDER_PATH;
 import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_TEMPLATE_0_9;
 import static com.eclipsesource.jshint.ui.test.TestUtil.createExampleSettingsFile;
+import static com.eclipsesource.jshint.ui.test.TestUtil.createFile;
+import static com.eclipsesource.jshint.ui.test.TestUtil.createFolder;
 import static com.eclipsesource.jshint.ui.test.TestUtil.createProject;
 import static com.eclipsesource.jshint.ui.test.TestUtil.deleteProject;
+import static com.eclipsesource.jshint.ui.test.TestUtil.list;
 import static com.eclipsesource.jshint.ui.test.TestUtil.readContent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -95,17 +101,104 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void getPluginVersion() {
-    assertTrue( CompatibilityUtil.getPluginVersion().contains( "." ) );
+  public void getCurrentVersion() {
+    assertNotNull( CompatibilityUtil.getCurrentVersion() );
   }
 
   @Test
   public void addsVersionToPreferences() throws Exception {
+    Version currentVersion = CompatibilityUtil.getCurrentVersion();
+    Preferences wsPrefs = PreferencesFactory.getWorkspacePreferences();
+
     CompatibilityUtil.run();
 
-    Preferences wsPrefs = PreferencesFactory.getWorkspacePreferences();
-    String currentVersion = CompatibilityUtil.getPluginVersion();
-    assertEquals( currentVersion, wsPrefs.get( CompatibilityUtil.KEY_PLUGIN_VERSION, null ) );
+    assertEquals( currentVersion, CompatibilityUtil.getPreviousVersion( wsPrefs ) );
+  }
+
+  @Test
+  public void turnsEnabledToBasicIncludes() throws Exception {
+    createExampleSettingsFile( project, SETTINGS_FILE_NAME, SETTINGS_TEMPLATE_0_9 );
+
+    CompatibilityUtil.run();
+
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    assertTrue( enablePrefs.getIncludePatterns().contains( "//*.js" ) );
+    assertNull( node.get( "enabled", null ) );
+  }
+
+  @Test
+  public void fixPre09FolderExcludePatterns_addsSlashesForFolder() throws Exception {
+    createFolder( project, "/target" );
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    enablePrefs.setExcludePatterns( list( "target" ) );
+
+    CompatibilityUtil.run();
+
+    assertTrue( enablePrefs.getExcludePatterns().contains( "target//" ) );
+  }
+
+  @Test
+  public void fixPre09FolderExcludePatterns_doesNotAddSlashesForFile() throws Exception {
+    createFile( project, "/test.js", "" );
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    enablePrefs.setExcludePatterns( list( "test.js" ) );
+
+    CompatibilityUtil.run();
+
+    assertTrue( enablePrefs.getExcludePatterns().contains( "test.js" ) );
+  }
+
+  @Test
+  public void fixPre09FolderExcludePatterns_doesNotAddAdditionalSlashes() throws Exception {
+    createFolder( project, "/target" );
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    enablePrefs.setExcludePatterns( list( "target/" ) );
+
+    CompatibilityUtil.run();
+
+    assertTrue( enablePrefs.getExcludePatterns().contains( "target/" ) );
+  }
+
+  @Test
+  public void fixPre09FolderExcludePatterns_worksForPre_0_9_4() throws Exception {
+    createFolder( project, "/target" );
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    enablePrefs.setExcludePatterns( list( "target" ) );
+
+    setPreviousVersion( "0.9.3.v0123" );
+    CompatibilityUtil.run();
+
+    assertTrue( enablePrefs.getExcludePatterns().contains( "target//" ) );
+  }
+
+  @Test
+  public void fixPre09FolderExcludePatterns_skips_0_9_4() throws Exception {
+    createFolder( project, "/target" );
+    Preferences node = PreferencesFactory.getProjectPreferences( project );
+    EnablementPreferences enablePrefs = new EnablementPreferences( node );
+    enablePrefs.setExcludePatterns( list( "target" ) );
+
+    setPreviousVersion( "0.9.4.v0123" );
+    CompatibilityUtil.run();
+
+    assertTrue( enablePrefs.getExcludePatterns().contains( "target" ) );
+  }
+
+  @Test
+  public void doesNotChangeProjectsWithoutSettings() throws Exception {
+    CompatibilityUtil.run();
+
+    IFolder settingsFolder = project.getFolder( SETTINGS_FOLDER_PATH );
+    assertFalse( settingsFolder.getFile( SETTINGS_FILE_NAME ).exists() );
+  }
+
+  private void setPreviousVersion( String version ) {
+    PreferencesFactory.getWorkspacePreferences().put( CompatibilityUtil.KEY_PLUGIN_VERSION, version );
   }
 
 }
