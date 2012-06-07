@@ -106,7 +106,7 @@ public class PathPatternDialog extends TitleAreaDialog {
     Listener listener = new Listener() {
       public void handleEvent( Event event ) {
         updateFileDetailsEnablementFromSelection();
-        validateFilePattern();
+        validate();
       }
     };
     allFilesRadiobox.addListener( SWT.Selection, listener );
@@ -116,7 +116,7 @@ public class PathPatternDialog extends TitleAreaDialog {
   private void addFileTextListener() {
     Listener listener = new Listener() {
       public void handleEvent( Event event ) {
-        validateFilePattern();
+        validate();
       }
     };
     filePatternText.addListener( SWT.Modify, listener );
@@ -128,6 +128,7 @@ public class PathPatternDialog extends TitleAreaDialog {
     area.setLayout( new GridLayout() );
     createFolderAreaControls( area );
     addFolderRadioListeners();
+    addFolderTextListener();
   }
 
   private void createFolderAreaControls( Composite area ) {
@@ -147,10 +148,20 @@ public class PathPatternDialog extends TitleAreaDialog {
     Listener listener = new Listener() {
       public void handleEvent( Event event ) {
         updateFolderDetailsEnablementFromSelection();
+        validate();
       }
     };
     allFoldersRadiobox.addListener( SWT.Selection, listener );
     selectedFolderRadiobox.addListener( SWT.Selection, listener );
+  }
+
+  private void addFolderTextListener() {
+    Listener listener = new Listener() {
+      public void handleEvent( Event event ) {
+        validate();
+      }
+    };
+    folderPatternText.addListener( SWT.Modify, listener );
   }
 
   private void initializeUI() {
@@ -205,16 +216,61 @@ public class PathPatternDialog extends TitleAreaDialog {
     includeSubFoldersCheckbox.setEnabled( selectedFolderRadiobox.getSelection() );
   }
 
-  private void validateFilePattern() {
-    String text = filePatternText.getText();
-    try {
-      if( matchingFilesRadiobox.getSelection() ) {
-        PathSegmentPattern.create( text );
-      }
-      setErrorMessage( null );
-    } catch( IllegalArgumentException exception ) {
-      setErrorMessage( exception.getMessage().replace( "in expression", "in file pattern" ) );
+  private void validate() {
+    String erroMessage = getCombinedErrorMessage();
+    setErrorMessage( erroMessage );
+  }
+
+  private String getCombinedErrorMessage() {
+    String fileErrorMessage = getFileErrorMessage();
+    String folderErrorMessage = getFolderErrorMessage();
+    if( fileErrorMessage != null && folderErrorMessage != null ) {
+      return fileErrorMessage + ", " + folderErrorMessage;
+    } else {
+      return fileErrorMessage != null ? fileErrorMessage : folderErrorMessage;
     }
+  }
+
+  private String getFolderErrorMessage() {
+    String errorMessage = null;
+    if( selectedFolderRadiobox.getSelection() ) {
+      String text = folderPatternText.getText();
+      errorMessage = checkFolderPattern( text );
+    }
+    return errorMessage;
+  }
+
+  private String getFileErrorMessage() {
+    String errorMessage = null;
+    if( matchingFilesRadiobox.getSelection() ) {
+      String text = filePatternText.getText();
+      errorMessage = checkFilePattern( text );
+    }
+    return errorMessage;
+  }
+
+  private static String checkFilePattern( String pattern ) {
+    String errorMessage = null;
+    try {
+      PathSegmentPattern.create( pattern );
+    } catch( IllegalArgumentException exception ) {
+      errorMessage = exception.getMessage().replace( "in expression", "in file pattern" );
+    }
+    return errorMessage;
+  }
+
+  private static String checkFolderPattern( String pattern ) {
+    String errorMessage = null;
+    if( pattern.contains( "//" ) ) {
+      errorMessage = "Illegal '//' in folder path";
+    } else {
+      try {
+        PathPattern.create( pattern );
+      } catch( IllegalArgumentException exception ) {
+        errorMessage = exception.getMessage().replace( "in expression", "in folder path" );
+      }
+    }
+    return errorMessage;
   }
 
   private static void addIndent( Control control ) {

@@ -308,6 +308,69 @@ public class PathPatternDialog_Test {
   }
 
   @Test
+  public void validateFolderPattern() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/" );
+    openNonBlocking( dialog );
+
+    assertNull( dialog.getErrorMessage() );
+  }
+
+  @Test
+  public void validateFolderPattern_errorOnChange() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/" );
+    openNonBlocking( dialog );
+
+    getFolderPatternText( dialog ).setText( "src//" );
+
+    assertEquals( "Illegal '//' in folder path", dialog.getErrorMessage() );
+  }
+
+  @Test
+  public void validateFolderPattern_errorOnChange_illegalCharacter() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/" );
+    openNonBlocking( dialog );
+
+    getFolderPatternText( dialog ).setText( "src/[" );
+
+    assertEquals( "Illegal character in folder path: '['", dialog.getErrorMessage() );
+  }
+
+  @Test
+  public void validateFolderPattern_errorClearedOnChange() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/" );
+    openNonBlocking( dialog );
+    getFolderPatternText( dialog ).setText( "src//" );
+
+    getFolderPatternText( dialog ).setText( "src/" );
+
+    assertNull( dialog.getErrorMessage() );
+  }
+
+  @Test
+  public void validateFolderPattern_errorClearedOnRadioChange() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/" );
+    openNonBlocking( dialog );
+    getFolderPatternText( dialog ).setText( "src//" );
+
+    getAllFoldersRadio( dialog ).click();
+
+    assertNull( dialog.getErrorMessage() );
+  }
+
+  @Test
+  public void validateFileAndFolderPattern_firstErrorRestored() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+    getFilePatternText( dialog ).setText( "[foo]" );
+    String originalErrorMessage = dialog.getErrorMessage();
+    getFolderPatternText( dialog ).setText( "src//" );
+
+    getFolderPatternText( dialog ).setText( "src/" );
+
+    assertEquals( originalErrorMessage, dialog.getErrorMessage() );
+  }
+
+  @Test
   public void swtBot_ClickOnRadio_switchesRadioSelection() {
     PathPatternDialog dialog = new PathPatternDialog( shell, "src/" );
     openNonBlocking( dialog );
