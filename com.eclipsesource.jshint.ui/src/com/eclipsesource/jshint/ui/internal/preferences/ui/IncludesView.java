@@ -16,8 +16,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,16 +26,16 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.PathPattern;
 
 
 public class IncludesView extends Composite {
@@ -105,10 +103,16 @@ public class IncludesView extends Composite {
   }
 
   private void addListeners( final Table table ) {
-    table.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetDefaultSelected( SelectionEvent e ) {
+    table.addListener( SWT.DefaultSelection, new Listener() {
+      public void handleEvent( Event event ) {
         editSelectedPattern( table );
+      }
+    } );
+    table.addListener( SWT.Traverse, new Listener() {
+      public void handleEvent( Event event ) {
+        if( event.detail == SWT.TRAVERSE_RETURN ) {
+          event.doit = false;
+        }
       }
     } );
   }
@@ -169,7 +173,7 @@ public class IncludesView extends Composite {
   }
 
   private void addPattern( Table table ) {
-    String pattern = editPattern( table.getShell(), "" );
+    String pattern = showPatternDialogForTable( table, null );
     if( pattern != null ) {
       ArrayList<String> patterns = getPatterns( table );
       if( !patterns.contains( pattern ) ) {
@@ -184,7 +188,7 @@ public class IncludesView extends Composite {
     TableItem[] selection = table.getSelection();
     if( selection.length != 0 ) {
       String oldPattern = selection[ 0 ].getText();
-      String newPattern = editPattern( table.getShell(), oldPattern );
+      String newPattern = showPatternDialogForTable( table, oldPattern );
       if( newPattern != null ) {
         ArrayList<String> patterns = getPatterns( table );
         patterns.remove( oldPattern );
@@ -206,25 +210,22 @@ public class IncludesView extends Composite {
     }
   }
 
-  private static String editPattern( Shell parent, String pattern ) {
-    String title = pattern.length() == 0 ? "Add" : "Edit";
-    String message = pattern.length() == 0 ? "New path" : "Edit path";
-    IInputValidator validator = new IInputValidator() {
-
-      public String isValid( String newText ) {
-        try {
-          PathPattern.create( newText );
-        } catch( IllegalArgumentException e ) {
-          return "Invalid pattern: " + e.getMessage();
-        }
-        return null;
-      }
-    };
-    InputDialog dialog = new InputDialog( parent, title, message, pattern, validator );
+  private String showPatternDialogForTable( Table table, String origPattern ) {
+    String pattern = null;
+    PathPatternDialog dialog = new PathPatternDialog( table.getShell(), origPattern );
+    configurePatternDialog( dialog, table );
     if( dialog.open() == Dialog.OK ) {
-      return dialog.getValue();
+      pattern = dialog.getValue();
     }
-    return null;
+    return pattern;
+  }
+
+  private void configurePatternDialog( PathPatternDialog dialog, Table table ) {
+    if( table == excludeTable ) {
+      dialog.setTitle( "Select files to exclude" );
+    } else {
+      dialog.setTitle( "Select files to include" );
+    }
   }
 
   private static void select( Table table, String pattern ) {

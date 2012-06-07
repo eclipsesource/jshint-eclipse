@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    ralf - initial implementation and API
+ *    Ralf Sternberg initial implementation and API
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
@@ -32,12 +32,12 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void emptyPattern_matchesAllPaths() {
+  public void emptyPattern_matchesOnlyRoot() {
     PathPattern pattern = PathPattern.create( "" );
 
     assertTrue( pattern.matchesFolder() );
-    assertTrue( pattern.matchesFolder( "foo" ) );
-    assertTrue( pattern.matchesFolder( "foo", "bar" ) );
+
+    assertFalse( pattern.matchesFolder( "foo" ) );
   }
 
   @Test
@@ -70,12 +70,21 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void fileOnlyPattern_matchesAllPaths() {
+  public void fileOnlyPattern_matchesOnlyRoot() {
     PathPattern pattern = PathPattern.create( "*.js" );
 
-    assertTrue( pattern.matchesFolder( "" ) );
-    assertTrue( pattern.matchesFolder( "foo" ) );
-    assertTrue( pattern.matchesFolder( "foo", "bar" ) );
+    assertTrue( pattern.matchesFolder() );
+
+    assertFalse( pattern.matchesFolder( "foo" ) );
+  }
+
+  @Test
+  public void filePatternAtRootPath_matchesOnlyRoot() {
+    PathPattern pattern = PathPattern.create( "/*.js" );
+
+    assertTrue( pattern.matchesFolder() );
+
+    assertFalse( pattern.matchesFolder( "foo" ) );
   }
 
   @Test
@@ -88,20 +97,19 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void relativePathOnlyPattern_matchesAnyPrefixPath() {
+  public void relativePathOnlyPattern_matchesExactPath() {
     PathPattern pattern = PathPattern.create( "foo/" );
 
     assertTrue( pattern.matchesFolder( "foo" ) );
-    assertTrue( pattern.matchesFolder( "doo", "foo" ) );
-    assertTrue( pattern.matchesFolder( "woo", "doo", "foo" ) );
 
-    assertFalse( pattern.matchesFolder( "" ) );
+    assertFalse( pattern.matchesFolder() );
     assertFalse( pattern.matchesFolder( "bar" ) );
     assertFalse( pattern.matchesFolder( "foo", "bar" ) );
+    assertFalse( pattern.matchesFolder( "zoo", "foo" ) );
   }
 
   @Test
-  public void absolutePathOnlyPattern_matchesAnyPrefixPath() {
+  public void absolutePathOnlyPattern_matchesExactPath() {
     PathPattern pattern = PathPattern.create( "/foo/" );
 
     assertTrue( pattern.matchesFolder( "foo" ) );
@@ -113,14 +121,14 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void nestedPathOnlyPattern_matchesPath() {
+  public void nestedPathOnlyPattern_matchesExactPath() {
     PathPattern pattern = PathPattern.create( "foo/bar/" );
 
     assertTrue( pattern.matchesFolder( "foo", "bar" ) );
-    assertTrue( pattern.matchesFolder( "zoo", "foo", "bar" ) );
 
     assertFalse( pattern.matchesFolder( "foo" ) );
     assertFalse( pattern.matchesFolder( "bar" ) );
+    assertFalse( pattern.matchesFolder( "zoo", "foo", "bar" ) );
     assertFalse( pattern.matchesFolder( "foo", "bar", "baz" ) );
   }
 
@@ -161,6 +169,7 @@ public class PathPattern_Test {
     assertTrue( pattern.matchesFolder( "foo-bar" ) );
 
     assertFalse( pattern.matchesFolder( "foo", "bar" ) );
+    assertFalse( pattern.matchesFolder( "foo", "x", "bar" ) );
   }
 
   @Test
@@ -174,28 +183,19 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void filePatternAtRootPath() {
-    PathPattern pattern = PathPattern.create( "/*.foo" );
-
-    assertTrue( pattern.matchesFolder() );
-
-    assertFalse( pattern.matchesFolder( "x" ) );
-    assertFalse( pattern.matchesFolder( "foo" ) );
+  public void tooManySuccessiveSlashes() {
+    assertCreateFailsWithTooManySuccessiveSlashes( "///foo" );
+    assertCreateFailsWithTooManySuccessiveSlashes( "foo///" );
+    assertCreateFailsWithTooManySuccessiveSlashes( "foo///bar" );
   }
 
-  @Test
-  public void tooManySlashesInARow() {
-    assertCreateFailsWithIAE( "///foo" );
-    assertCreateFailsWithIAE( "foo///" );
-    assertCreateFailsWithIAE( "foo///bar" );
-  }
-
-  private static void assertCreateFailsWithIAE( String expression ) {
+  private static void assertCreateFailsWithTooManySuccessiveSlashes( String expression ) {
     try {
       PathPattern.create( expression );
       fail( "Expected IllegalArgumentsException for expression " + expression );
     } catch( IllegalArgumentException exception ) {
-      assertTrue( exception.getMessage().contains( "Too many slashes in a row" ) );
+      String expected = "Too many successive slashes in expression";
+      assertEquals( expected, exception.getMessage() );
     }
   }
 
@@ -217,6 +217,63 @@ public class PathPattern_Test {
 
   private static String split( String expression ) {
     return Arrays.toString( PathPattern.splitIntoSegmentPatterns( expression ) );
+  }
+
+  @Test
+  public void matchesAllFiles() {
+    assertTrue( PathPattern.create( "" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "/" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "//" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src/" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src//" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "/*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "//*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src/*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src//*" ).matchesAllFiles() );
+
+    assertFalse( PathPattern.create( "*.*" ).matchesAllFiles() );
+    assertFalse( PathPattern.create( "*.js" ).matchesAllFiles() );
+    assertFalse( PathPattern.create( "src/*.js" ).matchesAllFiles() );
+  }
+
+  @Test
+  public void matchesAllFolders() {
+    assertTrue( PathPattern.create( "//" ).matchesAllFolders() );
+    assertTrue( PathPattern.create( "//*.js" ).matchesAllFolders() );
+
+    assertFalse( PathPattern.create( "" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "/" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "src//" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "src//*.js" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "//src//" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "src//js/" ).matchesAllFolders() );
+  }
+
+  @Test
+  public void getFilePattern() {
+    assertEquals( "*", PathPattern.create( "" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "/" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "//" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "src/" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "src/*" ).getFilePattern() );
+    assertEquals( "*.js", PathPattern.create( "src/*.js" ).getFilePattern() );
+    assertEquals( "foo", PathPattern.create( "//foo" ).getFilePattern() );
+  }
+
+  @Test
+  public void getPathPattern() {
+    assertEquals( "", PathPattern.create( "" ).getPathPattern() );
+    assertEquals( "", PathPattern.create( "file" ).getPathPattern() );
+    assertEquals( "/", PathPattern.create( "/" ).getPathPattern() );
+    assertEquals( "/", PathPattern.create( "/file" ).getPathPattern() );
+    assertEquals( "//", PathPattern.create( "//" ).getPathPattern() );
+    assertEquals( "//", PathPattern.create( "//file" ).getPathPattern() );
+    assertEquals( "src/", PathPattern.create( "src/file" ).getPathPattern() );
+    assertEquals( "src/", PathPattern.create( "src/*" ).getPathPattern() );
+    assertEquals( "src//", PathPattern.create( "src//file" ).getPathPattern() );
+    assertEquals( "src/js//", PathPattern.create( "src/js//file" ).getPathPattern() );
+    assertEquals( "//src//js/", PathPattern.create( "//src//js/file" ).getPathPattern() );
   }
 
 }

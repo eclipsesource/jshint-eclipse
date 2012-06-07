@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    ralf - initial implementation and API
+ *    Ralf Sternberg initial implementation and API
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
@@ -122,7 +122,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void allowVisitFile_fileTypeIncluded() {
-    preferences.setIncludePatterns( list( "*.js" ) );
+    preferences.setIncludePatterns( list( "//*.js" ) );
     ResourceSelector selector = new ResourceSelector( project );
 
     assertTrue( selector.allowVisitFile( test_js ) );
@@ -142,7 +142,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void allowVisitFile_parentExcluded() {
-    preferences.setIncludePatterns( list( "*.js" ) );
+    preferences.setIncludePatterns( list( "//*.js" ) );
     preferences.setExcludePatterns( list( "/bin/" ) );
     ResourceSelector selector = new ResourceSelector( project );
 

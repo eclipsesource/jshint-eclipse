@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    ralf - initial implementation and API
+ *    Ralf Sternberg initial implementation and API
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
@@ -65,7 +65,7 @@ public class PathSegmentPattern {
     for( int i = 0; i < length; i++ ) {
       char ch = expression.charAt( i );
       if( isIllegalCharacter( ch ) ) {
-        throw new IllegalArgumentException( "Illegal character in expression: " + ch );
+        throw new IllegalArgumentException( "Illegal character in expression: '" + ch + "'" );
       }
     }
     return expression;
