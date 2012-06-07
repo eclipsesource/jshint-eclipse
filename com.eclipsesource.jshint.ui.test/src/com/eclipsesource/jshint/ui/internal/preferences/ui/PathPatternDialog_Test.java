@@ -227,6 +227,52 @@ public class PathPatternDialog_Test {
   }
 
   @Test
+  public void getValue_addsMissingTrailingSlashToPath() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+
+    getFolderPatternText( dialog ).setText( "src" );
+    getOkButton( dialog ).click();
+
+    assertEquals( "src/*.js", dialog.getValue() );
+  }
+
+  @Test
+  public void getValue_removesLeadingSlashFromPath() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+
+    getFolderPatternText( dialog ).setText( "/src" );
+    getOkButton( dialog ).click();
+
+    assertEquals( "src/*.js", dialog.getValue() );
+  }
+
+  @Test
+  public void getValue_removesEnclosingWhitespaceFromFile() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+
+    getFilePatternText( dialog ).setText( " *.js " );
+    getOkButton( dialog ).click();
+
+    assertEquals( "src/*.js", dialog.getValue() );
+  }
+
+  @Test
+  public void getValue_removesEnclosingWhitespaceFromPath() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+
+    getFolderPatternText( dialog ).setText( " src/ " );
+    getOkButton( dialog ).click();
+
+    assertEquals( "src/*.js", dialog.getValue() );
+  }
+
+  // TODO remove leading slash
+
+  @Test
   public void shellTextIsNew_withNullPattern() {
     PathPatternDialog dialog = new PathPatternDialog( shell, null );
     openNonBlocking( dialog );
@@ -272,9 +318,9 @@ public class PathPatternDialog_Test {
   public void setErrorMessage() {
     PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
     openNonBlocking( dialog );
-  
+
     dialog.setErrorMessage( "error" );
-  
+
     assertEquals( "error", dialog.getErrorMessage() );
   }
 
@@ -282,9 +328,9 @@ public class PathPatternDialog_Test {
   public void setErrorMessage_disablesOkButton() {
     PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
     openNonBlocking( dialog );
-  
+
     dialog.setErrorMessage( "error" );
-  
+
     assertFalse( getOkButton( dialog ).isEnabled() );
   }
 

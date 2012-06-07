@@ -197,19 +197,18 @@ public class PathPatternDialog extends TitleAreaDialog {
     if( allFoldersRadiobox.getSelection() ) {
       builder.append( "//" );
     } else {
-      String folderPattern = folderPatternText.getText();
-      builder.append( folderPattern );
+      String folderPattern = folderPatternText.getText().trim();
+      builder.append( trimSlashes( folderPattern ) );
       if( includeSubFoldersCheckbox.getSelection() ) {
-        if( !folderPattern.endsWith( "/" ) ) {
-          builder.append( "/" );
-        }
+        builder.append( "//" );
+      } else if( folderPattern.length() > 0 ) {
         builder.append( "/" );
       }
     }
     if( allFilesRadiobox.getSelection() ) {
       builder.append( "*" );
     } else {
-      builder.append( filePatternText.getText() );
+      builder.append( filePatternText.getText().trim() );
     }
     value = builder.toString();
   }
@@ -261,6 +260,17 @@ public class PathPatternDialog extends TitleAreaDialog {
     if( okButton != null ) {
       okButton.setEnabled( enabled );
     }
+  }
+
+  private static String trimSlashes( String string ) {
+    String result = string;
+    while( result.startsWith( "/" ) ) {
+      result = result.substring( 1 );
+    }
+    while( result.endsWith( "/" ) ) {
+      result = result.substring( 0, result.length() - 1 );
+    }
+    return result;
   }
 
   private static String checkFilePattern( String pattern ) {
