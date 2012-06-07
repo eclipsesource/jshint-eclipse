@@ -39,10 +39,12 @@ package com.eclipsesource.jshint.ui.internal.preferences;
  */
 public class PathPattern {
 
+  private final boolean isAbsolute;
   private final PathSegmentPattern[] segmentPatterns;
 
   private PathPattern( String expression ) {
     checkExpression( expression );
+    isAbsolute = expression.startsWith( "/" ) && !expression.startsWith( "//" );
     segmentPatterns = extractSegments( expression );
   }
 
@@ -76,6 +78,59 @@ public class PathPattern {
       return pathSegments.length == 0;
     }
     return match( 0, 0, pathSegments );
+  }
+
+  /**
+   * Checks whether the file part of this pattern matches all files in a folder, independent from
+   * the path part. For example, this method will return <code>true</code> for <code>src/*</code>,
+   * but <code>false</code> for <code>src/*.js</code>.
+   *
+   * @return <code>true</code> if and only if this pattern matches all files in a folder
+   */
+  public boolean matchesAllFiles() {
+    return getFileSegmentPattern() == PathSegmentPattern.ALL;
+  }
+
+  /**
+   * Checks whether the path part of this pattern matches all folders. The result does not depend on
+   * the file part of the pattern. For example, this method will return <code>true</code> for
+   * <code>//*</code> and <code>//*.txt</code>, but <code>false</code> for <code>src/*</code>.
+   *
+   * @return <code>true</code> if and only if this pattern matches files in all folders
+   */
+  public boolean matchesAllFolders() {
+    return segmentPatterns.length == 2 && segmentPatterns[ 0 ] == PathSegmentPattern.ANY_NUMBER;
+  }
+
+  /**
+   * Returns the file part of this pattern.
+   *
+   * @return the file part of this pattern, never <code>null</code>
+   */
+  public String getFilePattern() {
+    return getFileSegmentPattern().toString();
+  }
+
+  /**
+   * Returns the path part of this pattern.
+   *
+   * @return the path part of this pattern, never <code>null</code>
+   */
+  public String getPathPattern() {
+    StringBuilder builder = new StringBuilder();
+    if( isAbsolute ) {
+      builder.append( '/' );
+    }
+    for( int i = 0; i < segmentPatterns.length - 1; i++ ) {
+      PathSegmentPattern pattern = segmentPatterns[ i ];
+      if( pattern != PathSegmentPattern.ANY_NUMBER ) {
+        builder.append( pattern.toString() );
+      } else if( i == 0 ) {
+        builder.append( '/' );
+      }
+      builder.append( '/' );
+    }
+    return builder.toString();
   }
 
   private PathSegmentPattern getFileSegmentPattern() {

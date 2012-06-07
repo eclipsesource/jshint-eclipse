@@ -218,4 +218,61 @@ public class PathPattern_Test {
     return Arrays.toString( PathPattern.splitIntoSegmentPatterns( expression ) );
   }
 
+  @Test
+  public void matchesAllFiles() {
+    assertTrue( PathPattern.create( "" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "/" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "//" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src/" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src//" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "/*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "//*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src/*" ).matchesAllFiles() );
+    assertTrue( PathPattern.create( "src//*" ).matchesAllFiles() );
+
+    assertFalse( PathPattern.create( "*.*" ).matchesAllFiles() );
+    assertFalse( PathPattern.create( "*.js" ).matchesAllFiles() );
+    assertFalse( PathPattern.create( "src/*.js" ).matchesAllFiles() );
+  }
+
+  @Test
+  public void matchesAllFolders() {
+    assertTrue( PathPattern.create( "//" ).matchesAllFolders() );
+    assertTrue( PathPattern.create( "//*.js" ).matchesAllFolders() );
+
+    assertFalse( PathPattern.create( "" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "/" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "src//" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "src//*.js" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "//src//" ).matchesAllFolders() );
+    assertFalse( PathPattern.create( "src//js/" ).matchesAllFolders() );
+  }
+
+  @Test
+  public void getFilePattern() {
+    assertEquals( "*", PathPattern.create( "" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "/" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "//" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "src/" ).getFilePattern() );
+    assertEquals( "*", PathPattern.create( "src/*" ).getFilePattern() );
+    assertEquals( "*.js", PathPattern.create( "src/*.js" ).getFilePattern() );
+    assertEquals( "foo", PathPattern.create( "//foo" ).getFilePattern() );
+  }
+
+  @Test
+  public void getPathPattern() {
+    assertEquals( "", PathPattern.create( "" ).getPathPattern() );
+    assertEquals( "", PathPattern.create( "file" ).getPathPattern() );
+    assertEquals( "/", PathPattern.create( "/" ).getPathPattern() );
+    assertEquals( "/", PathPattern.create( "/file" ).getPathPattern() );
+    assertEquals( "//", PathPattern.create( "//" ).getPathPattern() );
+    assertEquals( "//", PathPattern.create( "//file" ).getPathPattern() );
+    assertEquals( "src/", PathPattern.create( "src/file" ).getPathPattern() );
+    assertEquals( "src/", PathPattern.create( "src/*" ).getPathPattern() );
+    assertEquals( "src//", PathPattern.create( "src//file" ).getPathPattern() );
+    assertEquals( "src/js//", PathPattern.create( "src/js//file" ).getPathPattern() );
+    assertEquals( "//src//js/", PathPattern.create( "//src//js/file" ).getPathPattern() );
+  }
+
 }
