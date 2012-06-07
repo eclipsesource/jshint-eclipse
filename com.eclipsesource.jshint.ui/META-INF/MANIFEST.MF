@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JSHint Eclipse Integration
 Bundle-SymbolicName: com.eclipsesource.jshint.ui;singleton:=true
-Bundle-Version: 0.9.3.qualifier
+Bundle-Version: 0.9.4.qualifier
 Bundle-Activator: com.eclipsesource.jshint.ui.internal.Activator
 Bundle-Vendor: EclipseSource
 Require-Bundle: org.eclipse.ui;bundle-version="3.6.0",
@@ -10,8 +10,8 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.6.0",
  org.eclipse.core.resources;bundle-version="3.6.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
-Import-Package: com.eclipsesource.jshint;version="[0.9.3,1.0.0)"
-Export-Package: com.eclipsesource.jshint.ui.internal;version="0.9.3";x-internal:=true,
- com.eclipsesource.jshint.ui.internal.builder;version="0.9.3";x-internal:=true,
- com.eclipsesource.jshint.ui.internal.preferences;version="0.9.3",
- com.eclipsesource.jshint.ui.internal.preferences.ui;version="0.9.3";x-internal:=true
+Import-Package: com.eclipsesource.jshint;version="[0.9.4,1.0.0)"
+Export-Package: com.eclipsesource.jshint.ui.internal;version="0.9.4";x-internal:=true,
+ com.eclipsesource.jshint.ui.internal.builder;version="0.9.4";x-internal:=true,
+ com.eclipsesource.jshint.ui.internal.preferences;version="0.9.4",
+ com.eclipsesource.jshint.ui.internal.preferences.ui;version="0.9.4";x-internal:=true
