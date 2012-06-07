@@ -65,7 +65,7 @@ public class PathSegmentPattern {
     for( int i = 0; i < length; i++ ) {
       char ch = expression.charAt( i );
       if( isIllegalCharacter( ch ) ) {
-        throw new IllegalArgumentException( "Illegal character in expression: " + ch );
+        throw new IllegalArgumentException( "Illegal character in expression: '" + ch + "'" );
       }
     }
     return expression;

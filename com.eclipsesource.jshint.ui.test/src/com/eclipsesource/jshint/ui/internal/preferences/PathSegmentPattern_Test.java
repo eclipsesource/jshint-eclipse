@@ -149,21 +149,28 @@ public class PathSegmentPattern_Test {
   }
 
   @Test
-  public void forbiddenCharacters() {
+  public void createFailsWithIllegalCharacters() {
     // reserved for advanced patterns
-    assertCreateFailsWithIAE( "!" );
-    assertCreateFailsWithIAE( "?" );
-    assertCreateFailsWithIAE( "+" );
-    assertCreateFailsWithIAE( ":" );
-    assertCreateFailsWithIAE( "|" );
-    assertCreateFailsWithIAE( "(" );
-    assertCreateFailsWithIAE( ")" );
-    assertCreateFailsWithIAE( "[" );
-    assertCreateFailsWithIAE( "]" );
-    assertCreateFailsWithIAE( "}" );
-    assertCreateFailsWithIAE( "{" );
+    assertCreateFailsWithIllegalChar( '!', "!" );
+    assertCreateFailsWithIllegalChar( '+', "+" );
+    assertCreateFailsWithIllegalChar( ':', ":" );
+    assertCreateFailsWithIllegalChar( '|', "|" );
+    assertCreateFailsWithIllegalChar( '(', "(" );
+    assertCreateFailsWithIllegalChar( ')', ")" );
+    assertCreateFailsWithIllegalChar( '[', "[" );
+    assertCreateFailsWithIllegalChar( ']', "]" );
+    assertCreateFailsWithIllegalChar( '}', "}" );
+    assertCreateFailsWithIllegalChar( '{', "{" );
     // file separator
-    assertCreateFailsWithIAE( "/" );
+    assertCreateFailsWithIllegalChar( '/', "/" );
+  }
+
+  @Test
+  public void createFailsWithIllegalCharacterInExpression() {
+    assertCreateFailsWithIllegalChar( '!', "foo!bar" );
+    assertCreateFailsWithIllegalChar( '/', "/foo" );
+    assertCreateFailsWithIllegalChar( '/', "foo/" );
+    assertCreateFailsWithIllegalChar( '[', "[foo]" );
   }
 
   @Test
@@ -207,12 +214,13 @@ public class PathSegmentPattern_Test {
     assertEquals( "test.js", PathSegmentPattern.create( "test.js" ).toString() );
   }
 
-  private static void assertCreateFailsWithIAE( String expression ) {
+  private static void assertCreateFailsWithIllegalChar( char illegalCharacter, String expression ) {
     try {
-      PathSegmentPattern.create( ":" );
+      PathSegmentPattern.create( expression );
       fail( "Expected IllegalArgumentsException for expression " + expression );
     } catch( IllegalArgumentException exception ) {
-      assertTrue( exception.getMessage().contains( "Illegal character" ) );
+      String expected = "Illegal character in expression: '" + illegalCharacter + "'";
+      assertEquals( expected, exception.getMessage() );
     }
   }
 
