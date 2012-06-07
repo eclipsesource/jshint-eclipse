@@ -1,0 +1,18 @@
+---
+layout: post
+title: Version 0.9.4 published
+---
+
+This update introduces a new way of selecting the files and folders to
+be validated, based on include and exclude patterns.
+This allows for finer-grained control, e.g. including all `*.js` files
+but excluding `*.min.js` files, or excluding files in a build target
+folder.
+
+The include and exclude patterns must be configured in the project's
+properties, but a global preference page is planned for a future version.
+
+The built-in jshint has been updated to the newest version r07.
+
+A [bug](https://github.com/eclipsesource/jshint-eclipse/issues/13) that
+prevented jshint-eclipse from running on Eclipse 3.6 has been fixed.
