@@ -25,24 +25,8 @@ import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 
-import static com.eclipsesource.jshint.ui.test.TestUtil.BUILDER_ID;
-import static com.eclipsesource.jshint.ui.test.TestUtil.OLD_BUILDER_ID;
-import static com.eclipsesource.jshint.ui.test.TestUtil.OLD_SETTINGS_FILE_NAME;
-import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_FILE_NAME;
-import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_FOLDER_PATH;
-import static com.eclipsesource.jshint.ui.test.TestUtil.SETTINGS_TEMPLATE_0_9;
-import static com.eclipsesource.jshint.ui.test.TestUtil.createExampleSettingsFile;
-import static com.eclipsesource.jshint.ui.test.TestUtil.createFile;
-import static com.eclipsesource.jshint.ui.test.TestUtil.createFolder;
-import static com.eclipsesource.jshint.ui.test.TestUtil.createProject;
-import static com.eclipsesource.jshint.ui.test.TestUtil.deleteProject;
-import static com.eclipsesource.jshint.ui.test.TestUtil.list;
-import static com.eclipsesource.jshint.ui.test.TestUtil.readContent;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.eclipsesource.jshint.ui.test.TestUtil.*;
+import static org.junit.Assert.*;
 
 
 public class CompatibilityUtil_Test {
@@ -106,7 +90,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void addsVersionToPreferences() throws Exception {
+  public void addsVersionToPreferences() {
     Version currentVersion = CompatibilityUtil.getCurrentVersion();
     Preferences wsPrefs = PreferencesFactory.getWorkspacePreferences();
 
@@ -128,7 +112,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void fixPre09FolderExcludePatterns_addsSlashesForFolder() throws Exception {
+  public void fixPre09FolderExcludePatterns_addsSlashesForFolder() {
     createFolder( project, "/target" );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
@@ -140,7 +124,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void fixPre09FolderExcludePatterns_doesNotAddSlashesForFile() throws Exception {
+  public void fixPre09FolderExcludePatterns_doesNotAddSlashesForFile() {
     createFile( project, "/test.js", "" );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
@@ -152,7 +136,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void fixPre09FolderExcludePatterns_doesNotAddAdditionalSlashes() throws Exception {
+  public void fixPre09FolderExcludePatterns_doesNotAddAdditionalSlashes() {
     createFolder( project, "/target" );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
@@ -164,7 +148,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void fixPre09FolderExcludePatterns_worksForPre_0_9_4() throws Exception {
+  public void fixPre09FolderExcludePatterns_worksForPre_0_9_4() {
     createFolder( project, "/target" );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
@@ -177,7 +161,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void fixPre09FolderExcludePatterns_skips_0_9_4() throws Exception {
+  public void fixPre09FolderExcludePatterns_skips_0_9_4() {
     createFolder( project, "/target" );
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
@@ -190,7 +174,7 @@ public class CompatibilityUtil_Test {
   }
 
   @Test
-  public void doesNotChangeProjectsWithoutSettings() throws Exception {
+  public void doesNotChangeProjectsWithoutSettings() {
     CompatibilityUtil.run();
 
     IFolder settingsFolder = project.getFolder( SETTINGS_FOLDER_PATH );

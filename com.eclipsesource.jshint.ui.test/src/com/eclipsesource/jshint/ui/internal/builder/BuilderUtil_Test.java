@@ -10,16 +10,10 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.builder;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.Before;
@@ -27,27 +21,24 @@ import org.junit.Test;
 
 import com.eclipsesource.jshint.ui.test.TestUtil;
 
+import static com.eclipsesource.jshint.ui.test.TestUtil.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 
 public class BuilderUtil_Test {
 
   private IProject project;
-  private IFile file;
 
   @Before
-  public void setUp() throws CoreException {
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    project = workspace.getRoot().getProject( "test.project" );
-    project.create( null );
-    project.open( null );
-    file = project.getFile( "/test.js" );
-    file.create( new ByteArrayInputStream( "test".getBytes() ), true, null );
+  public void setUp() {
+    project = createProject( "test" );
+    createFile( project, "/test.js", "test" );
   }
 
   @After
-  public void tearDown() throws CoreException {
-    if( project.exists() ) {
-      project.delete( true, null );
-    }
+  public void tearDown() {
+    deleteProject( project );
   }
 
   @Test
@@ -56,7 +47,7 @@ public class BuilderUtil_Test {
 
     assertTrue( result );
     IFile metadata = project.getFile( ".project" );
-    assertTrue( TestUtil.readContent( metadata ).contains( TestUtil.BUILDER_ID ) );
+    assertTrue( readContent( metadata ).contains( TestUtil.BUILDER_ID ) );
   }
 
   @Test
@@ -76,7 +67,7 @@ public class BuilderUtil_Test {
 
     assertTrue( result );
     IFile metadata = project.getFile( ".project" );
-    assertFalse( TestUtil.readContent( metadata ).contains( TestUtil.BUILDER_ID ) );
+    assertFalse( readContent( metadata ).contains( TestUtil.BUILDER_ID ) );
   }
 
   @Test

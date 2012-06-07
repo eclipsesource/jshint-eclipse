@@ -18,10 +18,7 @@ import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
 
 import static com.eclipsesource.jshint.ui.test.TestUtil.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class ProjectPreferences_Test {

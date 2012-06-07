@@ -17,13 +17,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.eclipsesource.jshint.ui.test.TestUtil;
-
-import static com.eclipsesource.jshint.ui.test.TestUtil.array;
-import static com.eclipsesource.jshint.ui.test.TestUtil.list;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static com.eclipsesource.jshint.ui.test.TestUtil.*;
+import static org.junit.Assert.*;
 
 
 public class ResourceSelector_Test {
@@ -38,19 +33,19 @@ public class ResourceSelector_Test {
 
   @Before
   public void setUp() {
-    project = TestUtil.createProject( "test" );
-    src = TestUtil.createFolder( project, "src" );
-    TestUtil.createFolder( project, "bin" );
-    test_js = TestUtil.createFile( project, "test.js", "content" );
-    test_txt = TestUtil.createFile( project, "test.txt", "content" );
-    src_test_js = TestUtil.createFile( project, "src/test.js", "content" );
-    bin_test_js = TestUtil.createFile( project, "bin/test.js", "content" );
+    project = createProject( "test" );
+    src = createFolder( project, "src" );
+    createFolder( project, "bin" );
+    test_js = createFile( project, "test.js", "content" );
+    test_txt = createFile( project, "test.txt", "content" );
+    src_test_js = createFile( project, "src/test.js", "content" );
+    bin_test_js = createFile( project, "bin/test.js", "content" );
     preferences = new EnablementPreferences( PreferencesFactory.getProjectPreferences( project ) );
   }
 
   @After
   public void tearDown() {
-    TestUtil.deleteProject( project );
+    deleteProject( project );
   }
 
   @Test
@@ -70,7 +65,7 @@ public class ResourceSelector_Test {
 
   @Test
   public void allowVisitFolder_falseByDefault() {
-    IFolder folder = TestUtil.createFolder( project, "foo" );
+    IFolder folder = createFolder( project, "foo" );
     ResourceSelector selector = new ResourceSelector( project );
 
     assertFalse( selector.allowVisitFolder( folder ) );
@@ -152,9 +147,9 @@ public class ResourceSelector_Test {
 
   @Test
   public void understandPathSegments() {
-    TestUtil.createFolder( project, "foo" );
-    IFolder folder = TestUtil.createFolder( project, "foo/bar" );
-    IFile file = TestUtil.createFile( project, "foo/bar/test.txt", "content" );
+    createFolder( project, "foo" );
+    IFolder folder = createFolder( project, "foo/bar" );
+    IFile file = createFile( project, "foo/bar/test.txt", "content" );
 
     assertArrayEquals( array( "foo", "bar" ), folder.getProjectRelativePath().segments() );
     assertArrayEquals( array( "foo", "bar", "test.txt" ), file.getProjectRelativePath().segments() );

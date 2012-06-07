@@ -10,19 +10,16 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.builder;
 
-import java.io.ByteArrayInputStream;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.eclipsesource.jshint.ui.test.TestUtil.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -36,20 +33,14 @@ public class MarkerAdapter_Test {
   private IFile file;
 
   @Before
-  public void setUp() throws CoreException {
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    project = workspace.getRoot().getProject( TEST_PROJECT );
-    project.create( null );
-    project.open( null );
-    file = project.getFile( "/test.js" );
-    file.create( new ByteArrayInputStream( "test".getBytes() ), true, null );
+  public void setUp() {
+    project = createProject( TEST_PROJECT );
+    file = createFile( project, "/test.js", "test" );
   }
 
   @After
-  public void tearDown() throws CoreException {
-    if( project.exists() ) {
-      project.delete( true, null );
-    }
+  public void tearDown() {
+    deleteProject( project );
   }
 
   @Test

@@ -23,9 +23,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.eclipsesource.jshint.ui.internal.preferences.ui.IncludesView;
-import com.eclipsesource.jshint.ui.test.TestUtil;
 
-import static com.eclipsesource.jshint.ui.test.TestUtil.list;
+import static com.eclipsesource.jshint.ui.test.TestUtil.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -40,13 +39,13 @@ public class IncludesView_Test {
   public void setUp() {
     Display display = Display.getDefault();
     parent = new Shell( display );
-    project = TestUtil.createProject( "test" );
+    project = createProject( "test" );
     preferences = new EnablementPreferences( new PreferencesMock( "test" ) );
   }
 
   @After
   public void tearDown() {
-    TestUtil.deleteProject( project );
+    deleteProject( project );
     parent.dispose();
   }
 

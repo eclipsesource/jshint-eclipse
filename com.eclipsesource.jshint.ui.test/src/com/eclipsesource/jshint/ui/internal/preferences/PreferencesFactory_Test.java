@@ -11,13 +11,13 @@
 package com.eclipsesource.jshint.ui.internal.preferences;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
 
+import static com.eclipsesource.jshint.ui.test.TestUtil.createProject;
+import static com.eclipsesource.jshint.ui.test.TestUtil.deleteProject;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -26,14 +26,13 @@ public class PreferencesFactory_Test {
   private IProject project;
 
   @Before
-  public void setUp() throws CoreException {
-    IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    project = workspace.getRoot().getProject( "test" );
-    if( project.exists() ) {
-      project.delete( true, null );
-    }
-    project.create( null );
-    project.open( null );
+  public void setUp() {
+    project = createProject( "test" );
+  }
+
+  @After
+  public void tearDown() {
+    deleteProject( project );
   }
 
   @Test
