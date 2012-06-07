@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -107,6 +108,9 @@ public class PathPatternDialog extends TitleAreaDialog {
     filePatternText = new Text( area, SWT.BORDER );
     filePatternText.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
     addIndent( filePatternText );
+    Label label = new Label( area, SWT.NONE );
+    label.setText( "(* = any string, ? = any character)" );
+    addIndent( label );
   }
 
   private void addFileRadioListeners() {
@@ -146,6 +150,9 @@ public class PathPatternDialog extends TitleAreaDialog {
     folderPatternText = new Text( area, SWT.BORDER );
     folderPatternText.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
     addIndent( folderPatternText );
+    Label label = new Label( area, SWT.NONE );
+    label.setText( "(empty for project root folder)" );
+    addIndent( label );
     includeSubFoldersCheckbox = new Button( area, SWT.CHECK );
     includeSubFoldersCheckbox.setText( "including all subfolders" );
     addIndent( includeSubFoldersCheckbox );
