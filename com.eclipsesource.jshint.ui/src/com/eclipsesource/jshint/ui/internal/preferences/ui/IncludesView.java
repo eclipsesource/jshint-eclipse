@@ -26,8 +26,10 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.ISharedImages;
@@ -101,10 +103,16 @@ public class IncludesView extends Composite {
   }
 
   private void addListeners( final Table table ) {
-    table.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetDefaultSelected( SelectionEvent e ) {
+    table.addListener( SWT.DefaultSelection, new Listener() {
+      public void handleEvent( Event event ) {
         editSelectedPattern( table );
+      }
+    } );
+    table.addListener( SWT.Traverse, new Listener() {
+      public void handleEvent( Event event ) {
+        if( event.detail == SWT.TRAVERSE_RETURN ) {
+          event.doit = false;
+        }
       }
     } );
   }
