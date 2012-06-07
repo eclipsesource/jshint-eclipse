@@ -44,5 +44,5 @@ if [ -n "$commit_hash" ]; then
   
   mkdir -p $BUILD_TARGET_DIR
   rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version
-  cp repository/target/*repository.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
+  cp repository/target/com.eclipsesource.jshint.repository-*.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
 fi
