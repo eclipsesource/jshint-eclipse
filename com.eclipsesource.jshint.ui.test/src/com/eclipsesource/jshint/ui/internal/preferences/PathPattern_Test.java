@@ -183,18 +183,19 @@ public class PathPattern_Test {
   }
 
   @Test
-  public void tooManySlashesInARow() {
-    assertCreateFailsWithIAE( "///foo" );
-    assertCreateFailsWithIAE( "foo///" );
-    assertCreateFailsWithIAE( "foo///bar" );
+  public void tooManySuccessiveSlashes() {
+    assertCreateFailsWithTooManySuccessiveSlashes( "///foo" );
+    assertCreateFailsWithTooManySuccessiveSlashes( "foo///" );
+    assertCreateFailsWithTooManySuccessiveSlashes( "foo///bar" );
   }
 
-  private static void assertCreateFailsWithIAE( String expression ) {
+  private static void assertCreateFailsWithTooManySuccessiveSlashes( String expression ) {
     try {
       PathPattern.create( expression );
       fail( "Expected IllegalArgumentsException for expression " + expression );
     } catch( IllegalArgumentException exception ) {
-      assertTrue( exception.getMessage().contains( "Too many slashes in a row" ) );
+      String expected = "Too many successive slashes in expression";
+      assertEquals( expected, exception.getMessage() );
     }
   }
 

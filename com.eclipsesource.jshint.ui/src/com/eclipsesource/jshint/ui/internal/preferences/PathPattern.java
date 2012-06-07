@@ -165,7 +165,7 @@ public class PathPattern {
 
   private static void checkExpression( String expression ) {
     if( expression.contains( "///" ) ) {
-      throw new IllegalArgumentException( "Too many slashes in a row" );
+      throw new IllegalArgumentException( "Too many successive slashes in expression" );
     }
   }
 
