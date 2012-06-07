@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    ralf - initial implementation and API
+ *    Ralf Sternberg initial implementation and API
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences;
 
