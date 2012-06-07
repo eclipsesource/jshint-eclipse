@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -52,6 +53,12 @@ public class PathPatternDialog extends TitleAreaDialog {
   public void setTitle( String title ) {
     this.title = title;
     super.setTitle( title );
+  }
+
+  @Override
+  public void setErrorMessage( String newErrorMessage ) {
+    super.setErrorMessage( newErrorMessage );
+    setOkEnabled( newErrorMessage == null );
   }
 
   @Override
@@ -217,8 +224,8 @@ public class PathPatternDialog extends TitleAreaDialog {
   }
 
   private void validate() {
-    String erroMessage = getCombinedErrorMessage();
-    setErrorMessage( erroMessage );
+    String errorMessage = getCombinedErrorMessage();
+    setErrorMessage( errorMessage );
   }
 
   private String getCombinedErrorMessage() {
@@ -247,6 +254,13 @@ public class PathPatternDialog extends TitleAreaDialog {
       errorMessage = checkFilePattern( text );
     }
     return errorMessage;
+  }
+
+  private void setOkEnabled( boolean enabled ) {
+    Button okButton = getButton( IDialogConstants.OK_ID );
+    if( okButton != null ) {
+      okButton.setEnabled( enabled );
+    }
   }
 
   private static String checkFilePattern( String pattern ) {

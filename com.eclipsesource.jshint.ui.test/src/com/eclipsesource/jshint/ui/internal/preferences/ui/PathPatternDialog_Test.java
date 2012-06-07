@@ -15,6 +15,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotButton;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotRadio;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotText;
@@ -186,7 +187,7 @@ public class PathPatternDialog_Test {
   public void getValue_withNull() {
     PathPatternDialog dialog = new PathPatternDialog( shell, null );
     openNonBlocking( dialog );
-    new SWTBot( dialog.getShell() ).button( "OK" ).click();
+    getOkButton( dialog ).click();
 
     assertEquals( "//*", dialog.getValue() );
   }
@@ -195,7 +196,7 @@ public class PathPatternDialog_Test {
   public void getValue_withOnlyFilePattern() {
     PathPatternDialog dialog = new PathPatternDialog( shell, "*.js" );
     openNonBlocking( dialog );
-    new SWTBot( dialog.getShell() ).button( "OK" ).click();
+    getOkButton( dialog ).click();
 
     assertEquals( "*.js", dialog.getValue() );
   }
@@ -204,7 +205,7 @@ public class PathPatternDialog_Test {
   public void getValue_withPathAndFilePattern() {
     PathPatternDialog dialog = new PathPatternDialog( shell, "src/js//*.js" );
     openNonBlocking( dialog );
-    new SWTBot( dialog.getShell() ).button( "OK" ).click();
+    getOkButton( dialog ).click();
 
     assertEquals( "src/js//*.js", dialog.getValue() );
   }
@@ -220,7 +221,7 @@ public class PathPatternDialog_Test {
     getFolderPatternText( dialog ).setText( "src" );
     getIncludeFolderCheckbox( dialog ).select();
 
-    new SWTBot( dialog.getShell() ).button( "OK" ).click();
+    getOkButton( dialog ).click();
 
     assertEquals( "src//*.js", dialog.getValue() );
   }
@@ -265,6 +266,26 @@ public class PathPatternDialog_Test {
     dialog.setTitle( "foo" );
 
     assertNotNull( new SWTBot( dialog.getShell() ).label( "foo" ) );
+  }
+
+  @Test
+  public void setErrorMessage() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+  
+    dialog.setErrorMessage( "error" );
+  
+    assertEquals( "error", dialog.getErrorMessage() );
+  }
+
+  @Test
+  public void setErrorMessage_disablesOkButton() {
+    PathPatternDialog dialog = new PathPatternDialog( shell, "src/*.js" );
+    openNonBlocking( dialog );
+  
+    dialog.setErrorMessage( "error" );
+  
+    assertFalse( getOkButton( dialog ).isEnabled() );
   }
 
   @Test
@@ -410,6 +431,10 @@ public class PathPatternDialog_Test {
 
   private static SWTBotText getFolderPatternText( PathPatternDialog dialog ) {
     return new SWTBot( dialog.getShell() ).text( 1 );
+  }
+
+  private static SWTBotButton getOkButton( PathPatternDialog dialog ) {
+    return new SWTBot( dialog.getShell() ).button( "OK" );
   }
 
   private static void openNonBlocking( Dialog dialog ) {
