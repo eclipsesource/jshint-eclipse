@@ -48,6 +48,7 @@ public class JSHint {
   private static final String DEFAULT_JSHINT_VERSION = "r07";
   private Function jshint;
   private Object opts;
+  private ScriptableObject scope;
 
   /**
    * Loads the default JSHint library.
@@ -147,7 +148,7 @@ public class JSHint {
   private void load( Reader reader ) throws IOException {
     Context context = Context.enter();
     try {
-      ScriptableObject scope = context.initStandardObjects();
+      scope = context.initStandardObjects();
       context.evaluateReader( scope, reader, "jshint library", 1, null );
       jshint = findJSHintFunction( scope );
     } catch( RhinoException exception ) {
@@ -159,7 +160,6 @@ public class JSHint {
 
   private boolean checkCode( Context context, String code ) {
     try {
-      ScriptableObject scope = context.initStandardObjects();
       Object[] args = new Object[] { code, opts };
       return ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
     } catch( JavaScriptException exception ) {
