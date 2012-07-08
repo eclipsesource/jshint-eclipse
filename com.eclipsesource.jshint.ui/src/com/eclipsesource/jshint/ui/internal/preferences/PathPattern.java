@@ -150,11 +150,12 @@ public class PathPattern {
       return false;
     }
     if( segmentPatterns[ patternPos ] == PathSegmentPattern.ANY_NUMBER ) {
-      while( inputPos <= segments.length ) {
-        if( match( patternPos + 1, inputPos, segments ) ) {
+      int nextInputPos = inputPos;
+      while( nextInputPos <= segments.length ) {
+        if( match( patternPos + 1, nextInputPos, segments ) ) {
           return true;
         }
-        inputPos++;
+        nextInputPos++;
       }
       return false;
     } else if( segmentPatterns[ patternPos ].matches( segments[ inputPos ] ) ) {

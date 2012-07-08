@@ -81,9 +81,8 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
     IProject project = getResource().getProject();
     if( enabled ) {
       return BuilderUtil.addBuilderToProject( project, JSHintBuilder.ID );
-    } else {
-      return BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID );
     }
+    return BuilderUtil.removeBuilderFromProject( project, JSHintBuilder.ID );
   }
 
   private void triggerRebuild() throws CoreException {

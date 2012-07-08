@@ -109,11 +109,12 @@ public class PathSegmentPattern {
         return false;
       }
       if( pattern[ patternPos ] == '*' ) {
-        while( inputPos <= input.length ) {
-          if( match( patternPos + 1, inputPos, input ) ) {
+        int nextInputPos = inputPos;
+        while( nextInputPos <= input.length ) {
+          if( match( patternPos + 1, nextInputPos, input ) ) {
             return true;
           }
-          inputPos++;
+          nextInputPos++;
         }
         return false;
       } else if( pattern[ patternPos ] == '?' ) {

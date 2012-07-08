@@ -13,11 +13,11 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swtbot.swt.finder.SWTBot;
+import org.eclipse.swtbot.swt.finder.widgets.SWTBotTable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,24 +53,24 @@ public class IncludesView_Test {
   public void tablesEmptyByDefault() {
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
 
-    Table includeTable = findIncludeTable( view );
-    Table excludeTable = findExcludeTable( view );
-    assertEquals( 0, includeTable.getItemCount() );
-    assertEquals( 0, excludeTable.getItemCount() );
+    SWTBotTable includeTable = findIncludeTable( view );
+    SWTBotTable excludeTable = findExcludeTable( view );
+    assertEquals( 0, includeTable.rowCount() );
+    assertEquals( 0, excludeTable.rowCount() );
   }
 
   @Test
   public void loadDefaults() {
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
-    Table includeTable = findIncludeTable( view );
-    Table excludeTable = findExcludeTable( view );
-    new TableItem( includeTable, SWT.NONE ).setText( "/foo/" );
-    new TableItem( excludeTable, SWT.NONE ).setText( "/bar/" );
+    SWTBotTable includeTable = findIncludeTable( view );
+    SWTBotTable excludeTable = findExcludeTable( view );
+    new TableItem( includeTable.widget, SWT.NONE ).setText( "/foo/" );
+    new TableItem( excludeTable.widget, SWT.NONE ).setText( "/bar/" );
 
     view.loadDefaults();
 
-    assertEquals( 0, includeTable.getItemCount() );
-    assertEquals( 0, excludeTable.getItemCount() );
+    assertEquals( 0, includeTable.rowCount() );
+    assertEquals( 0, excludeTable.rowCount() );
   }
 
   @Test
@@ -81,12 +81,12 @@ public class IncludesView_Test {
 
     view.loadPreferences( preferences );
 
-    Table includeTable = findIncludeTable( view );
-    Table excludeTable = findExcludeTable( view );
-    assertEquals( 1, includeTable.getItemCount() );
-    assertEquals( 1, excludeTable.getItemCount() );
-    assertEquals( "/foo/", includeTable.getItem( 0 ).getText() );
-    assertEquals( "/bar/", excludeTable.getItem( 0 ).getText() );
+    SWTBotTable includeTable = findIncludeTable( view );
+    SWTBotTable excludeTable = findExcludeTable( view );
+    assertEquals( 1, includeTable.rowCount() );
+    assertEquals( 1, excludeTable.rowCount() );
+    assertEquals( "/foo/", includeTable.getTableItem( 0 ).getText() );
+    assertEquals( "/bar/", excludeTable.getTableItem( 0 ).getText() );
   }
 
   @Test
@@ -98,18 +98,18 @@ public class IncludesView_Test {
     preferences.setIncludePatterns( list( "/bar/" ) );
     view.loadPreferences( preferences );
 
-    Table table = findIncludeTable( view );
-    assertEquals( 1, table.getItemCount() );
-    assertEquals( "/bar/", table.getItem( 0 ).getText() );
+    SWTBotTable table = findIncludeTable( view );
+    assertEquals( 1, table.rowCount() );
+    assertEquals( "/bar/", table.getTableItem( 0 ).getText() );
   }
 
   @Test
   public void storePreferences() {
     IncludesView view = new IncludesView( parent, SWT.NONE, project );
-    Table includeTable = findIncludeTable( view );
-    Table excludeTable = findExcludeTable( view );
-    new TableItem( includeTable, SWT.NONE ).setText( "/foo/" );
-    new TableItem( excludeTable, SWT.NONE ).setText( "/bar/" );
+    SWTBotTable includeTable = findIncludeTable( view );
+    SWTBotTable excludeTable = findExcludeTable( view );
+    new TableItem( includeTable.widget, SWT.NONE ).setText( "/foo/" );
+    new TableItem( excludeTable.widget, SWT.NONE ).setText( "/bar/" );
 
     view.storePreferences( preferences );
 
@@ -117,21 +117,12 @@ public class IncludesView_Test {
     assertTrue( preferences.getExcludePatterns().contains( "/bar/" ) );
   }
 
-  private static Table findIncludeTable( Composite parent ) {
-    return findTable( parent, 0 );
+  private static SWTBotTable findIncludeTable( Composite parent ) {
+    return new SWTBot( parent ).table( 0 );
   }
 
-  private static Table findExcludeTable( Composite parent ) {
-    return findTable( parent, 1 );
-  }
-
-  private static Table findTable( Composite parent, int number ) {
-    for( Control child : parent.getChildren() ) {
-      if( child instanceof Table && number-- == 0 ) {
-        return (Table)child;
-      }
-    }
-    return null;
+  private static SWTBotTable findExcludeTable( Composite parent ) {
+    return new SWTBot( parent ).table( 1 );
   }
 
 }

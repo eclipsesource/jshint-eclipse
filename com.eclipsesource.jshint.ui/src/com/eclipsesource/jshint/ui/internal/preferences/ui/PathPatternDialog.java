@@ -239,9 +239,8 @@ public class PathPatternDialog extends TitleAreaDialog {
     String folderErrorMessage = getFolderErrorMessage();
     if( fileErrorMessage != null && folderErrorMessage != null ) {
       return fileErrorMessage + ", " + folderErrorMessage;
-    } else {
-      return fileErrorMessage != null ? fileErrorMessage : folderErrorMessage;
     }
+    return fileErrorMessage != null ? fileErrorMessage : folderErrorMessage;
   }
 
   private String getFolderErrorMessage() {

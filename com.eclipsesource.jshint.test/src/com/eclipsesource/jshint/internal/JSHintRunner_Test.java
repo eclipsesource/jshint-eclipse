@@ -179,17 +179,15 @@ public class JSHintRunner_Test {
   private File createTmpFile( String content, String charset ) throws IOException {
     File file = File.createTempFile( "jshint-test", ".tmp" );
     FileOutputStream outputStream = new FileOutputStream( file );
-    if( outputStream != null ) {
+    try {
+      BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( outputStream, charset ) );
       try {
-        BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( outputStream, charset ) );
-        try {
-          writer.write( content );
-        } finally {
-          writer.close();
-        }
+        writer.write( content );
       } finally {
-        outputStream.close();
+        writer.close();
       }
+    } finally {
+      outputStream.close();
     }
     file.deleteOnExit();
     return file;

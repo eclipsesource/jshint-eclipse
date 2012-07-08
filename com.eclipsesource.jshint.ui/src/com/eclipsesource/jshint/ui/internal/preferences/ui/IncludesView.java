@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -214,7 +214,7 @@ public class IncludesView extends Composite {
     String pattern = null;
     PathPatternDialog dialog = new PathPatternDialog( table.getShell(), origPattern );
     configurePatternDialog( dialog, table );
-    if( dialog.open() == Dialog.OK ) {
+    if( dialog.open() == Window.OK ) {
       pattern = dialog.getValue();
     }
     return pattern;
