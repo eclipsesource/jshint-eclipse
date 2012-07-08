@@ -32,6 +32,7 @@ public class Text_Test {
     assertEquals( "", textFile.getContent() );
     assertEquals( 1, textFile.getLineCount() );
     assertEquals( "0", getAllLineOffsets( textFile ) );
+    assertEquals( "0", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -42,6 +43,7 @@ public class Text_Test {
     assertEquals( "foo", textFile.getContent() );
     assertEquals( 1, textFile.getLineCount() );
     assertEquals( "0", getAllLineOffsets( textFile ) );
+    assertEquals( "3", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -52,6 +54,7 @@ public class Text_Test {
     assertEquals( "foo\n", textFile.getContent() );
     assertEquals( 2, textFile.getLineCount() );
     assertEquals( "0, 4", getAllLineOffsets( textFile ) );
+    assertEquals( "4, 0", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -62,6 +65,7 @@ public class Text_Test {
     assertEquals( "line1\nline2", textFile.getContent() );
     assertEquals( 2, textFile.getLineCount() );
     assertEquals( "0, 6", getAllLineOffsets( textFile ) );
+    assertEquals( "6, 5", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -72,6 +76,7 @@ public class Text_Test {
     assertEquals( "line1\nline2\n", textFile.getContent() );
     assertEquals( 3, textFile.getLineCount() );
     assertEquals( "0, 6, 12", getAllLineOffsets( textFile ) );
+    assertEquals( "6, 6, 0", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -82,6 +87,7 @@ public class Text_Test {
     assertEquals( "line1\n\nline3", textFile.getContent() );
     assertEquals( 3, textFile.getLineCount() );
     assertEquals( "0, 6, 7", getAllLineOffsets( textFile ) );
+    assertEquals( "6, 1, 5", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -92,6 +98,7 @@ public class Text_Test {
     assertEquals( "line1\r\nline2\r\n", textFile.getContent() );
     assertEquals( 3, textFile.getLineCount() );
     assertEquals( "0, 7, 14", getAllLineOffsets( textFile ) );
+    assertEquals( "7, 7, 0", getAllLineLengths( textFile ) );
   }
 
   @Test
@@ -118,6 +125,23 @@ public class Text_Test {
           result.append( ", " );
         }
         result.append( offset );
+      } catch( IndexOutOfBoundsException e ) {
+        break;
+      }
+    }
+    return result.toString();
+  }
+
+  private static String getAllLineLengths( Text textFile ) {
+    StringBuilder result = new StringBuilder();
+    int line = 0;
+    while( true ) {
+      try {
+        int length = textFile.getLineLength( line++ );
+        if( result.length() > 0 ) {
+          result.append( ", " );
+        }
+        result.append( length );
       } catch( IndexOutOfBoundsException e ) {
         break;
       }

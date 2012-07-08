@@ -33,7 +33,10 @@ final class MarkerHandler implements ProblemHandler {
     int character = problem.getCharacter();
     String message = problem.getMessage();
     if( isValidLine( line ) ) {
-      int start = code.getLineOffset( line - 1 ) + character;
+      int start = -1;
+      if( isValidCharacter( line, character ) ) {
+        start = code.getLineOffset( line - 1 ) + character;
+      }
       createMarker( line, start, message );
     } else {
       createMarker( -1, -1, message );
@@ -50,6 +53,10 @@ final class MarkerHandler implements ProblemHandler {
 
   private boolean isValidLine( int line ) {
     return line >= 1 && line <= code.getLineCount();
+  }
+
+  private boolean isValidCharacter( int line, int character ) {
+    return character >= 0 && character <= code.getLineLength( line - 1 );
   }
 
 }

@@ -35,11 +35,33 @@ public class Text {
     return lineCount;
   }
 
+  /**
+   * Returns the offset of the given line's first character.
+   *
+   * @param line
+   *          zero-relative line index
+   * @return the line offset
+   */
   public int getLineOffset( int line ) {
     if( line >= lineCount ) {
       throw new IndexOutOfBoundsException( "line does not exist" );
     }
     return lineOffsets[ line ];
+  }
+
+  /**
+   * Returns the length of the given line, including linebreak characters.
+   *
+   * @param line
+   *          zero-relative line index
+   * @return the line length in characters
+   */
+  public int getLineLength( int line ) {
+    if( line >= lineCount ) {
+      throw new IndexOutOfBoundsException( "line does not exist" );
+    }
+    int nextOffset = line + 1 == lineCount ? code.length() : lineOffsets[ line + 1 ];
+    return nextOffset - lineOffsets[ line ];
   }
 
   private void read( Reader reader ) throws IOException {

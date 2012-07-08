@@ -48,28 +48,55 @@ public class MarkerHandler_Test {
   }
 
   @Test
-  public void createMarkerWithInvalidLine() throws IOException {
+  public void createMarker_atDocumentWhenLineIsZero() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( 0, 0, "test" ) );
+    handler.handleProblem( new TestProblem( 0, 1, "test" ) );
 
     assertEquals( "-1,-1,-1,test", log.get( 0 ) );
   }
 
   @Test
-  public void createMarkerWithInvalidLine2() throws IOException {
+  public void createMarker_atDocumentWhenLineIsNegative() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( 2, 0, "test" ) );
+    handler.handleProblem( new TestProblem( -1, 1, "test" ) );
 
     assertEquals( "-1,-1,-1,test", log.get( 0 ) );
   }
 
   @Test
-  public void createMarkerWithInvalidRange() throws IOException {
+  public void createMarker_atDocumentWhenLineExceedsDocument() throws IOException {
+    MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
+
+    handler.handleProblem( new TestProblem( 2, 1, "test" ) );
+
+    assertEquals( "-1,-1,-1,test", log.get( 0 ) );
+  }
+
+  @Test
+  public void createMarker_atLineWhenCharacterIsNegative() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
     handler.handleProblem( new TestProblem( 1, -1, "test" ) );
+
+    assertEquals( "1,-1,-1,test", log.get( 0 ) );
+  }
+
+  @Test
+  public void createMarker_atLineWhenCharacterExceedsLine() throws IOException {
+    MarkerHandler handler = new MarkerHandler( adapter, createText( "line1\nline2\n" ) );
+
+    handler.handleProblem( new TestProblem( 1, 7, "test" ) );
+
+    assertEquals( "1,-1,-1,test", log.get( 0 ) );
+  }
+
+  @Test
+  public void createMarker_atLineWhenCharacterExceedsDocument() throws IOException {
+    MarkerHandler handler = new MarkerHandler( adapter, createText( "line1\nline2\n" ) );
+
+    handler.handleProblem( new TestProblem( 1, 13, "test" ) );
 
     assertEquals( "1,-1,-1,test", log.get( 0 ) );
   }
