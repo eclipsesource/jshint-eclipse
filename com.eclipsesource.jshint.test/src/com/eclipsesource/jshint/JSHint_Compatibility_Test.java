@@ -21,9 +21,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import static org.hamcrest.Matchers.greaterThan;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith( value = Parameterized.class )
@@ -59,21 +58,31 @@ public class JSHint_Compatibility_Test {
   }
 
   @Test
-  public void checkValid_noProblems() {
+  public void check_noProblemsIfValid() {
     jsHint.check( "var a = 23;", handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
-  @SuppressWarnings( "boxing" )
-  public void checkInvalid_problemFieldsSet() {
-    jsHint.check( "hmpf!", handler );
+  public void check_problemLineIs_1_Relative() {
+    jsHint.check( "#", handler );
 
-    assertFalse( problems.isEmpty() );
-    assertThat( problems.get( 0 ).getLine(), greaterThan( 0 ) );
-    assertThat( problems.get( 0 ).getCharacter(), greaterThan( 0 ) );
-    assertThat( problems.get( 0 ).getMessage().length(), greaterThan( 0 ) );
+    assertEquals( 1, problems.get( 0 ).getLine() );
+  }
+
+  @Test
+  public void check_problemCharacterIs_0_Relative() {
+    jsHint.check( "#", handler );
+
+    assertEquals( 0, problems.get( 0 ).getCharacter() );
+  }
+
+  @Test
+  public void check_problemMessageIsNotEmpty() {
+    jsHint.check( "#", handler );
+
+    assertTrue( problems.get( 0 ).getMessage().length() > 0 );
   }
 
   private void loadJsHint() throws IOException {

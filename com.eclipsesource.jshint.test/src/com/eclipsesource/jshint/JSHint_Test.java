@@ -272,11 +272,36 @@ public class JSHint_Test {
   }
 
   @Test
+  public void testProblemLineIs_1_Relative() {
+    jsHint.configure( new Configuration() );
+    jsHint.check( "#", handler );
+
+    assertEquals( 1, problems.get( 0 ).getLine() );
+  }
+
+  @Test
+  public void testProblemCharacterIs_0_Relative() {
+    jsHint.configure( new Configuration() );
+    jsHint.check( "#", handler );
+
+    assertEquals( 0, problems.get( 0 ).getCharacter() );
+  }
+
+  @Test
+  public void check_problemMessageIsNotEmpty() {
+    jsHint.configure( new Configuration() );
+    jsHint.check( "#", handler );
+
+    String message = problems.get( 0 ).getMessage();
+    assertTrue( message.length() > 0 );
+  }
+
+  @Test
   public void testPosition() {
     jsHint.configure( new Configuration() );
     jsHint.check( "var a = x == null ? null : 1;", handler );
 
-    assertEquals( "1.11", getPosition( problems.get( 0 ) ) );
+    assertEquals( "1.10", getPosition( problems.get( 0 ) ) );
   }
 
   @Test
@@ -284,7 +309,7 @@ public class JSHint_Test {
     jsHint.configure( new Configuration() );
     jsHint.check( " var a = x == null ? null : 1;", handler );
 
-    assertEquals( "1.12", getPosition( problems.get( 0 ) ) );
+    assertEquals( "1.11", getPosition( problems.get( 0 ) ) );
   }
 
   @Test
@@ -292,7 +317,7 @@ public class JSHint_Test {
     jsHint.configure( new Configuration() );
     jsHint.check( "\tvar a = x == null ? null : 1;", handler );
 
-    assertEquals( "1.12", getPosition( problems.get( 0 ) ) );
+    assertEquals( "1.11", getPosition( problems.get( 0 ) ) );
   }
 
   private static String getPosition( Problem problem ) {

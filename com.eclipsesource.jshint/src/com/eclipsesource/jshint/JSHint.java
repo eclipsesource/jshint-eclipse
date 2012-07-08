@@ -200,6 +200,9 @@ public class JSHint {
     String reason = getPropertyAsString( error, "reason", "" );
     int line = getPropertyAsInt( error, "line", -1 );
     int character = getPropertyAsInt( error, "character", -1 );
+    if( character > 0 ) {
+      character -= 1;
+    }
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
     return new ProblemImpl( line, character, message );
   }
