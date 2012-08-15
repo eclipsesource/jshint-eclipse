@@ -118,7 +118,6 @@ class CompatibilityUtil {
     EnablementPreferences enablementPrefs = new EnablementPreferences( projectPrefs );
     if( "true".equals( projectPrefs.get( "enabled", "" ) ) ) {
       enablementPrefs.setIncludePatterns( createBasicIncludesList() );
-      projectPrefs.remove( "enabled" );
       flushPreferences( projectPrefs );
     }
   }

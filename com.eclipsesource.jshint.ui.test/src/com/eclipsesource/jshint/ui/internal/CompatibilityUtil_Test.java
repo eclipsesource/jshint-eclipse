@@ -108,7 +108,9 @@ public class CompatibilityUtil_Test {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     EnablementPreferences enablePrefs = new EnablementPreferences( node );
     assertTrue( enablePrefs.getIncludePatterns().contains( "//*.js" ) );
-    assertNull( node.get( "enabled", null ) );
+    // enabled property not removed,
+    // see https://github.com/eclipsesource/jshint-eclipse/issues/20
+    assertEquals( "true", node.get( "enabled", null ) );
   }
 
   @Test
