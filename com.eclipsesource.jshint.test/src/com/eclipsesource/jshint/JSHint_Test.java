@@ -161,22 +161,33 @@ public class JSHint_Test {
 
   @Test
   public void checkEmpty() {
-    jsHint.check( "", handler );
+    boolean result = jsHint.check( "", handler );
 
+    assertTrue( result );
+    assertTrue( problems.isEmpty() );
+  }
+
+  @Test
+  public void checkWhitespace() {
+    boolean result = jsHint.check( " ", handler );
+
+    assertTrue( result );
     assertTrue( problems.isEmpty() );
   }
 
   @Test
   public void checkOk() {
-    jsHint.check( "var foo = 23;", handler );
+    boolean result = jsHint.check( "var foo = 23;", handler );
 
+    assertTrue( result );
     assertTrue( problems.isEmpty() );
   }
 
   @Test
   public void checkErrors() {
-    jsHint.check( "cheese!", handler );
+    boolean result = jsHint.check( "cheese!", handler );
 
+    assertFalse( result );
     assertFalse( problems.isEmpty() );
   }
 
@@ -187,6 +198,7 @@ public class JSHint_Test {
 
     try {
       jsHint.check( "var a = 1;", handler );
+      fail();
     } catch( RuntimeException exception ) {
 
       String expected = "JavaScript exception occured in JSHint check: ERROR";

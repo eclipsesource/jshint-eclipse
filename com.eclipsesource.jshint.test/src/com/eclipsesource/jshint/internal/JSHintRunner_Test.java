@@ -176,7 +176,7 @@ public class JSHintRunner_Test {
     }
   }
 
-  private File createTmpFile( String content, String charset ) throws IOException {
+  private static File createTmpFile( String content, String charset ) throws IOException {
     File file = File.createTempFile( "jshint-test", ".tmp" );
     FileOutputStream outputStream = new FileOutputStream( file );
     try {

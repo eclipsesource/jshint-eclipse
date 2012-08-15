@@ -45,7 +45,7 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "r07";
+  private static final String DEFAULT_JSHINT_VERSION = "r09";
   private Function jshint;
   private Object opts;
   private ScriptableObject scope;
@@ -122,15 +122,19 @@ public class JSHint {
     if( jshint == null ) {
       throw new IllegalStateException( "JSHint is not loaded" );
     }
-    boolean result;
-    Context context = Context.enter();
-    try {
-      result = checkCode( context, code );
-      if( !result && handler != null ) {
-        handleProblems( handler );
+    boolean result = true;
+    // Don't feed jshint with empty strings, see https://github.com/jshint/jshint/issues/615
+    // However, consider an empty string valid
+    if( code.trim().length() != 0 ) {
+      Context context = Context.enter();
+      try {
+        result = checkCode( context, code );
+        if( !result && handler != null ) {
+          handleProblems( handler );
+        }
+      } finally {
+        Context.exit();
       }
-    } finally {
-      Context.exit();
     }
     return result;
   }
