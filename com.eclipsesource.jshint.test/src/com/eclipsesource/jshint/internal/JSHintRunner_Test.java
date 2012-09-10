@@ -33,6 +33,7 @@ import static org.junit.Assert.assertThat;
 public class JSHintRunner_Test {
 
   private static final String SYSOUT_ENCODING = "UTF-8";
+  private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
   private PrintStream bufferedSysout;
   private ByteArrayOutputStream sysout;
 
@@ -54,7 +55,7 @@ public class JSHintRunner_Test {
 
     runner.run();
 
-    assertThat( getSysout(), startsWith( "No input files\n" ) );
+    assertThat( getSysout(), startsWith( "No input files" + LINE_SEPARATOR ) );
     assertThat( getSysout(), containsString( "Usage:" ) );
   }
 
@@ -64,7 +65,7 @@ public class JSHintRunner_Test {
 
     runner.run( "--charset" );
 
-    assertThat( getSysout(), startsWith( "No input files\n" ) );
+    assertThat( getSysout(), startsWith( "No input files" + LINE_SEPARATOR ) );
     assertThat( getSysout(), containsString( "Usage:" ) );
   }
 
@@ -105,10 +106,12 @@ public class JSHintRunner_Test {
     JSHintRunner runner = new JSHintRunner();
     File file = createTmpFile( "-- not processed --", "UTF-8" );
     String fileName = file.getAbsolutePath();
+    File missingFile = new File( "/nowhere/missing-file.js" );
+    String missingFileName = missingFile.getAbsolutePath();
 
-    runner.run( fileName, "/nowhere/missing-file.js" );
+    runner.run( fileName, missingFileName );
 
-    assertThat( getSysout(), startsWith( "No such file: /nowhere/missing-file.js" ) );
+    assertThat( getSysout(), startsWith( "No such file: " + missingFileName ) );
   }
 
   @Test
