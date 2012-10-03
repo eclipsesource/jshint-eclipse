@@ -1,0 +1,11 @@
+---
+layout: post
+title: Version 0.9.5 published
+---
+
+This is a bugfix release, it updates the built-in JSHint and fixes a
+number of issues such as an off-by-one shift in marker positions and
+a problem with wild JSHint errors caused by an interference with
+another rhino version in the IDE.
+
+The built-in JSHint has been upgraded to version r12.
