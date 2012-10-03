@@ -47,6 +47,14 @@ public class Configuration_Test {
   }
 
   @Test
+  public void addSeparateOptionsWithChaining() {
+    configuration.addOption( "foo", true ).addOption( "bar", false );
+
+    assertEquals( "{\"indent\": 1, \"foo\": true, \"bar\": false}",
+                  configuration.toJson() );
+  }
+
+  @Test
   public void addSameOptionTwice() {
     configuration.addOption( "foo", true );
     configuration.addOption( "foo", false );
@@ -67,6 +75,14 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
 
     assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.toJson() );
+  }
+
+  @Test
+  public void addSeparatePredefsWithChaining() {
+    configuration.addPredefined( "foo", true ).addPredefined( "bar", false );
+
+    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}, \"indent\": 1}",
+                  configuration.toJson() );
   }
 
   @Test

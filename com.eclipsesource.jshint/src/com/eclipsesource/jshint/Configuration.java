@@ -38,10 +38,12 @@ public class Configuration {
    * @param value
    *          the value for this option, <code>true</code> to enable the option, <code>false</code>
    *          to disable it
-   * @see http://www.jshint.com/options/
+   * @return the configuration to allow chaining
+   * @see http://www.jshint.com/docs/
    */
-  public void addOption( String option, boolean value ) {
+  public Configuration addOption( String option, boolean value ) {
     options.put( option, Boolean.valueOf( value ) );
+    return this;
   }
 
   /**
@@ -53,9 +55,11 @@ public class Configuration {
    * @param overwrite
    *          <code>true</code> if this identifier can be assigned, <code>false</code> if it is
    *          read-only
+   * @return the configuration to allow chaining
    */
-  public void addPredefined( String identifier, boolean overwrite ) {
+  public Configuration addPredefined( String identifier, boolean overwrite ) {
     predefs.put( identifier, Boolean.valueOf( overwrite ) );
+    return this;
   }
 
   public String toJson() {
