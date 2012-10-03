@@ -21,10 +21,10 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>../com.eclipsesource.jshint</module>
-    <module>../com.eclipsesource.jshint.ui</module>
-    <module>../com.eclipsesource.jshint.test</module>
-    <module>../com.eclipsesource.jshint.ui.test</module>
+    <module>../../bundles/com.eclipsesource.jshint</module>
+    <module>../../bundles/com.eclipsesource.jshint.ui</module>
+    <module>../../tests/com.eclipsesource.jshint.test</module>
+    <module>../../tests/com.eclipsesource.jshint.ui.test</module>
     <module>../com.eclipsesource.jshint.feature</module>
     <module>repository</module>
   </modules>

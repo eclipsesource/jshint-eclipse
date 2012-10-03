@@ -5,15 +5,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.eclipsesource.jshint</groupId>
-  <artifactId>com.eclipsesource.jshint</artifactId>
+  <artifactId>com.eclipsesource.jshint.test</artifactId>
   <version>0.9.4-SNAPSHOT</version>
-  <packaging>eclipse-plugin</packaging>
+  <packaging>eclipse-test-plugin</packaging>
 
   <parent>
     <groupId>com.eclipsesource.jshint</groupId>
     <artifactId>com.eclipsesource.jshint.releng</artifactId>
     <version>0.9.4-SNAPSHOT</version>
-    <relativePath>../com.eclipsesource.jshint.releng/pom.xml</relativePath>
+    <relativePath>../../releng/com.eclipsesource.jshint.releng/pom.xml</relativePath>
   </parent>
 
 </project>

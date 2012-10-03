@@ -13,7 +13,7 @@
     <groupId>com.eclipsesource.jshint</groupId>
     <artifactId>com.eclipsesource.jshint.releng</artifactId>
     <version>0.9.4-SNAPSHOT</version>
-    <relativePath>../com.eclipsesource.jshint.releng/pom.xml</relativePath>
+    <relativePath>../../releng/com.eclipsesource.jshint.releng/pom.xml</relativePath>
   </parent>
 
 </project>

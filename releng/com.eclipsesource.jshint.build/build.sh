@@ -3,10 +3,11 @@
 MVN=$HOME/bin/mvn
 BUILD_TARGET_DIR=/tmp/jshint-eclipse
 
-includePaths="com.eclipsesource.jshint com.eclipsesource.jshint.ui com.eclipsesource.jshint.feature"
+# path that are relevant for effective commit
+includePaths="bundles/com.eclipsesource.jshint bundles/com.eclipsesource.jshint.ui releng/com.eclipsesource.jshint.feature"
 
 # make sure we're in the git repository root
-GIT_ROOT="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+GIT_ROOT="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && cd ../../ && pwd )"
 cd $GIT_ROOT
 if [ ! -d ".git" ]; then
   echo "git root directory not found"
@@ -28,7 +29,7 @@ else
   echo "Uncommitted changes, run 'git status'"
 fi
 
-cd "com.eclipsesource.jshint.releng" || exit 1
+cd "releng/com.eclipsesource.jshint.build" || exit 1
 
 $MVN clean install || exit 1
 
@@ -46,3 +47,4 @@ if [ -n "$commit_hash" ]; then
   rsync -av repository/target/repository/ $BUILD_TARGET_DIR/jshint-eclipse-$version
   cp repository/target/com.eclipsesource.jshint.repository-*.zip $BUILD_TARGET_DIR/jshint-eclipse-$version.zip
 fi
+
