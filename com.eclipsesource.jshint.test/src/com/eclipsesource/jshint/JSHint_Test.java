@@ -27,10 +27,6 @@ import static org.junit.Assert.*;
 
 public class JSHint_Test {
 
-  private static final String CODE_WITH_EQNULL = "var f = x == null ? null : x + 1;";
-  private static final String CODE_WITH_GLOBAL_ORG = "org = {};";
-
-  private static final String WARN_EQNULL = "Use '===' to compare with 'null'";
   private List<Problem> problems;
   private TestHandler handler;
   private JSHint jsHint;
@@ -47,23 +43,42 @@ public class JSHint_Test {
   public void getDefaultVersion() {
     String version = JSHint.getDefaultLibraryVersion();
 
-    assertTrue( version.startsWith( "r" ) );
+    assertTrue( version.matches( "r\\d+" ) );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void configureWithNull() {
+    jsHint.configure( null );
+  }
+
+  @Test
+  public void configureBeforeLoad() throws Exception {
+    Configuration configuration = new Configuration().addOption( "undef", true );
+
+    JSHint jsHint = new JSHint();
+    jsHint.configure( configuration );
+    jsHint.load();
+    jsHint.check( "x = 23;", handler );
+
+    assertEquals( "'x' is not defined", problems.get( 0 ).getMessage() );
+  }
+
+  @Test
+    public void loadBeforeConfigure() throws Exception {
+    Configuration configuration = new Configuration().addOption( "undef", true );
+
+    JSHint jsHint = new JSHint();
+    jsHint.load();
+    jsHint.configure( configuration );
+    jsHint.check( "x = 23;", handler );
+
+    assertEquals( "'x' is not defined", problems.get( 0 ).getMessage() );
   }
 
   @Test( expected = IllegalStateException.class )
   public void checkWithoutLoad() {
     JSHint jsHint = new JSHint();
-    jsHint.check( "hmpf!", handler );
-  }
-
-  @Test
-  public void configureBeforeLoad() throws Exception {
-    JSHint jsHint = new JSHint();
-    jsHint.configure( new Configuration() );
-    jsHint.load();
-    jsHint.check( "hmpf!", handler );
-
-    assertFalse( problems.isEmpty() );
+    jsHint.check( "code", handler );
   }
 
   @Test( expected = NullPointerException.class )
@@ -75,11 +90,6 @@ public class JSHint_Test {
   public void checkWithNullHandler() {
     assertTrue( jsHint.check( "var a = 23;", null ) );
     assertFalse( jsHint.check( "HMPF!", null ) );
-  }
-
-  @Test( expected = NullPointerException.class )
-  public void configWithNull() {
-    jsHint.configure( null );
   }
 
   @Test( expected = NullPointerException.class )
@@ -160,7 +170,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkEmpty() {
+  public void checkWithEmptyCode() {
     boolean result = jsHint.check( "", handler );
 
     assertTrue( result );
@@ -168,7 +178,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkWhitespace() {
+  public void checkWithOnlyWhitespace() {
     boolean result = jsHint.check( " ", handler );
 
     assertTrue( result );
@@ -176,7 +186,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkOk() {
+  public void checkWithValidCode() {
     boolean result = jsHint.check( "var foo = 23;", handler );
 
     assertTrue( result );
@@ -184,7 +194,7 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkErrors() {
+  public void checkWithFaultyCode() {
     boolean result = jsHint.check( "cheese!", handler );
 
     assertFalse( result );
@@ -207,133 +217,30 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkUndefWithoutConfig() {
-    jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
+  public void noErrorsWithoutConfig() {
+    // undefined variable is only reported with 'undef' in config
+    jsHint.check( "var f = function () { v = {}; };", handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
-  public void checkUndefWithEmptyConfig() {
+  public void noErrorsWithEmptyConfig() {
+    // undefined variable is only reported with 'undef' in config
     jsHint.configure( new Configuration() );
 
-    jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
+    jsHint.check( "var f = function () { v = {}; };", handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
-  public void checkUndefWithConfig() {
-    Configuration configuration = new Configuration();
-    configuration.addOption( "undef", true );
-    jsHint.configure( configuration );
+  public void errorWithUndefInConfig() {
+    jsHint.configure( new Configuration().addOption( "undef", true ) );
 
-    jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
+    jsHint.check( "var f = function () { v = {}; };", handler );
 
-    assertThat( problems.get( 0 ).getMessage(), containsString( "'org' is not defined" ) );
-  }
-
-  @Test
-  public void checkUndefWithConfigAndGlobal() {
-    Configuration configuration = new Configuration();
-    configuration.addOption( "undef", true );
-    configuration.addPredefined( "org", true );
-    jsHint.configure( configuration );
-
-    jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
-
-    assertTrue( problems.isEmpty() );
-  }
-
-  @Test
-  public void checkUndefWithConfigAndReadonlyGlobal() {
-    Configuration configuration = new Configuration();
-    configuration.addOption( "undef", true );
-    configuration.addPredefined( "org", false );
-    jsHint.configure( configuration );
-
-    jsHint.check( CODE_WITH_GLOBAL_ORG, handler );
-
-    assertThat( problems.get( 0 ).getMessage(), containsString( "Read only" ) );
-  }
-
-  @Test
-  public void checkEqNullWithoutConfig() {
-    jsHint.check( CODE_WITH_EQNULL, handler );
-
-    assertThat( problems.get( 0 ).getMessage(), containsString( WARN_EQNULL ) );
-  }
-
-  @Test
-  public void checkEqNullWithEmptyConfig() {
-    jsHint.configure( new Configuration() );
-
-    jsHint.check( CODE_WITH_EQNULL, handler );
-
-    assertThat( problems.get( 0 ).getMessage(), containsString( WARN_EQNULL ) );
-  }
-
-  @Test
-  public void checkEqNullWithConfig() {
-    Configuration configuration = new Configuration();
-    configuration.addOption( "eqnull", true );
-    jsHint.configure( configuration );
-    jsHint.check( CODE_WITH_EQNULL, handler );
-
-    assertTrue( problems.isEmpty() );
-  }
-
-  @Test
-  public void testProblemLineIs_1_Relative() {
-    jsHint.configure( new Configuration() );
-    jsHint.check( "#", handler );
-
-    assertEquals( 1, problems.get( 0 ).getLine() );
-  }
-
-  @Test
-  public void testProblemCharacterIs_0_Relative() {
-    jsHint.configure( new Configuration() );
-    jsHint.check( "#", handler );
-
-    assertEquals( 0, problems.get( 0 ).getCharacter() );
-  }
-
-  @Test
-  public void check_problemMessageIsNotEmpty() {
-    jsHint.configure( new Configuration() );
-    jsHint.check( "#", handler );
-
-    String message = problems.get( 0 ).getMessage();
-    assertTrue( message.length() > 0 );
-  }
-
-  @Test
-  public void testPosition() {
-    jsHint.configure( new Configuration() );
-    jsHint.check( "var a = x == null ? null : 1;", handler );
-
-    assertEquals( "1.10", getPosition( problems.get( 0 ) ) );
-  }
-
-  @Test
-  public void testPositionWithLeadingSpace() {
-    jsHint.configure( new Configuration() );
-    jsHint.check( " var a = x == null ? null : 1;", handler );
-
-    assertEquals( "1.11", getPosition( problems.get( 0 ) ) );
-  }
-
-  @Test
-  public void testPositionWithLeadingTab() {
-    jsHint.configure( new Configuration() );
-    jsHint.check( "\tvar a = x == null ? null : 1;", handler );
-
-    assertEquals( "1.11", getPosition( problems.get( 0 ) ) );
-  }
-
-  private static String getPosition( Problem problem ) {
-    return problem.getLine() + "." + problem.getCharacter();
+    assertThat( problems.get( 0 ).getMessage(), containsString( "'v' is not defined" ) );
   }
 
   private class TestHandler implements ProblemHandler {
