@@ -6,13 +6,13 @@
 
   <groupId>com.eclipsesource.jshint</groupId>
   <artifactId>com.eclipsesource.jshint.ui</artifactId>
-  <version>0.9.4-SNAPSHOT</version>
+  <version>0.9.5-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
   <parent>
     <groupId>com.eclipsesource.jshint</groupId>
     <artifactId>com.eclipsesource.jshint.releng</artifactId>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
     <relativePath>../../releng/com.eclipsesource.jshint.releng/pom.xml</relativePath>
   </parent>
 
