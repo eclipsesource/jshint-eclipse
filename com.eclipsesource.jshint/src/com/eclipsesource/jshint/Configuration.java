@@ -27,7 +27,6 @@ public class Configuration {
   public Configuration() {
     predefs = new LinkedHashMap<String, Object>();
     options = new LinkedHashMap<String, Object>();
-    options.put( "indent", Integer.valueOf( 1 ) );
   }
 
   /**
@@ -76,6 +75,10 @@ public class Configuration {
     addMap( builder, options );
     builder.append( "}" );
     return builder.toString();
+  }
+
+  Object getOption( String option ) {
+    return options.get( option );
   }
 
   private void addMap( StringBuilder builder, Map<String, Object> map ) {

@@ -26,16 +26,14 @@ public class OptionParserUtil_Test {
   public void createConfiguration() {
     Configuration result = OptionParserUtil.createConfiguration( "opt1: true", "predef1: false" );
 
-    String expected = "{\"predef\": {\"predef1\": false}, \"indent\": 1, \"opt1\": true}";
-    assertEquals( expected, result.toJson() );
+    assertEquals( "{\"predef\": {\"predef1\": false}, \"opt1\": true}", result.toJson() );
   }
 
   @Test
   public void createConfiguration_withEmptyParameters() {
     Configuration result = OptionParserUtil.createConfiguration( "", "" );
 
-    String expected = "{\"indent\": 1}";
-    assertEquals( expected, result.toJson() );
+    assertEquals( "{}", result.toJson() );
   }
 
   @Test( expected = NullPointerException.class )

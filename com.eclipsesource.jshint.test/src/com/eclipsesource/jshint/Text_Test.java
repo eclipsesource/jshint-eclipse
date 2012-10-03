@@ -10,6 +10,7 @@
  ******************************************************************************/
 package com.eclipsesource.jshint;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -23,6 +24,24 @@ import static org.junit.Assert.assertThat;
 
 
 public class Text_Test {
+
+  @Test( expected = NullPointerException.class )
+  public void createWithNullStringFails() {
+    new Text( (String)null );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void createWithNullReaderFails() throws IOException {
+    new Text( (Reader)null );
+  }
+
+  @Test
+  public void createWithString() {
+    Text textFile = new Text( "" );
+
+    assertEquals( "", textFile.getContent() );
+    assertEquals( 1, textFile.getLineCount() );
+  }
 
   @Test
   public void emptyString() throws Exception {

@@ -12,6 +12,7 @@ package com.eclipsesource.jshint;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 
 /**
@@ -23,7 +24,24 @@ public class Text {
   private int lineCount = 1;
   private int[] lineOffsets = new int[ 200 ];
 
+  public Text( String text ) {
+    if( text == null ) {
+      throw new NullPointerException( "text is null" );
+    }
+    StringReader reader = new StringReader( text );
+    try {
+      read( reader );
+    } catch( IOException exception ) {
+      throw new RuntimeException( exception );
+    } finally {
+      reader.close();
+    }
+  }
+
   public Text( Reader reader ) throws IOException {
+    if( reader == null ) {
+      throw new NullPointerException( "reader is null" );
+    }
     read( reader );
   }
 
@@ -44,7 +62,7 @@ public class Text {
    */
   public int getLineOffset( int line ) {
     if( line >= lineCount ) {
-      throw new IndexOutOfBoundsException( "line does not exist" );
+      throw new IndexOutOfBoundsException( "line does not exist: " + line );
     }
     return lineOffsets[ line ];
   }

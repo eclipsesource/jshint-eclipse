@@ -148,7 +148,7 @@ public class JSHintRunner_Test {
   public void customLibrary() throws Exception {
     JSHintRunner runner = new JSHintRunner();
     String fakeJsHint = "JSHINT = function() { return false; };"
-            + "JSHINT.errors = [ { line: 23, character: 42, reason: 'test' } ]";
+            + "JSHINT.errors = [ { line: 1, character: 2, reason: 'test' } ]";
     File fakeJSHintFile = createTmpFile( fakeJsHint, "UTF-8" );
     File jsFile = createTmpFile( "-- ignored --", "UTF-8" );
     String fakeJSHintFileName = fakeJSHintFile.getAbsolutePath();
@@ -156,7 +156,7 @@ public class JSHintRunner_Test {
 
     runner.run( "--custom", fakeJSHintFileName, jsFileName );
 
-    assertThat( getSysout(), startsWith( "Problem in file " + jsFileName + " at line 23: test" ) );
+    assertThat( getSysout(), startsWith( "Problem in file " + jsFileName + " at line 1: test" ) );
   }
 
   @Test

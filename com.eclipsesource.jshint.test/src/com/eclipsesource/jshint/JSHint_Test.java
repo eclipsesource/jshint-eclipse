@@ -83,7 +83,12 @@ public class JSHint_Test {
 
   @Test( expected = NullPointerException.class )
   public void checkWithNullCode() {
-    jsHint.check( null, handler );
+    jsHint.check( (String)null, handler );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void checkWithNullText() {
+    jsHint.check( (Text)null, handler );
   }
 
   @Test

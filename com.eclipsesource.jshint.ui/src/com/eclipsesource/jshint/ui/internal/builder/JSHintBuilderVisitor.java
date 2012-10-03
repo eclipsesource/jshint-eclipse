@@ -101,7 +101,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     Text code = readContent( file );
     ProblemHandler handler = new MarkerHandler( new MarkerAdapter( file ), code );
     try {
-      checker.check( code.getContent(), handler );
+      checker.check( code, handler );
     } catch( CoreExceptionWrapper wrapper ) {
       throw (CoreException)wrapper.getCause();
     } catch( RuntimeException exception ) {

@@ -46,9 +46,11 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
 public class JSHint {
 
   private static final String DEFAULT_JSHINT_VERSION = "r12";
+  private static final int DEFAULT_JSHINT_INDENT = 4;
   private Function jshint;
   private Object opts;
   private ScriptableObject scope;
+  private int indent = DEFAULT_JSHINT_INDENT;
 
   /**
    * Loads the default JSHint library.
@@ -101,9 +103,18 @@ public class JSHint {
       ScriptableObject scope = context.initStandardObjects();
       String optionsString = configuration.toJson();
       opts = context.evaluateString( scope, "opts = " + optionsString + ";", "[options]", 1, null );
+      indent = determineIndent( configuration );
     } finally {
       Context.exit();
     }
+  }
+
+  private int determineIndent( Configuration configuration ) {
+    Object indent = configuration.getOption( "indent" );
+    if( indent instanceof Integer ) {
+      return ( (Integer)indent ).intValue();
+    }
+    return DEFAULT_JSHINT_INDENT;
   }
 
   /**
@@ -119,10 +130,18 @@ public class JSHint {
     if( code == null ) {
       throw new NullPointerException( "code is null" );
     }
+    return check( new Text( code ), handler );
+  }
+
+  public boolean check( Text text, ProblemHandler handler ) {
+    if( text == null ) {
+      throw new NullPointerException( "code is null" );
+    }
     if( jshint == null ) {
       throw new IllegalStateException( "JSHint is not loaded" );
     }
     boolean result = true;
+    String code = text.getContent();
     // Don't feed jshint with empty strings, see https://github.com/jshint/jshint/issues/615
     // However, consider an empty string valid
     if( code.trim().length() != 0 ) {
@@ -130,7 +149,7 @@ public class JSHint {
       try {
         result = checkCode( context, code );
         if( !result && handler != null ) {
-          handleProblems( handler );
+          handleProblems( handler, text );
         }
       } finally {
         Context.exit();
@@ -187,28 +206,43 @@ public class JSHint {
     return (Function)object;
   }
 
-  private void handleProblems( ProblemHandler handler ) {
+  private void handleProblems( ProblemHandler handler, Text text ) {
     NativeArray errors = (NativeArray)jshint.get( "errors", jshint );
     long length = errors.getLength();
     for( int i = 0; i < length; i++ ) {
       Object object = errors.get( i, errors );
       ScriptableObject error = (ScriptableObject)object;
       if( error != null ) {
-        Problem problem = createProblem( error );
+        Problem problem = createProblem( error, text );
         handler.handleProblem( problem );
       }
     }
   }
 
-  private ProblemImpl createProblem( ScriptableObject error ) {
+  private ProblemImpl createProblem( ScriptableObject error, Text text ) {
     String reason = getPropertyAsString( error, "reason", "" );
     int line = getPropertyAsInt( error, "line", -1 );
     int character = getPropertyAsInt( error, "character", -1 );
     if( character > 0 ) {
-      character -= 1;
+      character = fixPosition( text, line, character );
     }
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
     return new ProblemImpl( line, character, message );
+  }
+
+  private int fixPosition( Text text, int line, int character ) {
+    // JSHint reports physical character positions instead of a character index,
+    // i.e. every tab character is multiplied with the indent.
+    String string = text.getContent();
+    int offset = text.getLineOffset( line - 1 );
+    int indentIndex = 0;
+    int charIndex = 0;
+    while( indentIndex < character - 1 ) {
+      boolean isTab = string.charAt( offset + indentIndex ) == '\t';
+      indentIndex += isTab ? indent : 1;
+      charIndex++;
+    }
+    return charIndex;
   }
 
   private static String getPropertyAsString( ScriptableObject object,

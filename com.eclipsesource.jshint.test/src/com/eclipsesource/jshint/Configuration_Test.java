@@ -27,14 +27,14 @@ public class Configuration_Test {
 
   @Test
   public void emptyAfterCreation() {
-    assertEquals( "{\"indent\": 1}", configuration.toJson() );
+    assertEquals( "{}", configuration.toJson() );
   }
 
   @Test
   public void addOneOption() {
     configuration.addOption( "foo", true );
 
-    assertEquals( "{\"indent\": 1, \"foo\": true}", configuration.toJson() );
+    assertEquals( "{\"foo\": true}", configuration.toJson() );
   }
 
   @Test
@@ -42,16 +42,14 @@ public class Configuration_Test {
     configuration.addOption( "foo", true );
     configuration.addOption( "bar", false );
 
-    assertEquals( "{\"indent\": 1, \"foo\": true, \"bar\": false}",
-                  configuration.toJson() );
+    assertEquals( "{\"foo\": true, \"bar\": false}", configuration.toJson() );
   }
 
   @Test
   public void addSeparateOptionsWithChaining() {
     configuration.addOption( "foo", true ).addOption( "bar", false );
 
-    assertEquals( "{\"indent\": 1, \"foo\": true, \"bar\": false}",
-                  configuration.toJson() );
+    assertEquals( "{\"foo\": true, \"bar\": false}", configuration.toJson() );
   }
 
   @Test
@@ -59,7 +57,7 @@ public class Configuration_Test {
     configuration.addOption( "foo", true );
     configuration.addOption( "foo", false );
 
-    assertEquals( "{\"indent\": 1, \"foo\": false}", configuration.toJson() );
+    assertEquals( "{\"foo\": false}", configuration.toJson() );
   }
 
   @Test
@@ -67,22 +65,21 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "foo", false );
 
-    assertEquals( "{\"predef\": {\"foo\": false}, \"indent\": 1}", configuration.toJson() );
+    assertEquals( "{\"predef\": {\"foo\": false}}", configuration.toJson() );
   }
 
   @Test
   public void addOnePredef() {
     configuration.addPredefined( "foo", true );
 
-    assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1}", configuration.toJson() );
+    assertEquals( "{\"predef\": {\"foo\": true}}", configuration.toJson() );
   }
 
   @Test
   public void addSeparatePredefsWithChaining() {
     configuration.addPredefined( "foo", true ).addPredefined( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}, \"indent\": 1}",
-                  configuration.toJson() );
+    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}}", configuration.toJson() );
   }
 
   @Test
@@ -90,8 +87,7 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}, \"indent\": 1}",
-                  configuration.toJson() );
+    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}}", configuration.toJson() );
   }
 
   @Test
@@ -99,8 +95,7 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addOption( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true}, \"indent\": 1, \"bar\": false}",
-                  configuration.toJson() );
+    assertEquals( "{\"predef\": {\"foo\": true}, \"bar\": false}", configuration.toJson() );
   }
 
 }
