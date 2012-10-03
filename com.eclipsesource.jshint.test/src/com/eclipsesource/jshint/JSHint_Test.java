@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mozilla.javascript.EcmaError;
+import org.mozilla.javascript.JavaScriptException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
@@ -216,8 +218,25 @@ public class JSHint_Test {
       fail();
     } catch( RuntimeException exception ) {
 
-      String expected = "JavaScript exception occured in JSHint check: ERROR";
+      String expected = "JavaScript exception thrown by JSHint: ERROR";
       assertThat( exception.getMessage(), startsWith( expected ) );
+      assertSame( JavaScriptException.class, exception.getCause().getClass() );
+    }
+  }
+
+  @Test
+  public void checkWithRhinoException() throws Exception {
+    JSHint jsHint = new JSHint();
+    jsHint.load( new ByteArrayInputStream( "JSHINT = function() { throw x[ 0 ]; };".getBytes() ) );
+
+    try {
+      jsHint.check( "var a = 1;", handler );
+      fail();
+    } catch( RuntimeException exception ) {
+
+      String expected = "JavaScript exception caused by JSHint: ReferenceError";
+      assertThat( exception.getMessage(), startsWith( expected ) );
+      assertSame( EcmaError.class, exception.getCause().getClass() );
     }
   }
 

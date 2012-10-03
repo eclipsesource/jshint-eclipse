@@ -186,7 +186,10 @@ public class JSHint {
       Object[] args = new Object[] { code, opts };
       return ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
     } catch( JavaScriptException exception ) {
-      String message = "JavaScript exception occured in JSHint check: " + exception.getMessage();
+      String message = "JavaScript exception thrown by JSHint: " + exception.getMessage();
+      throw new RuntimeException( message, exception );
+    } catch( RhinoException exception ) {
+      String message = "JavaScript exception caused by JSHint: " + exception.getMessage();
       throw new RuntimeException( message, exception );
     }
   }
