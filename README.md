@@ -17,7 +17,7 @@ Eclipse 3.6 (Helios) or newer.
 JSHint version
 --------------
 
-JSHint version r06 is included.
+JSHint version r12 is included.
 
 Installation
 ------------
