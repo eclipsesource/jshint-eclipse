@@ -196,6 +196,14 @@ public class JSHint_Compatibility_Test {
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
   }
 
+  @Test
+  public void toleratesWindowsLineBreaks() {
+    jsHint.configure( new Configuration().addOption( "white", false ) );
+    jsHint.check( "var x = 1;\r\nvar y = 2;\r\nvar z = 23 == null;", handler );
+
+    assertEquals( "3.11", getPositionFromProblem( 0 ) );
+  }
+
   private void loadJsHint() throws IOException {
     ClassLoader classLoader = getClass().getClassLoader();
     InputStream stream = classLoader.getResourceAsStream( jsHintResource );
