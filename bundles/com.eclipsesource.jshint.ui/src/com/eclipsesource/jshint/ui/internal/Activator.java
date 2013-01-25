@@ -62,4 +62,14 @@ public class Activator extends AbstractUIPlugin {
     Platform.getLog( getDefault().getBundle() ).log( status );
   }
 
+  public static void logError( String message, Throwable t ) {
+    if (!(t instanceof CoreException)) {
+      t = new CoreException(createStatus(message, 0, IStatus.ERROR, t));
+    }
+    logError(message, (CoreException)t);
+  }
+
+  private static IStatus createStatus(String msg, int code, int severity, Throwable ex) {
+    return new Status(severity, PLUGIN_ID, code, msg, ex);
+  }
 }
