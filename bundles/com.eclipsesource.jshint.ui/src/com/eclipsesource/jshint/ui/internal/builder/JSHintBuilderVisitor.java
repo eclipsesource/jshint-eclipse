@@ -68,7 +68,11 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       } else {
         clean( resource );
         if( selector.allowVisitFile( resource ) ) {
-          check( (IFile)resource );
+          try {
+            check( (IFile)resource );
+          } catch (Throwable t) {
+        	  Activator.logError("Builder:" + t.getLocalizedMessage(), t);
+          }
         }
         descend = true;
       }
