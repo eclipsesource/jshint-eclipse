@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -240,7 +240,8 @@ public class JSHint {
     int offset = text.getLineOffset( line - 1 );
     int indentIndex = 0;
     int charIndex = 0;
-    while( indentIndex < character - 1 ) {
+    int maxIndex = Math.min( character, string.length() - offset ) - 1;
+    while( indentIndex < maxIndex ) {
       boolean isTab = string.charAt( offset + indentIndex ) == '\t';
       indentIndex += isTab ? indent : 1;
       charIndex++;

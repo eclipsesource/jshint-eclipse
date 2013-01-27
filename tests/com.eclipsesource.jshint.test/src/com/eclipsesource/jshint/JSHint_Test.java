@@ -267,6 +267,24 @@ public class JSHint_Test {
     assertThat( problems.get( 0 ).getMessage(), containsString( "'v' is not defined" ) );
   }
 
+  @Test
+  public void errorAfterTabHasCorrectPosition() {
+    jsHint.configure( new Configuration().addOption( "undef", true ) );
+
+    jsHint.check( "var x = 1,\t# y = 2;", handler );
+
+    assertEquals( 11, problems.get( 0 ).getCharacter() );
+  }
+
+  @Test
+  public void errorAtEndDoesNotThrowException() {
+    jsHint.configure( new Configuration().addOption( "undef", true ) );
+
+    // Must not throw SIOOBE
+    // See https://github.com/eclipsesource/jshint-eclipse/issues/34
+    jsHint.check( "var x = 1;\t#", handler );
+  }
+
   private class TestHandler implements ProblemHandler {
 
     public void handleProblem( Problem problem ) {
