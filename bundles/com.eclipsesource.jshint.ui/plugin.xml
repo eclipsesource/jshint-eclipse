@@ -48,7 +48,7 @@
    </extension>
    <extension
          id="builder"
-         name="builder"
+         name="JSHint Problem Checker"
          point="org.eclipse.core.resources.builders">
       <builder
             callOnEmptyDelta="false"
