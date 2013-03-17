@@ -45,7 +45,7 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "r12";
+  private static final String DEFAULT_JSHINT_VERSION = "1.1.0";
   private static final int DEFAULT_JSHINT_INDENT = 4;
   private Function jshint;
   private Object opts;
@@ -273,7 +273,7 @@ public class JSHint {
   private static BufferedReader getJsHintReader() throws UnsupportedEncodingException {
     ClassLoader classLoader = JSHint.class.getClassLoader();
     // Include DEFAULT_JSHINT_VERSION in name to ensure the constant matches the actual version
-    String name = "com/jshint/jshint-" + DEFAULT_JSHINT_VERSION + ".min.js";
+    String name = "com/jshint/jshint-" + DEFAULT_JSHINT_VERSION + ".js";
     InputStream inputStream = classLoader.getResourceAsStream( name );
     return new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
   }

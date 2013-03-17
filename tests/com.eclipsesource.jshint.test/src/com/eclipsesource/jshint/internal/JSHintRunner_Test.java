@@ -116,7 +116,7 @@ public class JSHintRunner_Test {
   @Test
   public void charsetDefaultsToUtf8() throws Exception {
     JSHintRunner runner = new JSHintRunner();
-    File file = createTmpFile( "var föhn = 23;", "UTF-8" );
+    File file = createTmpFile( "föhn.foo = 23;", "UTF-8" );
 
     runner.run( file.getAbsolutePath() );
 
@@ -126,7 +126,7 @@ public class JSHintRunner_Test {
   @Test
   public void customCharset() throws Exception {
     JSHintRunner runner = new JSHintRunner();
-    File file = createTmpFile( "var föhn = 23;", "ISO-8859-1" );
+    File file = createTmpFile( "föhn.foo = 23;", "ISO-8859-1" );
 
     runner.run( "--charset", "ISO-8859-1", file.getAbsolutePath() );
 
@@ -136,7 +136,7 @@ public class JSHintRunner_Test {
   @Test
   public void illegalCharset() throws Exception {
     JSHintRunner runner = new JSHintRunner();
-    File file = createTmpFile( "var föhn = 23;", "ISO-8859-1" );
+    File file = createTmpFile( "föhn.foo = 23;", "ISO-8859-1" );
 
     runner.run( "--charset", "HMPF!", file.getAbsolutePath() );
 

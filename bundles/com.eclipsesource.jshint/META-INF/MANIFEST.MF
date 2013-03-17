@@ -9,4 +9,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.eclipsesource.jshint;version="0.9.5",
  com.eclipsesource.jshint.internal;version="0.9.5";x-friends:="com.eclipsesource.jshint.test",
  com.eclipsesource.json;version="0.9.0"
-Require-Bundle: org.mozilla.javascript;bundle-version="1.7.2"
+Require-Bundle: org.mozilla.javascript;bundle-version="1.7.4"

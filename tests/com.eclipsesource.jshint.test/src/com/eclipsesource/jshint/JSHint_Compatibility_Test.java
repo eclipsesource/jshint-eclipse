@@ -48,6 +48,7 @@ public class JSHint_Compatibility_Test {
     parameters.add( new Object[] { "com/jshint/jshint-r10.js" } );
     parameters.add( new Object[] { "com/jshint/jshint-r11.js" } );
     parameters.add( new Object[] { "com/jshint/jshint-r12.js" } );
+    parameters.add( new Object[] { "com/jshint/jshint-1.1.0.js" } );
     return parameters;
   }
 

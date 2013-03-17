@@ -132,7 +132,9 @@ public class JSHintRunner {
   }
 
   private void configureJSHint() {
-    jshint.configure( new Configuration() );
+    Configuration configuration = new Configuration();
+    configuration.addOption( "undef", true );
+    jshint.configure( configuration );
   }
 
   private String readFileContents( File file ) throws FileNotFoundException, IOException {

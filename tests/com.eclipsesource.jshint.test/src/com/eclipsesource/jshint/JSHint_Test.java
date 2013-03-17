@@ -44,7 +44,7 @@ public class JSHint_Test {
   public void getDefaultVersion() {
     String version = JSHint.getDefaultLibraryVersion();
 
-    assertTrue( version.matches( "r\\d+" ) );
+    assertTrue( version.matches( "\\d+\\.\\d+\\.\\d+" ) );
   }
 
   @Test( expected = NullPointerException.class )
