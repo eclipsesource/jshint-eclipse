@@ -35,7 +35,7 @@ public class JSHint_Test {
   @Before
   public void setUp() throws IOException {
     problems = new ArrayList<Problem>();
-    handler = new TestHandler();
+    handler = new TestHandler( problems );
     jsHint = new JSHint();
     jsHint.load();
   }
@@ -284,11 +284,63 @@ public class JSHint_Test {
     jsHint.check( "var x = 1;\t#", handler );
   }
 
-  private class TestHandler implements ProblemHandler {
+  @Test
+  public void checkSameInputTwice() {
+    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    LoggingHandler handler1 = new LoggingHandler();
+    LoggingHandler handler2 = new LoggingHandler();
+
+    jsHint.check( "var x = 1;\t#", handler1 );
+    jsHint.check( "var x = 1;\t#", handler2 );
+
+    assertTrue( handler1.toString().length() > 0 );
+    assertEquals( handler1.toString(), handler2.toString() );
+  }
+
+  @Test
+  public void checkMultipleFiles() {
+    // see https://github.com/jshint/jshint/issues/931
+    jsHint.configure( new Configuration().addOption( "undef", true ) );
+
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+  }
+
+  private static class LoggingHandler implements ProblemHandler {
+
+    StringBuilder log = new StringBuilder();
+
+    public void handleProblem( Problem problem ) {
+      log.append( problem.getLine() );
+      log.append( ':' );
+      log.append( problem.getCharacter() );
+      log.append( ':' );
+      log.append( problem.getMessage() );
+      log.append( '\n' );
+    }
+
+    @Override
+    public String toString() {
+      return log.toString();
+    }
+
+  }
+
+  private static class TestHandler implements ProblemHandler {
+
+    private final List<Problem> problems;
+
+    public TestHandler( List<Problem> problems ) {
+      this.problems = problems;
+    }
 
     public void handleProblem( Problem problem ) {
       problems.add( problem );
     }
+
   }
 
 }
