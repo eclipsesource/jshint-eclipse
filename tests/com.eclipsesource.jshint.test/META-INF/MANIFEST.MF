@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for JSHint Eclipse Integration
 Bundle-SymbolicName: com.eclipsesource.jshint.test
-Bundle-Version: 0.9.5.qualifier
-Fragment-Host: com.eclipsesource.jshint;bundle-version="0.9.5"
+Bundle-Version: 0.9.6.qualifier
+Fragment-Host: com.eclipsesource.jshint;bundle-version="0.9.6"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.junit;version="4.8.2",
  org.junit.runner;version="4.8.2",
