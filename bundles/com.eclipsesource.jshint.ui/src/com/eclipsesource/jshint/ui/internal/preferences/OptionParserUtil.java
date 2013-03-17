@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.eclipsesource.jshint.Configuration;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
 
 
 public class OptionParserUtil {
@@ -25,7 +27,7 @@ public class OptionParserUtil {
   public static Configuration createConfiguration( String options, String globals ) {
     Configuration configuration = new Configuration();
     for( Entry entry : parseOptionString( globals ) ) {
-      configuration.addPredefined( entry.name, entry.value );
+      configuration.addPredefined( entry.name, entry.value == JsonValue.TRUE );
     }
     for( Entry entry : parseOptionString( options ) ) {
       configuration.addOption( entry.name, entry.value );
@@ -37,23 +39,35 @@ public class OptionParserUtil {
     List<Entry> result = new ArrayList<Entry>();
     String[] elements = input.split( "," );
     for( String element : elements ) {
-      element = element.trim();
-      if( element.length() > 0 ) {
-        String[] parts = element.split( ":", 2 );
-        String key = parts[ 0 ].trim();
-        if( key.length() > 0 ) {
-          boolean value = parts.length > 1 ? Boolean.parseBoolean( parts[ 1 ].trim() ) : false;
-          result.add( new Entry( key, value ) );
-        }
-      }
+      element = parseOptionElement( result, element.trim() );
     }
     return result;
   }
 
+  private static String parseOptionElement( List<Entry> result, String element ) {
+    if( element.length() > 0 ) {
+      String[] parts = element.split( ":", 2 );
+      String key = parts[ 0 ].trim();
+      if( key.length() > 0 ) {
+        if( parts.length != 2 ) {
+          // TODO handle error
+        } else {
+          try {
+            JsonValue value = JsonValue.readFrom( parts[ 1 ].trim() );
+            result.add( new Entry( key, value ) );
+          } catch( ParseException exception ) {
+            // TODO handle error
+          }
+        }
+      }
+    }
+    return element;
+  }
+
   static class Entry {
     public final String name;
-    public final boolean value;
-    public Entry( String name, boolean value ) {
+    public final JsonValue value;
+    public Entry( String name, JsonValue value ) {
       this.name = name;
       this.value = value;
     }
