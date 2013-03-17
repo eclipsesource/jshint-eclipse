@@ -7,5 +7,6 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: EclipseSource
 Bundle-ActivationPolicy: lazy
 Export-Package: com.eclipsesource.jshint;version="0.9.5",
- com.eclipsesource.jshint.internal;version="0.9.5";x-friends:="com.eclipsesource.jshint.test"
+ com.eclipsesource.jshint.internal;version="0.9.5";x-friends:="com.eclipsesource.jshint.test",
+ com.eclipsesource.json;version="0.9.0"
 Require-Bundle: org.mozilla.javascript;bundle-version="1.7.2"

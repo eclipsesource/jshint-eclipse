@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,6 +12,8 @@ package com.eclipsesource.jshint;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.eclipsesource.json.JsonValue;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,10 +33,24 @@ public class Configuration_Test {
   }
 
   @Test
-  public void addOneOption() {
+  public void addOption_boolean() {
     configuration.addOption( "foo", true );
 
-    assertEquals( "{\"foo\": true}", configuration.toJson() );
+    assertEquals( "{\"foo\":true}", configuration.toJson() );
+  }
+
+  @Test
+  public void addOption_numeric() {
+    configuration.addOption( "foo", 23 );
+
+    assertEquals( "{\"foo\":23}", configuration.toJson() );
+  }
+
+  @Test
+  public void addOption_json() {
+    configuration.addOption( "foo", JsonValue.NULL );
+
+    assertEquals( "{\"foo\":null}", configuration.toJson() );
   }
 
   @Test
@@ -42,22 +58,22 @@ public class Configuration_Test {
     configuration.addOption( "foo", true );
     configuration.addOption( "bar", false );
 
-    assertEquals( "{\"foo\": true, \"bar\": false}", configuration.toJson() );
+    assertEquals( "{\"foo\":true,\"bar\":false}", configuration.toJson() );
   }
 
   @Test
   public void addSeparateOptionsWithChaining() {
     configuration.addOption( "foo", true ).addOption( "bar", false );
 
-    assertEquals( "{\"foo\": true, \"bar\": false}", configuration.toJson() );
+    assertEquals( "{\"foo\":true,\"bar\":false}", configuration.toJson() );
   }
 
   @Test
   public void addSameOptionTwice() {
     configuration.addOption( "foo", true );
-    configuration.addOption( "foo", false );
+    configuration.addOption( "foo", 23 );
 
-    assertEquals( "{\"foo\": false}", configuration.toJson() );
+    assertEquals( "{\"foo\":23}", configuration.toJson() );
   }
 
   @Test
@@ -65,21 +81,21 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "foo", false );
 
-    assertEquals( "{\"predef\": {\"foo\": false}}", configuration.toJson() );
+    assertEquals( "{\"predef\":{\"foo\":false}}", configuration.toJson() );
   }
 
   @Test
   public void addOnePredef() {
     configuration.addPredefined( "foo", true );
 
-    assertEquals( "{\"predef\": {\"foo\": true}}", configuration.toJson() );
+    assertEquals( "{\"predef\":{\"foo\":true}}", configuration.toJson() );
   }
 
   @Test
   public void addSeparatePredefsWithChaining() {
     configuration.addPredefined( "foo", true ).addPredefined( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}}", configuration.toJson() );
+    assertEquals( "{\"predef\":{\"foo\":true,\"bar\":false}}", configuration.toJson() );
   }
 
   @Test
@@ -87,7 +103,7 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addPredefined( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true, \"bar\": false}}", configuration.toJson() );
+    assertEquals( "{\"predef\":{\"foo\":true,\"bar\":false}}", configuration.toJson() );
   }
 
   @Test
@@ -95,7 +111,7 @@ public class Configuration_Test {
     configuration.addPredefined( "foo", true );
     configuration.addOption( "bar", false );
 
-    assertEquals( "{\"predef\": {\"foo\": true}, \"bar\": false}", configuration.toJson() );
+    assertEquals( "{\"bar\":false,\"predef\":{\"foo\":true}}", configuration.toJson() );
   }
 
 }
