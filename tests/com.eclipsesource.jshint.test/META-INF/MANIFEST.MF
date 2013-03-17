@@ -9,4 +9,4 @@ Import-Package: org.junit;version="4.8.2",
  org.junit.runner;version="4.8.2",
  org.junit.runners;version="4.8.2"
 Bundle-Vendor: EclipseSource
-Require-Bundle: org.hamcrest;bundle-version="1.1.0"
+Require-Bundle: org.hamcrest.core;bundle-version="1.1.0"
