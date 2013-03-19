@@ -1,0 +1,13 @@
+---
+layout: post
+title: Version 0.9.6 published
+---
+
+This version adds support for
+[non-boolean options](https://github.com/eclipsesource/jshint-eclipse/issues/25)
+such as `indent`, `maxparams`, `maxdepth`, etc.
+
+A [bug](https://github.com/eclipsesource/jshint-eclipse/issues/34) that caused a runtime exception
+for certain input files has been fixed.
+
+The built-in JSHint has been upgraded to version 1.1.0.
