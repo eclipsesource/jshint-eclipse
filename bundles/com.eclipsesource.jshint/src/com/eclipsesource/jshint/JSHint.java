@@ -47,7 +47,7 @@ public class JSHint {
 
   private static final String DEFAULT_JSHINT_VERSION = "1.1.0";
   private static final int DEFAULT_JSHINT_INDENT = 4;
-  private Function fakeConsole;
+  private ScriptableObject scope;
   private Function jshint;
   private Object opts;
   private int indent = DEFAULT_JSHINT_INDENT;
@@ -171,11 +171,12 @@ public class JSHint {
   private void load( Reader reader ) throws IOException {
     Context context = Context.enter();
     try {
-      ScriptableObject scope = context.initStandardObjects();
+      context.setOptimizationLevel( 9 );
+      context.setLanguageVersion( Context.VERSION_1_5 );
+      scope = context.initStandardObjects();
       context.evaluateReader( scope, reader, "jshint library", 1, null );
-      String code = "fakeConsole = function(){ console = {log:function(){},error:function(){},trace:function(){}}; };";
-      context.evaluateString( scope, code, "fake console", 2, null );
-      fakeConsole = (Function)scope.get( "fakeConsole" );
+      String code = "console = {log:function(){},error:function(){},trace:function(){}};";
+      context.evaluateString( scope, code, "fake console", 1, null );
       jshint = findJSHintFunction( scope );
     } catch( RhinoException exception ) {
       throw new IllegalArgumentException( "Could not evaluate JavaScript input", exception );
@@ -187,8 +188,6 @@ public class JSHint {
   private boolean checkCode( Context context, String code ) {
     try {
       Object[] args = new Object[] { code, opts };
-      ScriptableObject scope = context.initStandardObjects();
-      fakeConsole.call( context, scope, null, null );
       return ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
     } catch( JavaScriptException exception ) {
       String message = "JavaScript exception thrown by JSHint: " + exception.getMessage();
