@@ -20,10 +20,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.ProblemHandler;
+import com.eclipsesource.json.JsonObject;
 
 
 public class JSHintRunner {
@@ -132,8 +132,8 @@ public class JSHintRunner {
   }
 
   private void configureJSHint() {
-    Configuration configuration = new Configuration();
-    configuration.addOption( "undef", true );
+    JsonObject configuration = new JsonObject();
+    configuration.add( "undef", true );
     jshint.configure( configuration );
   }
 

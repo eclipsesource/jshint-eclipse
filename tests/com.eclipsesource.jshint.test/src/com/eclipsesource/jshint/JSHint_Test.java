@@ -21,6 +21,8 @@ import org.junit.Test;
 import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.JavaScriptException;
 
+import com.eclipsesource.json.JsonObject;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
@@ -54,7 +56,7 @@ public class JSHint_Test {
 
   @Test
   public void configureBeforeLoad() throws Exception {
-    Configuration configuration = new Configuration().addOption( "undef", true );
+    JsonObject configuration = new JsonObject().add( "undef", true );
 
     JSHint jsHint = new JSHint();
     jsHint.configure( configuration );
@@ -66,7 +68,7 @@ public class JSHint_Test {
 
   @Test
     public void loadBeforeConfigure() throws Exception {
-    Configuration configuration = new Configuration().addOption( "undef", true );
+    JsonObject configuration = new JsonObject().add( "undef", true );
 
     JSHint jsHint = new JSHint();
     jsHint.load();
@@ -250,7 +252,7 @@ public class JSHint_Test {
   @Test
   public void noErrorsWithEmptyConfig() {
     // undefined variable is only reported with 'undef' in config
-    jsHint.configure( new Configuration() );
+    jsHint.configure( new JsonObject() );
 
     jsHint.check( "var f = function () { v = {}; };", handler );
 
@@ -259,7 +261,7 @@ public class JSHint_Test {
 
   @Test
   public void errorWithUndefInConfig() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     jsHint.check( "var f = function () { v = {}; };", handler );
 
@@ -268,7 +270,7 @@ public class JSHint_Test {
 
   @Test
   public void errorAfterTabHasCorrectPosition() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     jsHint.check( "var x = 1,\t# y = 2;", handler );
 
@@ -277,7 +279,7 @@ public class JSHint_Test {
 
   @Test
   public void errorAtEndDoesNotThrowException() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     // Must not throw SIOOBE
     // See https://github.com/eclipsesource/jshint-eclipse/issues/34
@@ -286,7 +288,7 @@ public class JSHint_Test {
 
   @Test
   public void checkSameInputTwice() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
     LoggingHandler handler1 = new LoggingHandler();
     LoggingHandler handler2 = new LoggingHandler();
 
@@ -300,7 +302,7 @@ public class JSHint_Test {
   @Test
   public void checkMultipleFiles() {
     // see https://github.com/jshint/jshint/issues/931
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     jsHint.check( "var x = 1;\t#", handler );
     jsHint.check( "var x = 1;\t#", handler );
