@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,7 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eclipsesource.jshint.Configuration;
+import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
@@ -24,13 +24,17 @@ public class OptionParserUtil {
     // prevent instantiation
   }
 
-  public static Configuration createConfiguration( String options, String globals ) {
-    Configuration configuration = new Configuration();
-    for( Entry entry : parseOptionString( globals ) ) {
-      configuration.addPredefined( entry.name, entry.value == JsonValue.TRUE );
-    }
+  public static JsonObject createConfiguration( String options, String globals ) {
+    JsonObject configuration = new JsonObject();
     for( Entry entry : parseOptionString( options ) ) {
-      configuration.addOption( entry.name, entry.value );
+      configuration.add( entry.name, entry.value );
+    }
+    JsonObject predefined = new JsonObject();
+    for( Entry entry : parseOptionString( globals ) ) {
+      predefined.add( entry.name, entry.value == JsonValue.TRUE );
+    }
+    if( !predefined.isEmpty() ) {
+      configuration.add( "predef", predefined );
     }
     return configuration;
   }
