@@ -26,6 +26,8 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.eclipsesource.jshint.internal.JSHintRunner;
 import com.eclipsesource.jshint.internal.ProblemImpl;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 
 /**
@@ -45,11 +47,11 @@ import com.eclipsesource.jshint.internal.ProblemImpl;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "r12";
+  private static final String DEFAULT_JSHINT_VERSION = "1.1.0";
   private static final int DEFAULT_JSHINT_INDENT = 4;
+  private ScriptableObject scope;
   private Function jshint;
   private Object opts;
-  private ScriptableObject scope;
   private int indent = DEFAULT_JSHINT_INDENT;
 
   /**
@@ -94,14 +96,14 @@ public class JSHint {
    * @param configuration
    *          the configuration to use, must not be null
    */
-  public void configure( Configuration configuration ) {
+  public void configure( JsonObject configuration ) {
     if( configuration == null ) {
       throw new NullPointerException( "configuration is null" );
     }
     Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
-      String optionsString = configuration.toJson();
+      String optionsString = configuration.toString();
       opts = context.evaluateString( scope, "opts = " + optionsString + ";", "[options]", 1, null );
       indent = determineIndent( configuration );
     } finally {
@@ -109,10 +111,10 @@ public class JSHint {
     }
   }
 
-  private int determineIndent( Configuration configuration ) {
-    Object indent = configuration.getOption( "indent" );
-    if( indent instanceof Integer ) {
-      return ( (Integer)indent ).intValue();
+  private int determineIndent( JsonObject configuration ) {
+    JsonValue value = configuration.get( "indent" );
+    if( value != null && value.isNumber() ) {
+      return value.asInt();
     }
     return DEFAULT_JSHINT_INDENT;
   }
@@ -171,8 +173,12 @@ public class JSHint {
   private void load( Reader reader ) throws IOException {
     Context context = Context.enter();
     try {
+      context.setOptimizationLevel( 9 );
+      context.setLanguageVersion( Context.VERSION_1_5 );
       scope = context.initStandardObjects();
       context.evaluateReader( scope, reader, "jshint library", 1, null );
+      String code = "console = {log:function(){},error:function(){},trace:function(){}};";
+      context.evaluateString( scope, code, "fake console", 1, null );
       jshint = findJSHintFunction( scope );
     } catch( RhinoException exception ) {
       throw new IllegalArgumentException( "Could not evaluate JavaScript input", exception );
@@ -273,7 +279,7 @@ public class JSHint {
   private static BufferedReader getJsHintReader() throws UnsupportedEncodingException {
     ClassLoader classLoader = JSHint.class.getClassLoader();
     // Include DEFAULT_JSHINT_VERSION in name to ensure the constant matches the actual version
-    String name = "com/jshint/jshint-" + DEFAULT_JSHINT_VERSION + ".min.js";
+    String name = "com/jshint/jshint-" + DEFAULT_JSHINT_VERSION + ".js";
     InputStream inputStream = classLoader.getResourceAsStream( name );
     return new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
   }

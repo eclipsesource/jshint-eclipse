@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,9 +21,10 @@ import org.junit.Test;
 import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.JavaScriptException;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.startsWith;
+import com.eclipsesource.json.JsonObject;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
 
 
@@ -36,7 +37,7 @@ public class JSHint_Test {
   @Before
   public void setUp() throws IOException {
     problems = new ArrayList<Problem>();
-    handler = new TestHandler();
+    handler = new TestHandler( problems );
     jsHint = new JSHint();
     jsHint.load();
   }
@@ -45,7 +46,7 @@ public class JSHint_Test {
   public void getDefaultVersion() {
     String version = JSHint.getDefaultLibraryVersion();
 
-    assertTrue( version.matches( "r\\d+" ) );
+    assertTrue( version.matches( "\\d+\\.\\d+\\.\\d+" ) );
   }
 
   @Test( expected = NullPointerException.class )
@@ -55,7 +56,7 @@ public class JSHint_Test {
 
   @Test
   public void configureBeforeLoad() throws Exception {
-    Configuration configuration = new Configuration().addOption( "undef", true );
+    JsonObject configuration = new JsonObject().add( "undef", true );
 
     JSHint jsHint = new JSHint();
     jsHint.configure( configuration );
@@ -67,7 +68,7 @@ public class JSHint_Test {
 
   @Test
     public void loadBeforeConfigure() throws Exception {
-    Configuration configuration = new Configuration().addOption( "undef", true );
+    JsonObject configuration = new JsonObject().add( "undef", true );
 
     JSHint jsHint = new JSHint();
     jsHint.load();
@@ -251,7 +252,7 @@ public class JSHint_Test {
   @Test
   public void noErrorsWithEmptyConfig() {
     // undefined variable is only reported with 'undef' in config
-    jsHint.configure( new Configuration() );
+    jsHint.configure( new JsonObject() );
 
     jsHint.check( "var f = function () { v = {}; };", handler );
 
@@ -260,7 +261,7 @@ public class JSHint_Test {
 
   @Test
   public void errorWithUndefInConfig() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     jsHint.check( "var f = function () { v = {}; };", handler );
 
@@ -269,7 +270,7 @@ public class JSHint_Test {
 
   @Test
   public void errorAfterTabHasCorrectPosition() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     jsHint.check( "var x = 1,\t# y = 2;", handler );
 
@@ -278,18 +279,70 @@ public class JSHint_Test {
 
   @Test
   public void errorAtEndDoesNotThrowException() {
-    jsHint.configure( new Configuration().addOption( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ) );
 
     // Must not throw SIOOBE
     // See https://github.com/eclipsesource/jshint-eclipse/issues/34
     jsHint.check( "var x = 1;\t#", handler );
   }
 
-  private class TestHandler implements ProblemHandler {
+  @Test
+  public void checkSameInputTwice() {
+    jsHint.configure( new JsonObject().add( "undef", true ) );
+    LoggingHandler handler1 = new LoggingHandler();
+    LoggingHandler handler2 = new LoggingHandler();
+
+    jsHint.check( "var x = 1;\t#", handler1 );
+    jsHint.check( "var x = 1;\t#", handler2 );
+
+    assertTrue( handler1.toString().length() > 0 );
+    assertEquals( handler1.toString(), handler2.toString() );
+  }
+
+  @Test
+  public void checkMultipleFiles() {
+    // see https://github.com/jshint/jshint/issues/931
+    jsHint.configure( new JsonObject().add( "undef", true ) );
+
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler );
+  }
+
+  private static class LoggingHandler implements ProblemHandler {
+
+    StringBuilder log = new StringBuilder();
+
+    public void handleProblem( Problem problem ) {
+      log.append( problem.getLine() );
+      log.append( ':' );
+      log.append( problem.getCharacter() );
+      log.append( ':' );
+      log.append( problem.getMessage() );
+      log.append( '\n' );
+    }
+
+    @Override
+    public String toString() {
+      return log.toString();
+    }
+
+  }
+
+  private static class TestHandler implements ProblemHandler {
+
+    private final List<Problem> problems;
+
+    public TestHandler( List<Problem> problems ) {
+      this.problems = problems;
+    }
 
     public void handleProblem( Problem problem ) {
       problems.add( problem );
     }
+
   }
 
 }

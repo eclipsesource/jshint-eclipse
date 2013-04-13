@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,7 +13,9 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eclipsesource.jshint.Configuration;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.ParseException;
 
 
 public class OptionParserUtil {
@@ -22,13 +24,17 @@ public class OptionParserUtil {
     // prevent instantiation
   }
 
-  public static Configuration createConfiguration( String options, String globals ) {
-    Configuration configuration = new Configuration();
-    for( Entry entry : parseOptionString( globals ) ) {
-      configuration.addPredefined( entry.name, entry.value );
-    }
+  public static JsonObject createConfiguration( String options, String globals ) {
+    JsonObject configuration = new JsonObject();
     for( Entry entry : parseOptionString( options ) ) {
-      configuration.addOption( entry.name, entry.value );
+      configuration.add( entry.name, entry.value );
+    }
+    JsonObject predefined = new JsonObject();
+    for( Entry entry : parseOptionString( globals ) ) {
+      predefined.add( entry.name, entry.value == JsonValue.TRUE );
+    }
+    if( !predefined.isEmpty() ) {
+      configuration.add( "predef", predefined );
     }
     return configuration;
   }
@@ -37,23 +43,35 @@ public class OptionParserUtil {
     List<Entry> result = new ArrayList<Entry>();
     String[] elements = input.split( "," );
     for( String element : elements ) {
-      element = element.trim();
-      if( element.length() > 0 ) {
-        String[] parts = element.split( ":", 2 );
-        String key = parts[ 0 ].trim();
-        if( key.length() > 0 ) {
-          boolean value = parts.length > 1 ? Boolean.parseBoolean( parts[ 1 ].trim() ) : false;
-          result.add( new Entry( key, value ) );
-        }
-      }
+      element = parseOptionElement( result, element.trim() );
     }
     return result;
   }
 
+  private static String parseOptionElement( List<Entry> result, String element ) {
+    if( element.length() > 0 ) {
+      String[] parts = element.split( ":", 2 );
+      String key = parts[ 0 ].trim();
+      if( key.length() > 0 ) {
+        if( parts.length != 2 ) {
+          // TODO handle error
+        } else {
+          try {
+            JsonValue value = JsonValue.readFrom( parts[ 1 ].trim() );
+            result.add( new Entry( key, value ) );
+          } catch( ParseException exception ) {
+            // TODO handle error
+          }
+        }
+      }
+    }
+    return element;
+  }
+
   static class Entry {
     public final String name;
-    public final boolean value;
-    public Entry( String name, boolean value ) {
+    public final JsonValue value;
+    public Entry( String name, JsonValue value ) {
       this.name = name;
       this.value = value;
     }

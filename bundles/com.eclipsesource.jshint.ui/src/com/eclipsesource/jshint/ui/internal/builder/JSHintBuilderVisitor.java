@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.Preferences;
 
-import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
@@ -42,6 +41,7 @@ import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
+import com.eclipsesource.json.JsonObject;
 
 
 class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
@@ -79,7 +79,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     return descend;
   }
 
-  private JSHint createJSHint( Configuration configuration ) throws CoreException {
+  private JSHint createJSHint( JsonObject configuration ) throws CoreException {
     JSHint jshint = new JSHint();
     try {
       InputStream inputStream = getCustomLib();
@@ -113,8 +113,8 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     }
   }
 
-  private static Configuration getConfiguration( IProject project ) {
-    Configuration configuration;
+  private static JsonObject getConfiguration( IProject project ) {
+    JsonObject configuration;
     Preferences projectNode = PreferencesFactory.getProjectPreferences( project );
     OptionsPreferences projectPreferences = new OptionsPreferences( projectNode );
     if( projectPreferences.getProjectSpecific() ) {

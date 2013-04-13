@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <tycho-version>0.15.0</tycho-version>
+    <tycho-version>0.16.0</tycho-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -17,7 +17,7 @@
 
   <groupId>com.eclipsesource.jshint</groupId>
   <artifactId>com.eclipsesource.jshint.releng</artifactId>
-  <version>0.9.5-SNAPSHOT</version>
+  <version>0.9.6-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -37,9 +37,10 @@
       <url>http://download.eclipse.org/releases/indigo/</url>
     </repository>
     <repository>
-      <id>orbit-repo</id>
+      <!-- need stable orbit repository, since latest release does not contain rhino 1.7.4 -->
+      <id>orbit-stable-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20120526062928/repository/</url>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/S20130308121626/repository/</url>
     </repository>
     <repository>
       <id>swtbot-repo</id>

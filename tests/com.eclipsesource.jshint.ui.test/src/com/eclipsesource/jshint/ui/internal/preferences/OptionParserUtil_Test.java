@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,26 +14,28 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.eclipsesource.jshint.Configuration;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionParserUtil.Entry;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class OptionParserUtil_Test {
 
   @Test
   public void createConfiguration() {
-    Configuration result = OptionParserUtil.createConfiguration( "opt1: true", "predef1: false" );
+    JsonObject result = OptionParserUtil.createConfiguration( "opt1: true", "predef1: false" );
 
-    assertEquals( "{\"predef\": {\"predef1\": false}, \"opt1\": true}", result.toJson() );
+    assertEquals( "{\"opt1\":true,\"predef\":{\"predef1\":false}}",result.toString() );
   }
 
   @Test
   public void createConfiguration_withEmptyParameters() {
-    Configuration result = OptionParserUtil.createConfiguration( "", "" );
+    JsonObject result = OptionParserUtil.createConfiguration( "", "" );
 
-    assertEquals( "{}", result.toJson() );
+    assertEquals( "{}", result.toString() );
   }
 
   @Test( expected = NullPointerException.class )
@@ -64,7 +66,7 @@ public class OptionParserUtil_Test {
 
     assertEquals( 1, result.size() );
     assertEquals( "foo", result.get( 0 ).name );
-    assertTrue( result.get( 0 ).value );
+    assertEquals( JsonValue.TRUE, result.get( 0 ).value );
   }
 
   @Test
@@ -73,9 +75,9 @@ public class OptionParserUtil_Test {
 
     assertEquals( 2, result.size() );
     assertEquals( "foo", result.get( 0 ).name );
-    assertTrue( result.get( 0 ).value );
+    assertEquals( JsonValue.TRUE, result.get( 0 ).value );
     assertEquals( "bar", result.get( 1 ).name );
-    assertFalse( result.get( 1 ).value );
+    assertEquals( JsonValue.FALSE, result.get( 1 ).value );
   }
 
   @Test
@@ -84,9 +86,9 @@ public class OptionParserUtil_Test {
 
     assertEquals( 2, result.size() );
     assertEquals( "foo", result.get( 0 ).name );
-    assertTrue( result.get( 0 ).value );
+    assertEquals( JsonValue.TRUE, result.get( 0 ).value );
     assertEquals( "bar", result.get( 1 ).name );
-    assertFalse( result.get( 1 ).value );
+    assertEquals( JsonValue.FALSE, result.get( 1 ).value );
   }
 
   // TODO check for illegal names
@@ -96,16 +98,23 @@ public class OptionParserUtil_Test {
 
     assertEquals( 1, result.size() );
     assertEquals( "foo bar", result.get( 0 ).name );
-    assertTrue( result.get( 0 ).value );
+    assertEquals( JsonValue.TRUE, result.get( 0 ).value );
   }
 
   @Test
-  public void parseNonBooleanValue() {
-    List<Entry> result = OptionParserUtil.parseOptionString( "foo: bar" );
+  public void parseNumericValue() {
+    List<Entry> result = OptionParserUtil.parseOptionString( "foo: 23" );
 
     assertEquals( 1, result.size() );
     assertEquals( "foo", result.get( 0 ).name );
-    assertFalse( result.get( 0 ).value );
+    assertEquals( JsonValue.valueOf( 23 ), result.get( 0 ).value );
+  }
+
+  @Test
+  public void parseIllegalValue() {
+    List<Entry> result = OptionParserUtil.parseOptionString( "foo: (invalidJSON)" );
+
+    assertEquals( 0, result.size() );
   }
 
 }
