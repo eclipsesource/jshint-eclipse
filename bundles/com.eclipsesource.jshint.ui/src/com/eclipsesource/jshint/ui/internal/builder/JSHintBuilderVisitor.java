@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.Preferences;
@@ -47,12 +48,14 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private final JSHint checker;
   private final ResourceSelector selector;
+  private IProgressMonitor monitor;
 
-  public JSHintBuilderVisitor( IProject project ) throws CoreException {
+  public JSHintBuilderVisitor( IProject project, IProgressMonitor monitor ) throws CoreException {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     new EnablementPreferences( node );
     selector = new ResourceSelector( project );
     checker = selector.allowVisitProject() ? createJSHint( getConfiguration( project ) ) : null;
+    this.monitor = monitor;
   }
 
   public boolean visit( IResourceDelta delta ) throws CoreException {
@@ -62,7 +65,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   public boolean visit( IResource resource ) throws CoreException {
     boolean descend = false;
-    if( resource.exists() && selector.allowVisitProject() ) {
+    if( resource.exists() && selector.allowVisitProject() && !monitor.isCanceled() ) {
       if( resource.getType() != IResource.FILE ) {
         descend = selector.allowVisitFolder( resource );
       } else {

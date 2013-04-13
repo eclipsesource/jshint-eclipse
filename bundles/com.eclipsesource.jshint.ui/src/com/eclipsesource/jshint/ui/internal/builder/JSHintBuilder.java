@@ -50,14 +50,14 @@ public class JSHintBuilder extends IncrementalProjectBuilder {
 
   private void fullBuild( IProgressMonitor monitor ) throws CoreException {
     IProject project = getProject();
-    getProject().accept( new JSHintBuilderVisitor( project ) );
+    getProject().accept( new JSHintBuilderVisitor( project, monitor ) );
   }
 
   private void incrementalBuild( IResourceDelta delta, IProgressMonitor monitor )
       throws CoreException
   {
     IProject project = getProject();
-    delta.accept( new JSHintBuilderVisitor( project ) );
+    delta.accept( new JSHintBuilderVisitor( project, monitor ) );
   }
 
   static class CoreExceptionWrapper extends RuntimeException {
