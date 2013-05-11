@@ -45,7 +45,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarker() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test" );
+    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( 1, markers.length );
@@ -57,7 +57,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarkerWithValidLine() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test" );
+    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( Integer.valueOf( 1 ), markers[ 0 ].getAttribute( IMarker.LINE_NUMBER ) );
@@ -65,7 +65,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarkerWithInvalidLine() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 0, 0, 0, "test" );
+    new MarkerAdapter( file ).createMarker( 0, 0, 0, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertNull( markers[ 0 ].getAttribute( IMarker.LINE_NUMBER ) );
@@ -73,7 +73,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarkerWithValidRange() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 3, 5, "test" );
+    new MarkerAdapter( file ).createMarker( 1, 3, 5, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( Integer.valueOf( 3 ), markers[ 0 ].getAttribute( IMarker.CHAR_START ) );
@@ -82,7 +82,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarkerWithNegativeStart() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, -1, 5, "test" );
+    new MarkerAdapter( file ).createMarker( 1, -1, 5, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertNull( markers[ 0 ].getAttribute( IMarker.CHAR_START ) );
@@ -91,7 +91,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarkerWithEndLowerThanStart() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 3, 2, "test" );
+    new MarkerAdapter( file ).createMarker( 1, 3, 2, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( Integer.valueOf( 3 ), markers[ 0 ].getAttribute( IMarker.CHAR_START ) );
@@ -100,7 +100,7 @@ public class MarkerAdapter_Test {
 
   @Test
   public void createMarkerWithMessage() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test" );
+    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test", "W000" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( "test", markers[ 0 ].getAttribute( IMarker.MESSAGE ) );
@@ -108,7 +108,7 @@ public class MarkerAdapter_Test {
 
   @Test( expected=NullPointerException.class )
   public void createMarkerWithNullMessage() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 3, 5, null );
+    new MarkerAdapter( file ).createMarker( 1, 3, 5, null, "W000" );
   }
 
   @Test
