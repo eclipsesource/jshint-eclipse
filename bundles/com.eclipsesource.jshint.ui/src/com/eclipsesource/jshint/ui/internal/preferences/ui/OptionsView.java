@@ -25,27 +25,32 @@ public class OptionsView extends Composite {
 
   private Text predefinedText;
   private Text optionsText;
+  private Text annotationText;
 
   public OptionsView( Composite parent, int style ) {
     super( parent, style );
     super.setLayout( createGridLayout( 1, false ) );
     createPredefControls();
     createOptionsControls();
+    createAnnotationControls();
   }
 
   public void loadDefaults() {
     predefinedText.setText( "" );
     optionsText.setText( "" );
+    annotationText.setText( "" );
   }
 
   public void loadPreferences( OptionsPreferences preferences ) {
     predefinedText.setText( preferences.getGlobals() );
     optionsText.setText( preferences.getOptions() );
+    annotationText.setText( preferences.getAnnotation() );
   }
 
   public void storePreferences( OptionsPreferences preferences ) {
     preferences.setGlobals( predefinedText.getText() );
     preferences.setOptions( optionsText.getText() );
+    preferences.setAnnotation( annotationText.getText() );
   }
 
   @Override
@@ -54,7 +59,7 @@ public class OptionsView extends Composite {
   }
 
   private void createPredefControls() {
-    new Label( this, SWT.NONE ).setText( "Predefined globals:" );
+    new Label( this, SWT.NONE ).setText( "Predefined Globals:" );
     predefinedText = new Text( this, SWT.BORDER | SWT.MULTI | SWT.WRAP );
     predefinedText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
     createSubText( this ).setText( "Example: \"org: true, com: true, ...\"\n"
@@ -67,6 +72,13 @@ public class OptionsView extends Composite {
     optionsText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
     createSubText( this ).setText( "Example: \"strict: false, sub: true, ...\"\n"
                                    + "see http://www.jshint.com/options/" );
+  }
+
+  private void createAnnotationControls() {
+    new Label( this, SWT.NONE ).setText( "Default JSHint Annotation:" );
+    annotationText = new Text( this, SWT.BORDER | SWT.MULTI | SWT.WRAP );
+    annotationText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    createSubText( this ).setText( "Example: \"-W086, -W078\"" );
   }
 
   private static Text createSubText( Composite parent ) {

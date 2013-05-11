@@ -31,7 +31,7 @@ final class MarkerHandler implements ProblemHandler {
   public void handleProblem( Problem problem ) {
     int line = problem.getLine();
     int character = problem.getCharacter();
-    String codeStr = problem.getCode().indexOf('E') != -1 ? "ERROR" : "WARNING";
+    String codeStr = problem.getCode();
     String message = problem.getMessage();
     if( isValidLine( line ) ) {
       int start = -1;

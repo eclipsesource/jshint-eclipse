@@ -54,7 +54,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     new EnablementPreferences( node );
     selector = new ResourceSelector( project );
-    checker = selector.allowVisitProject() ? createJSHint( getConfiguration( project ) ) : null;
+    checker = selector.allowVisitProject() ? createJSHint( getConfiguration( project ), getDefaultAnnotation( project ) ) : null;
     this.monitor = monitor;
   }
 
@@ -79,7 +79,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     return descend;
   }
 
-  private JSHint createJSHint( JsonObject configuration ) throws CoreException {
+  private JSHint createJSHint( JsonObject configuration, String defaultAnnotation ) throws CoreException {
     JSHint jshint = new JSHint();
     try {
       InputStream inputStream = getCustomLib();
@@ -92,7 +92,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       } else {
         jshint.load();
       }
-      jshint.configure( configuration );
+      jshint.configure( configuration, defaultAnnotation );
     } catch( IOException exception ) {
       String message = "Failed to intialize JSHint";
       throw new CoreException( new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception ) );
@@ -125,6 +125,20 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       configuration = workspacePreferences.getConfiguration();
     }
     return configuration;
+  }
+
+  private static String getDefaultAnnotation( IProject project ) {
+    String defaultAnnotation;
+    Preferences projectNode = PreferencesFactory.getProjectPreferences( project );
+    OptionsPreferences projectPreferences = new OptionsPreferences( projectNode );
+    if( projectPreferences.getProjectSpecific() ) {
+	  defaultAnnotation = projectPreferences.getAnnotation();
+    } else {
+      Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
+      OptionsPreferences workspacePreferences = new OptionsPreferences( workspaceNode );
+      defaultAnnotation = workspacePreferences.getAnnotation();
+    }
+    return defaultAnnotation;
   }
 
   private static void clean( IResource resource ) throws CoreException {

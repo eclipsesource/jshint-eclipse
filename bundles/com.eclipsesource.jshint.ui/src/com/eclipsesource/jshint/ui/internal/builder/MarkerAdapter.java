@@ -35,8 +35,22 @@ public class MarkerAdapter {
       throw new NullPointerException( "message is null" );
     }
     IMarker marker = resource.createMarker( TYPE_PROBLEM );
-    marker.setAttribute( IMarker.SEVERITY, new Integer( "ERROR".equals(code) ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING ) ); 
-    marker.setAttribute( IMarker.MESSAGE, message );
+    int severity;
+    switch(code.charAt(0))
+    {
+		case 'I':
+			severity = IMarker.SEVERITY_INFO;
+			break;
+    	case 'W':
+    		severity = IMarker.SEVERITY_WARNING;
+    		break;
+    	case 'E':
+    	default:
+    		severity = IMarker.SEVERITY_ERROR;
+    		break;
+    }
+    marker.setAttribute( IMarker.SEVERITY, new Integer( severity ) ); 
+    marker.setAttribute( IMarker.MESSAGE, new StringBuilder(message).append(" (").append(code).append(")").toString() );
     if( line >= 1 ) {
       // needed to display line number in problems view location column
       marker.setAttribute( IMarker.LINE_NUMBER, line );

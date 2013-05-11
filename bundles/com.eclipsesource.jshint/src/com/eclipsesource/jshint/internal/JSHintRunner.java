@@ -134,7 +134,7 @@ public class JSHintRunner {
   private void configureJSHint() {
     JsonObject configuration = new JsonObject();
     configuration.add( "undef", true );
-    jshint.configure( configuration );
+    jshint.configure( configuration, "" );
   }
 
   private String readFileContents( File file ) throws FileNotFoundException, IOException {

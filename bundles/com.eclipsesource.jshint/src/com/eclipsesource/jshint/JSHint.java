@@ -53,6 +53,7 @@ public class JSHint {
   private Function jshint;
   private Object opts;
   private int indent = DEFAULT_JSHINT_INDENT;
+  private String defaultAnnotation;
 
   /**
    * Loads the default JSHint library.
@@ -96,7 +97,7 @@ public class JSHint {
    * @param configuration
    *          the configuration to use, must not be null
    */
-  public void configure( JsonObject configuration ) {
+  public void configure( JsonObject configuration, String defaultAnnotation ) {
     if( configuration == null ) {
       throw new NullPointerException( "configuration is null" );
     }
@@ -109,6 +110,7 @@ public class JSHint {
     } finally {
       Context.exit();
     }
+    this.defaultAnnotation = defaultAnnotation;
   }
 
   private int determineIndent( JsonObject configuration ) {
@@ -143,7 +145,10 @@ public class JSHint {
       throw new IllegalStateException( "JSHint is not loaded" );
     }
     boolean result = true;
-    String code = text.getContent();
+    StringBuilder builder = new StringBuilder();
+    if(defaultAnnotation != null && defaultAnnotation.length() > 0)
+	  builder.append( "/* jshint " ).append( defaultAnnotation ).append( " */\n" );
+    String code = builder.append(text.getContent()).toString();
     // Don't feed jshint with empty strings, see https://github.com/jshint/jshint/issues/615
     // However, consider an empty string valid
     if( code.trim().length() != 0 ) {
@@ -236,6 +241,8 @@ public class JSHint {
     if( character > 0 ) {
       character = fixPosition( text, line, character );
     }
+    if(defaultAnnotation != null && defaultAnnotation.length() > 0)
+    	line--; // Adjust for the annotation comment at the top of the file.
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
     return new ProblemImpl( line, character, message, code );
   }
@@ -289,5 +296,4 @@ public class JSHint {
     JSHintRunner runner = new JSHintRunner();
     runner.run( args );
   }
-
 }
