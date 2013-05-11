@@ -256,7 +256,7 @@ public class JSHint {
     int charIndex = 0;
     int maxIndex = Math.min( character, string.length() - offset ) - 1;
     while( indentIndex < maxIndex ) {
-      boolean isTab = string.charAt( offset + indentIndex ) == '\t';
+      boolean isTab = string.charAt( offset + charIndex ) == '\t';
       indentIndex += isTab ? indent : 1;
       charIndex++;
     }
