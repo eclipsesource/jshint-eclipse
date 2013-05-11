@@ -50,7 +50,7 @@ public class MarkerAdapter {
     		break;
     }
     marker.setAttribute( IMarker.SEVERITY, new Integer( severity ) ); 
-    marker.setAttribute( IMarker.MESSAGE, new StringBuilder(message).append(" (").append(code).append(")").toString() );
+    marker.setAttribute( IMarker.MESSAGE, new StringBuilder(message).append("   (").append(code).append(")").toString() );
     if( line >= 1 ) {
       // needed to display line number in problems view location column
       marker.setAttribute( IMarker.LINE_NUMBER, line );

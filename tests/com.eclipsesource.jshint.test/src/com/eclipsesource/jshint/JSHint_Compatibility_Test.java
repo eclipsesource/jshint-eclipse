@@ -84,7 +84,7 @@ public class JSHint_Compatibility_Test {
   public void problemCharacterIs_0_Relative() {
     jsHint.check( "#", handler );
 
-    assertEquals( 0, problems.get( 0 ).getCharacter() );
+    assertEquals( 0, problems.get( 0 ).getStartCharacter() );
   }
 
   @Test
@@ -229,7 +229,7 @@ public class JSHint_Compatibility_Test {
 
   private String getPositionFromProblem( int n ) {
     Problem problem = problems.get( n );
-    return problem.getLine() + "." + problem.getCharacter();
+    return problem.getLine() + "." + problem.getStartCharacter();
   }
 
   private String getAllProblems() {
@@ -240,7 +240,7 @@ public class JSHint_Compatibility_Test {
       }
       builder.append( problem.getLine() );
       builder.append( '.' );
-      builder.append( problem.getCharacter() );
+      builder.append( problem.getStartCharacter() );
       builder.append( ':' );
       builder.append( problem.getMessage() );
     }

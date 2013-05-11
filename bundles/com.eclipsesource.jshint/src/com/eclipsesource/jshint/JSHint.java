@@ -110,7 +110,7 @@ public class JSHint {
     } finally {
       Context.exit();
     }
-    this.defaultAnnotation = defaultAnnotation;
+    this.defaultAnnotation = defaultAnnotation != null && defaultAnnotation.length() > 0 ? new StringBuilder("/* jshint ").append(defaultAnnotation).append(" */\n").toString() : "";
   }
 
   private int determineIndent( JsonObject configuration ) {
@@ -145,10 +145,7 @@ public class JSHint {
       throw new IllegalStateException( "JSHint is not loaded" );
     }
     boolean result = true;
-    StringBuilder builder = new StringBuilder();
-    if(defaultAnnotation != null && defaultAnnotation.length() > 0)
-	  builder.append( "/* jshint " ).append( defaultAnnotation ).append( " */\n" );
-    String code = builder.append(text.getContent()).toString();
+    String code = new StringBuilder(defaultAnnotation).append(text.getContent()).toString();
     // Don't feed jshint with empty strings, see https://github.com/jshint/jshint/issues/615
     // However, consider an empty string valid
     if( code.trim().length() != 0 ) {
@@ -236,31 +233,66 @@ public class JSHint {
   private ProblemImpl createProblem( ScriptableObject error, Text text ) {
     String reason = getPropertyAsString( error, "reason", "" );
     int line = getPropertyAsInt( error, "line", -1 );
-    int character = getPropertyAsInt( error, "character", -1 );
-    String code = getPropertyAsString( error, "code", "W000" ); 
-    if( character > 0 ) {
-      character = fixPosition( text, line, character );
+    int startCharacter = getPropertyAsInt( error, "character", -1 );
+    int offset = text.getLineOffset( line - (defaultAnnotation.length() > 0 ? 2 : 1) );  // Adjust for the annotation comment at the top of the file.
+    int stopCharacter;
+    String code = getPropertyAsString( error, "code", "W000" );
+    String token = coalesceToken( getPropertyAsString( error, "a", null ), reason );
+	String content = text.getContent();
+    if( startCharacter > 0 ) {
+      startCharacter = fixStartPosition( content, line, startCharacter, offset );
     }
+    if(token != null && offset + startCharacter > -1 && offset + startCharacter < content.length())
+    {
+	  	if(offset + startCharacter + token.length() < content.length() && content.substring(offset + startCharacter, offset + startCharacter + token.length()).equals(token))
+	  	{
+	  		stopCharacter = startCharacter + token.length();
+	  	}
+	  	else
+	  		if(offset + startCharacter - token.length() > -1 && content.substring(offset + startCharacter - token.length(), offset + startCharacter).equals(token))
+	  		{
+	  			stopCharacter = startCharacter;
+	  			startCharacter -= token.length();
+	  		}
+	  		else
+	  			stopCharacter = startCharacter;
+    }
+    else
+    	stopCharacter = startCharacter;
     if(defaultAnnotation != null && defaultAnnotation.length() > 0)
     	line--; // Adjust for the annotation comment at the top of the file.
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
-    return new ProblemImpl( line, character, message, code );
+    return new ProblemImpl( line, startCharacter, stopCharacter, message, code );
   }
 
-  private int fixPosition( Text text, int line, int character ) {
+  private int fixStartPosition( String content, int line, int character, int offset ) {
     // JSHint reports physical character positions instead of a character index,
     // i.e. every tab character is multiplied with the indent.
-    String string = text.getContent();
-    int offset = text.getLineOffset( line - 1 );
     int indentIndex = 0;
     int charIndex = 0;
-    int maxIndex = Math.min( character, string.length() - offset ) - 1;
+    int maxIndex = Math.min( character, content.length() - offset ) - 1;
     while( indentIndex < maxIndex ) {
-      boolean isTab = string.charAt( offset + charIndex ) == '\t';
+      boolean isTab = content.charAt( offset + charIndex ) == '\t';
       indentIndex += isTab ? indent : 1;
       charIndex++;
     }
     return charIndex;
+  }
+
+  private String coalesceToken( String token, String reason )
+  {
+	  String coalesced;
+	  int index;
+
+	  if(token == null && reason.length() > 0 && reason.charAt(0) == '\'')
+	  {
+		  index = reason.indexOf('\'', 1);
+		  coalesced = index != -1 ? reason.substring(1, index) : token;
+	  }
+	  else
+		  coalesced = token;
+
+	  return coalesced;
   }
 
   private static String getPropertyAsString( ScriptableObject object,

@@ -24,11 +24,18 @@ public interface Problem {
   int getLine();
 
   /**
-   * Returns the character offset within the line in which the character occurred.
+   * Returns the character offset within the line in which the problem occurred.
    * 
    * @return the character offset, beginning with 0
    */
-  int getCharacter();
+  int getStartCharacter();
+
+  /**
+   * Returns the character offset at the end of the token (if present), otherwise the same as getStartCharacter() above.
+   * 
+   * @return the character offset, beginning with 0
+   */
+  int getStopCharacter();
 
   /**
    * The problem message returned from JSHint.

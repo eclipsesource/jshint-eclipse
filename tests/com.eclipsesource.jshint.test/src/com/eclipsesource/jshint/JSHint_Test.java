@@ -274,7 +274,7 @@ public class JSHint_Test {
 
     jsHint.check( "var x = 1,\t# y = 2;", handler );
 
-    assertEquals( 11, problems.get( 0 ).getCharacter() );
+    assertEquals( 11, problems.get( 0 ).getStartCharacter() );
   }
 
   @Test
@@ -318,7 +318,7 @@ public class JSHint_Test {
     public void handleProblem( Problem problem ) {
       log.append( problem.getLine() );
       log.append( ':' );
-      log.append( problem.getCharacter() );
+      log.append( problem.getStartCharacter() );
       log.append( ':' );
       log.append( problem.getMessage() );
       log.append( '\n' );

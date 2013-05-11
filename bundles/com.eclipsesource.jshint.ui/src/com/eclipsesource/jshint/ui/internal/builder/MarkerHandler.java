@@ -30,23 +30,30 @@ final class MarkerHandler implements ProblemHandler {
 
   public void handleProblem( Problem problem ) {
     int line = problem.getLine();
-    int character = problem.getCharacter();
+    int startCharacter = problem.getStartCharacter();
+    int stopCharacter = problem.getStopCharacter();
     String codeStr = problem.getCode();
     String message = problem.getMessage();
     if( isValidLine( line ) ) {
       int start = -1;
-      if( isValidCharacter( line, character ) ) {
-        start = code.getLineOffset( line - 1 ) + character;
+      int stop;
+      if( isValidCharacter( line, startCharacter ) ) {
+        start = code.getLineOffset( line - 1 ) + startCharacter;
       }
-      createMarker( line, start, message, codeStr );
+      if( isValidCharacter( line, stopCharacter ) ) {
+    	  stop = code.getLineOffset( line - 1 ) + stopCharacter;
+      }
+      else
+    	  stop = start;
+      createMarker( line, start, stop, message, codeStr );
     } else {
-      createMarker( -1, -1, message, codeStr );
+      createMarker( -1, -1, -1, message, codeStr );
     }
   }
 
-  private void createMarker( int line, int start, String message, String codeStr ) throws CoreExceptionWrapper {
+  private void createMarker( int line, int start, int stop, String message, String codeStr ) throws CoreExceptionWrapper {
     try {
-      markerAdapter.createMarker( line, start, start, message, codeStr );
+      markerAdapter.createMarker( line, start, stop, message, codeStr );
     } catch( CoreException ce ) {
       throw new CoreExceptionWrapper( ce );
     }
