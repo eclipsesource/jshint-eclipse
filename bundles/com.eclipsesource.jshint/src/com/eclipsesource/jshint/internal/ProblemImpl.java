@@ -17,11 +17,13 @@ public class ProblemImpl implements Problem {
   private final int line;
   private final int character;
   private final String message;
+  private final String code;
 
-  public ProblemImpl( int line, int character, String message ) {
+  public ProblemImpl( int line, int character, String message, String code ) {
     this.line = line;
     this.character = character;
     this.message = message;
+    this.code = code;
   }
 
   public int getLine() {
@@ -34,6 +36,10 @@ public class ProblemImpl implements Problem {
 
   public String getMessage() {
     return message;
+  }
+
+  public String getCode() {
+    return code;
   }
 
 }

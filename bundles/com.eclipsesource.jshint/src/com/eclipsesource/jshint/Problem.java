@@ -37,4 +37,6 @@ public interface Problem {
    */
   String getMessage();
 
+  String getCode();
+
 }
