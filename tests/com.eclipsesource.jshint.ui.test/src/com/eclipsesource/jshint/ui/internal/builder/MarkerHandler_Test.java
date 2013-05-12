@@ -114,7 +114,7 @@ public class MarkerHandler_Test {
     }
 
     @Override
-    public void createMarker( int line, int start, int end, String message, String code ) throws CoreException {
+    public void createProblemMarker( int line, int start, int end, String message, String code ) throws CoreException {
       log.add( line + "," + start + "," + end + "," + message + "," + code );
     }
 

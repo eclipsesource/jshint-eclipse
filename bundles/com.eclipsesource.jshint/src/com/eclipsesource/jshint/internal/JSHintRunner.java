@@ -23,6 +23,8 @@ import java.util.List;
 import com.eclipsesource.jshint.JSHint;
 import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.ProblemHandler;
+import com.eclipsesource.jshint.Task;
+import com.eclipsesource.jshint.TaskHandler;
 import com.eclipsesource.json.JsonObject;
 
 
@@ -126,8 +128,9 @@ public class JSHintRunner {
   private void processFiles() throws IOException {
     for( File file : files ) {
       String code = readFileContents( file );
-      ProblemHandler handler = new SysoutProblemHandler( file.getAbsolutePath() );
-      jshint.check( code, handler );
+      ProblemHandler problem = new SysoutProblemHandler( file.getAbsolutePath() );
+      TaskHandler task = new SysoutTaskHandler( file.getAbsolutePath() );
+      jshint.check( code, problem, task );
     }
   }
 
@@ -170,4 +173,17 @@ public class JSHintRunner {
 
   }
 
+  private static final class SysoutTaskHandler implements TaskHandler {
+	  private final String fileName;
+
+    public SysoutTaskHandler( String fileName ) {
+        this.fileName = fileName;
+      }
+
+    public void handleTask( Task task ) {
+        int line = task.getLine();
+        String message = task.getMessage();
+        System.out.println( "Task in file " + fileName + " at line " + line + ": " + message );
+      }
+  }
 }

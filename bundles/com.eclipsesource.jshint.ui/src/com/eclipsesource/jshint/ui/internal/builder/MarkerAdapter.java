@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 
 public class MarkerAdapter {
 
+  private static final String TYPE_TASK = "com.eclipsesource.jshint.ui.taskmarker";
   private static final String TYPE_PROBLEM = "com.eclipsesource.jshint.ui.problemmarker";
   private static final String TYPE_PROBLEM_OLD = "com.eclipsesource.jshint.problemmarker";
   private final IResource resource;
@@ -28,9 +29,10 @@ public class MarkerAdapter {
   public void removeMarkers() throws CoreException {
     resource.deleteMarkers( TYPE_PROBLEM, true, IResource.DEPTH_INFINITE );
     resource.deleteMarkers( TYPE_PROBLEM_OLD, true, IResource.DEPTH_INFINITE );
+    resource.deleteMarkers( TYPE_TASK, true, IResource.DEPTH_INFINITE );
   }
 
-  public void createMarker( int line, int start, int end, String message, String code ) throws CoreException { 
+  public void createProblemMarker( int line, int start, int end, String message, String code ) throws CoreException { 
     if( message == null ) {
       throw new NullPointerException( "message is null" );
     }
@@ -59,6 +61,19 @@ public class MarkerAdapter {
       marker.setAttribute( IMarker.CHAR_START, new Integer( start ) );
       marker.setAttribute( IMarker.CHAR_END, new Integer( end >= start ? end : start ) );
     }
+  }
+
+  public void createTaskMarker( int line, int startCharacter, int stopCharacter, String code, String message ) throws CoreException {
+	  if( message == null ) {
+		  throw new NullPointerException( "message is null" );
+	  }
+	  IMarker marker = resource.createMarker( TYPE_TASK );
+	  marker.setAttribute( IMarker.LINE_NUMBER, line );
+	  marker.setAttribute( IMarker.CHAR_START, startCharacter );
+	  marker.setAttribute( IMarker.CHAR_END, stopCharacter );
+	  marker.setAttribute( IMarker.MESSAGE, message );
+	  marker.setAttribute( IMarker.USER_EDITABLE, false );
+	  marker.setAttribute( IMarker.PRIORITY, "FIXME".equals(code) ? IMarker.PRIORITY_HIGH : IMarker.PRIORITY_NORMAL );
   }
 
 }

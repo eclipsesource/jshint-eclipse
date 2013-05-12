@@ -16,6 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -26,6 +28,7 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.eclipsesource.jshint.internal.JSHintRunner;
 import com.eclipsesource.jshint.internal.ProblemImpl;
+import com.eclipsesource.jshint.internal.TaskImpl;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -54,6 +57,8 @@ public class JSHint {
   private Object opts;
   private int indent = DEFAULT_JSHINT_INDENT;
   private String defaultAnnotation;
+  private Pattern commentSearch = Pattern.compile("(?:\"(?:[^\"\\n]*\\\\\")*[^\"\\n]*[\"\\n])|(/\\*(?:[^*]*\\*[^/])*[^*]*\\*/|//.*)");
+  private final String[] TASK_TYPES = new String[] {"TODO", "FIXME", "XXX"};
 
   /**
    * Loads the default JSHint library.
@@ -130,14 +135,14 @@ public class JSHint {
    *          the handler to report problems to or <code>null</code>
    * @return <code>true</code> if no problems have been found, otherwise <code>false</code>
    */
-  public boolean check( String code, ProblemHandler handler ) {
+  public boolean check( String code, ProblemHandler problem, TaskHandler task ) {
     if( code == null ) {
       throw new NullPointerException( "code is null" );
     }
-    return check( new Text( code ), handler );
+    return check( new Text( code ), problem, task );
   }
 
-  public boolean check( Text text, ProblemHandler handler ) {
+  public boolean check( Text text, ProblemHandler problem, TaskHandler task ) {
     if( text == null ) {
       throw new NullPointerException( "code is null" );
     }
@@ -152,9 +157,10 @@ public class JSHint {
       Context context = Context.enter();
       try {
         result = checkCode( context, code );
-        if( !result && handler != null ) {
-          handleProblems( handler, text );
+        if( !result && problem != null ) {
+          handleProblems( problem, text );
         }
+        generateTasks(task, text);
       } finally {
         Context.exit();
       }
@@ -279,8 +285,7 @@ public class JSHint {
     return charIndex;
   }
 
-  private String coalesceToken( String token, String reason )
-  {
+  private String coalesceToken( String token, String reason ) {
 	  String coalesced;
 	  int index;
 
@@ -293,6 +298,55 @@ public class JSHint {
 		  coalesced = token;
 
 	  return coalesced;
+  }
+
+  private TaskImpl createTask( int line, int startCharacter, int stopCharacter, String code, String message ) {
+	  return new TaskImpl( line, startCharacter, stopCharacter, code, message );
+  }
+
+  // Generates a list of todo/fixme/xxx tasks found in the document
+  // TODO: Make this use the central preferences store
+  private void generateTasks(TaskHandler handler, Text text) {
+	  String content;
+	  String code;
+	  String message;
+	  int line;
+	  int startCharacter;
+	  int stopCharacter;
+	  int offset;
+	  int taskCount;
+	  int taskIndex;
+	  Matcher commentMatch;
+	  Matcher taskMatch;
+	  taskCount = TASK_TYPES.length;
+	  Pattern[] taskPattern = new Pattern[taskCount];
+	  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ )
+		  taskPattern[taskIndex] = Pattern.compile(TASK_TYPES[taskIndex] + "(?::?|[ \t])[ \t]*.*\\b[^ \t\n]*");
+	  String comment;
+	  content = text.getContent();
+	  for( commentMatch = commentSearch.matcher(content); commentMatch.find(); ) {
+		  comment = commentMatch.group(1);
+		  // Prevent task expressions matching the closing mark for a comment
+		  if(comment != null)
+		  {
+			  if(comment.endsWith("*/"))
+				  comment = comment.substring(0, comment.length() - 2);
+			  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ )
+			  {
+				  for(taskMatch = taskPattern[taskIndex].matcher(comment); taskMatch.find(); ) {
+					  code = TASK_TYPES[taskIndex];
+					  message = taskMatch.group();
+					  startCharacter = taskMatch.start() + commentMatch.start();
+					  stopCharacter = taskMatch.end() + commentMatch.start();
+			    	  line = text.getOffsetLine(startCharacter);
+			    	  offset = text.getLineOffset(line);
+			    	  stopCharacter -= offset;
+			    	  startCharacter -= offset;
+			    	  handler.handleTask( createTask( line + 1, startCharacter, stopCharacter, code, message ) );
+				  }
+			  }
+		  }
+	  }
   }
 
   private static String getPropertyAsString( ScriptableObject object,

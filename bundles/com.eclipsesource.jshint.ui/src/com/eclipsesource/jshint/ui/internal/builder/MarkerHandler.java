@@ -14,11 +14,13 @@ import org.eclipse.core.runtime.CoreException;
 
 import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.ProblemHandler;
+import com.eclipsesource.jshint.Task;
+import com.eclipsesource.jshint.TaskHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
 
 
-final class MarkerHandler implements ProblemHandler {
+final class MarkerHandler implements ProblemHandler, TaskHandler {
 
   private final MarkerAdapter markerAdapter;
   private final Text code;
@@ -45,18 +47,45 @@ final class MarkerHandler implements ProblemHandler {
       }
       else
     	  stop = start;
-      createMarker( line, start, stop, message, codeStr );
+      createProblemMarker( line, start, stop, message, codeStr );
     } else {
-      createMarker( -1, -1, -1, message, codeStr );
+      createProblemMarker( -1, -1, -1, message, codeStr );
     }
   }
 
-  private void createMarker( int line, int start, int stop, String message, String codeStr ) throws CoreExceptionWrapper {
+  private void createProblemMarker( int line, int start, int stop, String message, String codeStr ) throws CoreExceptionWrapper {
     try {
-      markerAdapter.createMarker( line, start, stop, message, codeStr );
+      markerAdapter.createProblemMarker( line, start, stop, message, codeStr );
     } catch( CoreException ce ) {
       throw new CoreExceptionWrapper( ce );
     }
+  }
+
+  public void handleTask( Task task ) {
+	  int line = task.getLine();
+	  int startCharacter = task.getStartCharacter();
+	  int stopCharacter = task.getStopCharacter();
+	  String message = task.getMessage();
+	  String codeStr = task.getCode();
+
+	  if( isValidLine( line ) && isValidCharacter(line, startCharacter) ) {
+		  startCharacter = code.getLineOffset( line - 1 ) + startCharacter;
+		  if( isValidCharacter(line, stopCharacter ) )
+			  stopCharacter = code.getLineOffset( line - 1 ) + stopCharacter;
+		  else
+			  stopCharacter = startCharacter;
+		  createTaskMarker( line, startCharacter, stopCharacter, codeStr, message );
+	  }
+	  else
+		  createTaskMarker( -1, startCharacter, stopCharacter, codeStr, message );
+  }
+
+  private void createTaskMarker( int line, int startCharacter, int stopCharacter, String codeStr, String message ) throws CoreExceptionWrapper {
+	  try {
+		  markerAdapter.createTaskMarker(line, startCharacter, stopCharacter, codeStr, message);
+	  } catch( CoreException ce ) {
+		  throw new CoreExceptionWrapper( ce );
+	  }
   }
 
   private boolean isValidLine( int line ) {

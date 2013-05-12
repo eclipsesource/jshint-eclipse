@@ -31,13 +31,14 @@ import static org.junit.Assert.*;
 public class JSHint_Test {
 
   private List<Problem> problems;
+  private List<Task> tasks;
   private TestHandler handler;
   private JSHint jsHint;
 
   @Before
   public void setUp() throws IOException {
     problems = new ArrayList<Problem>();
-    handler = new TestHandler( problems );
+    handler = new TestHandler( problems, tasks );
     jsHint = new JSHint();
     jsHint.load();
   }
@@ -61,7 +62,7 @@ public class JSHint_Test {
     JSHint jsHint = new JSHint();
     jsHint.configure( configuration, "" );
     jsHint.load();
-    jsHint.check( "x = 23;", handler );
+    jsHint.check( "x = 23;", handler, handler );
 
     assertEquals( "'x' is not defined", problems.get( 0 ).getMessage() );
   }
@@ -73,7 +74,7 @@ public class JSHint_Test {
     JSHint jsHint = new JSHint();
     jsHint.load();
     jsHint.configure( configuration, "" );
-    jsHint.check( "x = 23;", handler );
+    jsHint.check( "x = 23;", handler, handler );
 
     assertEquals( "'x' is not defined", problems.get( 0 ).getMessage() );
   }
@@ -81,23 +82,23 @@ public class JSHint_Test {
   @Test( expected = IllegalStateException.class )
   public void checkWithoutLoad() {
     JSHint jsHint = new JSHint();
-    jsHint.check( "code", handler );
+    jsHint.check( "code", handler, handler );
   }
 
   @Test( expected = NullPointerException.class )
   public void checkWithNullCode() {
-    jsHint.check( (String)null, handler );
+    jsHint.check( (String)null, handler, handler );
   }
 
   @Test( expected = NullPointerException.class )
   public void checkWithNullText() {
-    jsHint.check( (Text)null, handler );
+    jsHint.check( (Text)null, handler, handler );
   }
 
   @Test
   public void checkWithNullHandler() {
-    assertTrue( jsHint.check( "var a = 23;", null ) );
-    assertFalse( jsHint.check( "HMPF!", null ) );
+    assertTrue( jsHint.check( "var a = 23;", null, null ) );
+    assertFalse( jsHint.check( "HMPF!", null, null ) );
   }
 
   @Test( expected = NullPointerException.class )
@@ -172,14 +173,14 @@ public class JSHint_Test {
       stream.close();
     }
 
-    jsHint.check( "cheese! :D", handler );
+    jsHint.check( "cheese! :D", handler, handler );
 
     assertFalse( problems.isEmpty() );
   }
 
   @Test
   public void checkWithEmptyCode() {
-    boolean result = jsHint.check( "", handler );
+    boolean result = jsHint.check( "", handler, handler );
 
     assertTrue( result );
     assertTrue( problems.isEmpty() );
@@ -187,7 +188,7 @@ public class JSHint_Test {
 
   @Test
   public void checkWithOnlyWhitespace() {
-    boolean result = jsHint.check( " ", handler );
+    boolean result = jsHint.check( " ", handler, handler );
 
     assertTrue( result );
     assertTrue( problems.isEmpty() );
@@ -195,7 +196,7 @@ public class JSHint_Test {
 
   @Test
   public void checkWithValidCode() {
-    boolean result = jsHint.check( "var foo = 23;", handler );
+    boolean result = jsHint.check( "var foo = 23;", handler, handler );
 
     assertTrue( result );
     assertTrue( problems.isEmpty() );
@@ -203,7 +204,7 @@ public class JSHint_Test {
 
   @Test
   public void checkWithFaultyCode() {
-    boolean result = jsHint.check( "cheese!", handler );
+    boolean result = jsHint.check( "cheese!", handler, handler );
 
     assertFalse( result );
     assertFalse( problems.isEmpty() );
@@ -215,7 +216,7 @@ public class JSHint_Test {
     jsHint.load( new ByteArrayInputStream( "JSHINT = function() { throw 'ERROR'; };".getBytes() ) );
 
     try {
-      jsHint.check( "var a = 1;", handler );
+      jsHint.check( "var a = 1;", handler, handler );
       fail();
     } catch( RuntimeException exception ) {
 
@@ -231,7 +232,7 @@ public class JSHint_Test {
     jsHint.load( new ByteArrayInputStream( "JSHINT = function() { throw x[ 0 ]; };".getBytes() ) );
 
     try {
-      jsHint.check( "var a = 1;", handler );
+      jsHint.check( "var a = 1;", handler, handler );
       fail();
     } catch( RuntimeException exception ) {
 
@@ -244,7 +245,7 @@ public class JSHint_Test {
   @Test
   public void noErrorsWithoutConfig() {
     // undefined variable is only reported with 'undef' in config
-    jsHint.check( "var f = function () { v = {}; };", handler );
+    jsHint.check( "var f = function () { v = {}; };", handler, handler );
 
     assertTrue( problems.isEmpty() );
   }
@@ -254,7 +255,7 @@ public class JSHint_Test {
     // undefined variable is only reported with 'undef' in config
     jsHint.configure( new JsonObject(), null );
 
-    jsHint.check( "var f = function () { v = {}; };", handler );
+    jsHint.check( "var f = function () { v = {}; };", handler, handler );
 
     assertTrue( problems.isEmpty() );
   }
@@ -263,7 +264,7 @@ public class JSHint_Test {
   public void errorWithUndefInConfig() {
     jsHint.configure( new JsonObject().add( "undef", true ), null );
 
-    jsHint.check( "var f = function () { v = {}; };", handler );
+    jsHint.check( "var f = function () { v = {}; };", handler, handler );
 
     assertThat( problems.get( 0 ).getMessage(), containsString( "'v' is not defined" ) );
   }
@@ -272,7 +273,7 @@ public class JSHint_Test {
   public void errorAfterTabHasCorrectPosition() {
     jsHint.configure( new JsonObject().add( "undef", true ), null );
 
-    jsHint.check( "var x = 1,\t# y = 2;", handler );
+    jsHint.check( "var x = 1,\t# y = 2;", handler, handler );
 
     assertEquals( 11, problems.get( 0 ).getStartCharacter() );
   }
@@ -283,7 +284,7 @@ public class JSHint_Test {
 
     // Must not throw SIOOBE
     // See https://github.com/eclipsesource/jshint-eclipse/issues/34
-    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler, handler );
   }
 
   @Test
@@ -292,8 +293,8 @@ public class JSHint_Test {
     LoggingHandler handler1 = new LoggingHandler();
     LoggingHandler handler2 = new LoggingHandler();
 
-    jsHint.check( "var x = 1;\t#", handler1 );
-    jsHint.check( "var x = 1;\t#", handler2 );
+    jsHint.check( "var x = 1;\t#", handler1, handler );
+    jsHint.check( "var x = 1;\t#", handler2, handler );
 
     assertTrue( handler1.toString().length() > 0 );
     assertEquals( handler1.toString(), handler2.toString() );
@@ -304,11 +305,11 @@ public class JSHint_Test {
     // see https://github.com/jshint/jshint/issues/931
     jsHint.configure( new JsonObject().add( "undef", true ), null );
 
-    jsHint.check( "var x = 1;\t#", handler );
-    jsHint.check( "var x = 1;\t#", handler );
-    jsHint.check( "var x = 1;\t#", handler );
-    jsHint.check( "var x = 1;\t#", handler );
-    jsHint.check( "var x = 1;\t#", handler );
+    jsHint.check( "var x = 1;\t#", handler, handler );
+    jsHint.check( "var x = 1;\t#", handler, handler );
+    jsHint.check( "var x = 1;\t#", handler, handler );
+    jsHint.check( "var x = 1;\t#", handler, handler );
+    jsHint.check( "var x = 1;\t#", handler, handler );
   }
 
   private static class LoggingHandler implements ProblemHandler {
@@ -331,16 +332,22 @@ public class JSHint_Test {
 
   }
 
-  private static class TestHandler implements ProblemHandler {
+  private static class TestHandler implements ProblemHandler, TaskHandler {
 
     private final List<Problem> problems;
+    private final List<Task> tasks;
 
-    public TestHandler( List<Problem> problems ) {
+    public TestHandler( List<Problem> problems, List<Task> tasks ) {
       this.problems = problems;
+      this.tasks = tasks;
     }
 
     public void handleProblem( Problem problem ) {
       problems.add( problem );
+    }
+
+    public void handleTask( Task task ) {
+    	tasks.add( task );
     }
 
   }

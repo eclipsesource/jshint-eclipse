@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -49,6 +51,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
   private final JSHint checker;
   private final ResourceSelector selector;
   private IProgressMonitor monitor;
+  private static Pattern errorSwitch = Pattern.compile("\\B[-+][EWI]\\d{3}");
 
   public JSHintBuilderVisitor( IProject project, IProgressMonitor monitor ) throws CoreException {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
@@ -102,9 +105,9 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private void check( IFile file ) throws CoreException {
     Text code = readContent( file );
-    ProblemHandler handler = new MarkerHandler( new MarkerAdapter( file ), code );
+    MarkerHandler handler = new MarkerHandler( new MarkerAdapter( file ), code );
     try {
-      checker.check( code, handler );
+      checker.check( code, handler, handler );
     } catch( CoreExceptionWrapper wrapper ) {
       throw (CoreException)wrapper.getCause();
     } catch( RuntimeException exception ) {
@@ -129,6 +132,8 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private static String getDefaultAnnotation( IProject project ) {
     String defaultAnnotation;
+    Matcher match;
+    StringBuilder cleaned;
     Preferences projectNode = PreferencesFactory.getProjectPreferences( project );
     OptionsPreferences projectPreferences = new OptionsPreferences( projectNode );
     if( projectPreferences.getProjectSpecific() ) {
@@ -137,6 +142,17 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
       OptionsPreferences workspacePreferences = new OptionsPreferences( workspaceNode );
       defaultAnnotation = workspacePreferences.getAnnotation();
+    }
+    if(defaultAnnotation != null) {
+    	match = errorSwitch.matcher(defaultAnnotation);
+    	if(match.find()) {
+    		cleaned = new StringBuilder(match.group());
+    		while(match.find())
+    			cleaned.append(", ").append(match.group());
+    		defaultAnnotation = cleaned.toString();
+    	}
+    	else
+    		defaultAnnotation = null;
     }
     return defaultAnnotation;
   }

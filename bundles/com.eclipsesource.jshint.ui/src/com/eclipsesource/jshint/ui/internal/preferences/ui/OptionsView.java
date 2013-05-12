@@ -75,10 +75,11 @@ public class OptionsView extends Composite {
   }
 
   private void createAnnotationControls() {
-    new Label( this, SWT.NONE ).setText( "Default JSHint Annotation:" );
+    new Label( this, SWT.NONE ).setText( "Default JSHint Error Switches:" );
     annotationText = new Text( this, SWT.BORDER | SWT.MULTI | SWT.WRAP );
     annotationText.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    createSubText( this ).setText( "Example: \"-W086, -W078\"" );
+    createSubText( this ).setText( "You can enable/disable a specific warning or error here by listing a +/- followed by its code\n"
+                                   + "Example: \"-W086, -W078\"" );
   }
 
   private static Text createSubText( Composite parent ) {

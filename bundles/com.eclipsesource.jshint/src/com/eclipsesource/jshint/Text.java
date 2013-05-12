@@ -67,6 +67,13 @@ public class Text {
     return lineOffsets[ line ];
   }
 
+  public int getOffsetLine( int offset ) {
+	  int line;
+	  for(line = 1; line < lineCount && lineOffsets[line] < offset; line++);
+
+	  return line - 1;
+  }
+
   /**
    * Returns the length of the given line, including linebreak characters.
    *
