@@ -331,7 +331,7 @@ public class JSHint {
 		  taskCount = this.taskTags.size();
 		  Pattern[] taskPattern = new Pattern[taskCount];
 		  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ )
-			  taskPattern[taskIndex] = Pattern.compile(Pattern.quote(this.taskTags.get(taskIndex).getKeyword()) + ":?[ \t]+.*\\b[^ \t\n]*");
+			  taskPattern[taskIndex] = Pattern.compile(Pattern.quote(this.taskTags.get(taskIndex).getKeyword()) + ":?(?:[ \t]+.*\\b[^ \t\n]*|[ \t]*$)");
 		  String comment;
 		  content = text.getContent();
 		  for( commentMatch = commentSearch.matcher(content); commentMatch.find(); ) {
