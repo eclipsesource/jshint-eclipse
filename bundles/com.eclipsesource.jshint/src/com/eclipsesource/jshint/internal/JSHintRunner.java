@@ -25,6 +25,7 @@ import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Task;
 import com.eclipsesource.jshint.TaskHandler;
+import com.eclipsesource.jshint.TaskTag;
 import com.eclipsesource.json.JsonObject;
 
 
@@ -137,7 +138,7 @@ public class JSHintRunner {
   private void configureJSHint() {
     JsonObject configuration = new JsonObject();
     configuration.add( "undef", true );
-    jshint.configure( configuration, "" );
+    jshint.configure( configuration, "", new ArrayList<TaskTag>() );
   }
 
   private String readFileContents( File file ) throws FileNotFoundException, IOException {

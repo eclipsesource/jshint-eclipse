@@ -14,6 +14,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
+import com.eclipsesource.jshint.TaskTag;
+
 
 public class MarkerAdapter {
 
@@ -63,7 +65,7 @@ public class MarkerAdapter {
     }
   }
 
-  public void createTaskMarker( int line, int startCharacter, int stopCharacter, String code, String message ) throws CoreException {
+  public void createTaskMarker( int line, int startCharacter, int stopCharacter, TaskTag tag, String message ) throws CoreException {
 	  if( message == null ) {
 		  throw new NullPointerException( "message is null" );
 	  }
@@ -73,7 +75,8 @@ public class MarkerAdapter {
 	  marker.setAttribute( IMarker.CHAR_END, stopCharacter );
 	  marker.setAttribute( IMarker.MESSAGE, message );
 	  marker.setAttribute( IMarker.USER_EDITABLE, false );
-	  marker.setAttribute( IMarker.PRIORITY, "FIXME".equals(code) ? IMarker.PRIORITY_HIGH : IMarker.PRIORITY_NORMAL );
+	  // Annoying mismatch between stored pref priorities and internal Eclipse priorities.
+	  marker.setAttribute( IMarker.PRIORITY, tag.getPriority() );
   }
 
 }

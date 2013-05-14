@@ -16,6 +16,7 @@ import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Task;
 import com.eclipsesource.jshint.TaskHandler;
+import com.eclipsesource.jshint.TaskTag;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
 
@@ -66,7 +67,7 @@ final class MarkerHandler implements ProblemHandler, TaskHandler {
 	  int startCharacter = task.getStartCharacter();
 	  int stopCharacter = task.getStopCharacter();
 	  String message = task.getMessage();
-	  String codeStr = task.getCode();
+	  TaskTag tag = task.getTag();
 
 	  if( isValidLine( line ) && isValidCharacter(line, startCharacter) ) {
 		  startCharacter = code.getLineOffset( line - 1 ) + startCharacter;
@@ -74,15 +75,15 @@ final class MarkerHandler implements ProblemHandler, TaskHandler {
 			  stopCharacter = code.getLineOffset( line - 1 ) + stopCharacter;
 		  else
 			  stopCharacter = startCharacter;
-		  createTaskMarker( line, startCharacter, stopCharacter, codeStr, message );
+		  createTaskMarker( line, startCharacter, stopCharacter, tag, message );
 	  }
 	  else
-		  createTaskMarker( -1, startCharacter, stopCharacter, codeStr, message );
+		  createTaskMarker( -1, startCharacter, stopCharacter, tag, message );
   }
 
-  private void createTaskMarker( int line, int startCharacter, int stopCharacter, String codeStr, String message ) throws CoreExceptionWrapper {
+  private void createTaskMarker( int line, int startCharacter, int stopCharacter, TaskTag tag, String message ) throws CoreExceptionWrapper {
 	  try {
-		  markerAdapter.createTaskMarker(line, startCharacter, stopCharacter, codeStr, message);
+		  markerAdapter.createTaskMarker(line, startCharacter, stopCharacter, tag, message);
 	  } catch( CoreException ce ) {
 		  throw new CoreExceptionWrapper( ce );
 	  }

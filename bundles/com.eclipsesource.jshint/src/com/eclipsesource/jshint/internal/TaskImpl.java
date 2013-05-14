@@ -1,6 +1,7 @@
 package com.eclipsesource.jshint.internal;
 
 import com.eclipsesource.jshint.Task;
+import com.eclipsesource.jshint.TaskTag;
 
 
 public class TaskImpl implements Task {
@@ -8,14 +9,14 @@ public class TaskImpl implements Task {
   private final int startCharacter;
   private final int stopCharacter;
   private final String message;
-  private final String code;
+  private final TaskTag tag;
 
-  public TaskImpl( int line, int startCharacter, int stopCharacter, String code, String message ) {
+  public TaskImpl( int line, int startCharacter, int stopCharacter, TaskTag tag, String message ) {
     this.line = line;
     this.startCharacter = startCharacter;
     this.stopCharacter = stopCharacter;
     this.message = message;
-    this.code = code;
+    this.tag = tag;
   }
 
   public int getLine() {
@@ -34,7 +35,7 @@ public class TaskImpl implements Task {
     return message;
   }
 
-  public String getCode() {
-	  return code;
+  public TaskTag getTag() {
+	  return tag;
   }
 }

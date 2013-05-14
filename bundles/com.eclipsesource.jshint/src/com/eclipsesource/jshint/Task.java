@@ -27,11 +27,11 @@ public interface Task {
   int getStopCharacter();
 
   /**
-   * The code for the type of task (usu. todo, fixme or xxx)
+   * The tag for the task (usu. todo, fixme or xxx)
    *
    * @return the code
    */
-  String getCode();
+  TaskTag getTag();
 
   /**
    * The task message found in the scan.

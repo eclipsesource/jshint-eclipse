@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +30,7 @@ import org.mozilla.javascript.ScriptableObject;
 import com.eclipsesource.jshint.internal.JSHintRunner;
 import com.eclipsesource.jshint.internal.ProblemImpl;
 import com.eclipsesource.jshint.internal.TaskImpl;
+import com.eclipsesource.jshint.internal.TaskTagImpl;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
@@ -59,6 +61,7 @@ public class JSHint {
   private String defaultAnnotation;
   private Pattern commentSearch = Pattern.compile("(?:\"(?:[^\"\\n]*\\\\\")*[^\"\\n]*[\"\\n])|(/\\*(?:[^*]*\\*[^/])*[^*]*\\*/|//.*)");
   private final String[] TASK_TYPES = new String[] {"TODO", "FIXME", "XXX"};
+  private List<TaskTag> taskTags;
 
   /**
    * Loads the default JSHint library.
@@ -102,7 +105,7 @@ public class JSHint {
    * @param configuration
    *          the configuration to use, must not be null
    */
-  public void configure( JsonObject configuration, String defaultAnnotation ) {
+  public void configure( JsonObject configuration, String defaultAnnotation, List<TaskTag> taskTags ) {
     if( configuration == null ) {
       throw new NullPointerException( "configuration is null" );
     }
@@ -115,7 +118,9 @@ public class JSHint {
     } finally {
       Context.exit();
     }
+    this.taskTags = taskTags;
     this.defaultAnnotation = defaultAnnotation != null && defaultAnnotation.length() > 0 ? new StringBuilder("/* jshint ").append(defaultAnnotation).append(" */\n").toString() : "";
+    //TODO Set up task tags here.
   }
 
   private int determineIndent( JsonObject configuration ) {
@@ -300,15 +305,18 @@ public class JSHint {
 	  return coalesced;
   }
 
-  private TaskImpl createTask( int line, int startCharacter, int stopCharacter, String code, String message ) {
-	  return new TaskImpl( line, startCharacter, stopCharacter, code, message );
+  private TaskImpl createTask( int line, int startCharacter, int stopCharacter, TaskTag tag, String message ) {
+	  return new TaskImpl( line, startCharacter, stopCharacter, tag, message );
+  }
+
+  public static TaskTagImpl createTaskTag( String keyword, int priority ) {
+	  return new TaskTagImpl ( keyword, priority );
   }
 
   // Generates a list of todo/fixme/xxx tasks found in the document
   // TODO: Make this use the central preferences store
   private void generateTasks(TaskHandler handler, Text text) {
 	  String content;
-	  String code;
 	  String message;
 	  int line;
 	  int startCharacter;
@@ -318,31 +326,31 @@ public class JSHint {
 	  int taskIndex;
 	  Matcher commentMatch;
 	  Matcher taskMatch;
-	  taskCount = TASK_TYPES.length;
-	  Pattern[] taskPattern = new Pattern[taskCount];
-	  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ )
-		  taskPattern[taskIndex] = Pattern.compile(TASK_TYPES[taskIndex] + "(?::?|[ \t])[ \t]*.*\\b[^ \t\n]*");
-	  String comment;
-	  content = text.getContent();
-	  for( commentMatch = commentSearch.matcher(content); commentMatch.find(); ) {
-		  comment = commentMatch.group(1);
-		  // Prevent task expressions matching the closing mark for a comment
-		  if(comment != null)
-		  {
-			  if(comment.endsWith("*/"))
-				  comment = comment.substring(0, comment.length() - 2);
-			  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ )
-			  {
-				  for(taskMatch = taskPattern[taskIndex].matcher(comment); taskMatch.find(); ) {
-					  code = TASK_TYPES[taskIndex];
-					  message = taskMatch.group();
-					  startCharacter = taskMatch.start() + commentMatch.start();
-					  stopCharacter = taskMatch.end() + commentMatch.start();
-			    	  line = text.getOffsetLine(startCharacter);
-			    	  offset = text.getLineOffset(line);
-			    	  stopCharacter -= offset;
-			    	  startCharacter -= offset;
-			    	  handler.handleTask( createTask( line + 1, startCharacter, stopCharacter, code, message ) );
+
+	  if(this.taskTags != null) {
+		  taskCount = this.taskTags.size();
+		  Pattern[] taskPattern = new Pattern[taskCount];
+		  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ )
+			  taskPattern[taskIndex] = Pattern.compile(Pattern.quote(this.taskTags.get(taskIndex).getKeyword()) + ":?[ \t]+.*\\b[^ \t\n]*");
+		  String comment;
+		  content = text.getContent();
+		  for( commentMatch = commentSearch.matcher(content); commentMatch.find(); ) {
+			  comment = commentMatch.group(1);
+			  // Prevent task expressions matching the closing mark for a comment
+			  if(comment != null) {
+				  if(comment.endsWith("*/"))
+					  comment = comment.substring(0, comment.length() - 2);
+				  for( taskIndex = 0; taskIndex < taskCount; taskIndex++ ) {
+					  for(taskMatch = taskPattern[taskIndex].matcher(comment); taskMatch.find(); ) {
+						  message = taskMatch.group();
+						  startCharacter = taskMatch.start() + commentMatch.start();
+						  stopCharacter = taskMatch.end() + commentMatch.start();
+				    	  line = text.getOffsetLine(startCharacter);
+				    	  offset = text.getLineOffset(line);
+				    	  stopCharacter -= offset;
+				    	  startCharacter -= offset;
+				    	  handler.handleTask( createTask( line + 1, startCharacter, stopCharacter, this.taskTags.get(taskIndex), message ) );
+					  }
 				  }
 			  }
 		  }
