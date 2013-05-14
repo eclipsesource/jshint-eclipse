@@ -108,7 +108,7 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void undefinedVariable_withoutPredefInConfig_fails() {
-    jsHint.configure( new JsonObject().add( "undef", true ), null );
+    jsHint.configure( new JsonObject().add( "undef", true ), null, null );
 
     jsHint.check( "foo = {};", handler, handler );
 
@@ -120,7 +120,7 @@ public class JSHint_Compatibility_Test {
   @Test
   public void undefinedVariable_withPredefInConfig_succeeds() {
     JsonObject predefined = new JsonObject().add( "foo", true );
-    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ), null );
+    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ), null, null );
 
     jsHint.check( "foo = {};", handler, handler );
 
@@ -132,7 +132,7 @@ public class JSHint_Compatibility_Test {
     // FIXME [rst] See https://github.com/jshint/jshint/issues/665
     assumeTrue( !isVersion( "r10" ) && !isVersion( "r11" ) && !isVersion( "r12" ) );
     JsonObject predefined = new JsonObject().add( "foo", false );
-    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ), null );
+    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ), null, null );
 
     jsHint.check( "foo = {};", handler, handler );
 
@@ -150,7 +150,7 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void eqnull_withEmptyConfig() {
-    jsHint.configure( new JsonObject(), null );
+    jsHint.configure( new JsonObject(), null, null );
 
     jsHint.check( "var x = 23 == null;", handler, handler );
 
@@ -163,7 +163,7 @@ public class JSHint_Compatibility_Test {
   public void eqnull_withEqnullInConfig() {
     // JSLint doesn't get this right
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "eqnull", true ), null );
+    jsHint.configure( new JsonObject().add( "eqnull", true ), null, null );
 
     jsHint.check( "var f = x == null ? null : x + 1;", handler, handler );
 
@@ -180,7 +180,7 @@ public class JSHint_Compatibility_Test {
   @Test
   public void positionIsCorrectWithLeadingSpace() {
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "white", false ), null );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
     jsHint.check( " var x = 23 == null;", handler, handler );
 
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
@@ -189,7 +189,7 @@ public class JSHint_Compatibility_Test {
   @Test
   public void positionIsCorrectWithLeadingTab() {
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "white", false ), null );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
     jsHint.check( "\tvar x = 23 == null;", handler, handler );
 
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
@@ -198,7 +198,7 @@ public class JSHint_Compatibility_Test {
   @Test
   public void positionIsCorrectWithMultipleTabs() {
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "white", false ), null );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
     jsHint.check( "\tvar x\t= 23 == null;", handler, handler );
 
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
@@ -206,7 +206,7 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void toleratesWindowsLineBreaks() {
-    jsHint.configure( new JsonObject().add( "white", false ), null );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
     jsHint.check( "var x = 1;\r\nvar y = 2;\r\nvar z = 23 == null;", handler, handler );
 
     assertEquals( "3.11", getPositionFromProblem( 0 ) );
