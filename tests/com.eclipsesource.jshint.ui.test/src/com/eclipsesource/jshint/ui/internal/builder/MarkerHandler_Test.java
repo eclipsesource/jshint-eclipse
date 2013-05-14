@@ -41,7 +41,7 @@ public class MarkerHandler_Test {
   public void createMarker() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( 1, 0, "test" ) );
+    handler.handleProblem( new TestProblem( 1, 0, 0, "test", "W000" ) );
 
     assertEquals( 1, log.size() );
     assertEquals( "1,0,0,test", log.get( 0 ) );
@@ -51,7 +51,7 @@ public class MarkerHandler_Test {
   public void createMarker_atDocumentWhenLineIsZero() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( 0, 1, "test" ) );
+    handler.handleProblem( new TestProblem( 0, 1, 1, "test", "W000" ) );
 
     assertEquals( "-1,-1,-1,test", log.get( 0 ) );
   }
@@ -60,7 +60,7 @@ public class MarkerHandler_Test {
   public void createMarker_atDocumentWhenLineIsNegative() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( -1, 1, "test" ) );
+    handler.handleProblem( new TestProblem( -1, 1, 1, "test", "W000" ) );
 
     assertEquals( "-1,-1,-1,test", log.get( 0 ) );
   }
@@ -69,7 +69,7 @@ public class MarkerHandler_Test {
   public void createMarker_atDocumentWhenLineExceedsDocument() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( 2, 1, "test" ) );
+    handler.handleProblem( new TestProblem( 2, 1, 1, "test", "W000" ) );
 
     assertEquals( "-1,-1,-1,test", log.get( 0 ) );
   }
@@ -78,7 +78,7 @@ public class MarkerHandler_Test {
   public void createMarker_atLineWhenCharacterIsNegative() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "test" ) );
 
-    handler.handleProblem( new TestProblem( 1, -1, "test" ) );
+    handler.handleProblem( new TestProblem( 1, -1, -1, "test", "W000" ) );
 
     assertEquals( "1,-1,-1,test", log.get( 0 ) );
   }
@@ -87,7 +87,7 @@ public class MarkerHandler_Test {
   public void createMarker_atLineWhenCharacterExceedsLine() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "line1\nline2\n" ) );
 
-    handler.handleProblem( new TestProblem( 1, 7, "test" ) );
+    handler.handleProblem( new TestProblem( 1, 7, 7, "test", "W000" ) );
 
     assertEquals( "1,-1,-1,test", log.get( 0 ) );
   }
@@ -96,7 +96,7 @@ public class MarkerHandler_Test {
   public void createMarker_atLineWhenCharacterExceedsDocument() throws IOException {
     MarkerHandler handler = new MarkerHandler( adapter, createText( "line1\nline2\n" ) );
 
-    handler.handleProblem( new TestProblem( 1, 13, "test" ) );
+    handler.handleProblem( new TestProblem( 1, 13, 13, "test", "W000" ) );
 
     assertEquals( "1,-1,-1,test", log.get( 0 ) );
   }
@@ -114,8 +114,8 @@ public class MarkerHandler_Test {
     }
 
     @Override
-    public void createMarker( int line, int start, int end, String message ) throws CoreException {
-      log.add( line + "," + start + "," + end + "," + message );
+    public void createProblemMarker( int line, int start, int end, String message, String code ) throws CoreException {
+      log.add( line + "," + start + "," + end + "," + message + "," + code );
     }
 
   }
@@ -124,24 +124,36 @@ public class MarkerHandler_Test {
 
     private final int line;
     private final int start;
+    private final int stop;
     private final String message;
+    private final String code;
 
-    public TestProblem( int line, int start, String message ) {
+    public TestProblem( int line, int start, int stop, String message, String code ) {
       this.line = line;
       this.start = start;
+      this.stop = stop;
       this.message = message;
+      this.code = code;
     }
 
     public int getLine() {
       return line;
     }
 
-    public int getCharacter() {
+    public int getStartCharacter() {
       return start;
+    }
+
+    public int getStopCharacter() {
+      return stop;
     }
 
     public String getMessage() {
       return message;
+    }
+
+    public String getCode() {
+      return code;
     }
 
   }

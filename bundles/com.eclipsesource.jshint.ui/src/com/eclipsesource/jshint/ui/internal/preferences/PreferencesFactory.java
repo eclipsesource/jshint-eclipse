@@ -21,13 +21,21 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 public class PreferencesFactory {
 
   public static Preferences getProjectPreferences( IProject project ) {
-    return new ProjectScope( project ).getNode( Activator.PLUGIN_ID );
+    return getProjectPreferences( project, Activator.PLUGIN_ID );
+  }
+
+  public static Preferences getProjectPreferences( IProject project, String id ) {
+    return new ProjectScope( project ).getNode( id );
+  }
+
+  public static Preferences getWorkspacePreferences() {
+    return getWorkspacePreferences( Activator.PLUGIN_ID );
   }
 
   @SuppressWarnings( "deprecation" )
-  public static Preferences getWorkspacePreferences() {
+  public static Preferences getWorkspacePreferences(String id) {
     // InstanceScope.INSTANCE does not yet exist in Eclipse 3.6
-    return new InstanceScope().getNode( Activator.PLUGIN_ID );
+    return new InstanceScope().getNode( id );
   }
 
 }

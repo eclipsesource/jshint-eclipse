@@ -15,25 +15,37 @@ import com.eclipsesource.jshint.Problem;
 
 public class ProblemImpl implements Problem {
   private final int line;
-  private final int character;
+  private final int startCharacter;
+  private final int stopCharacter;
   private final String message;
+  private final String code;
 
-  public ProblemImpl( int line, int character, String message ) {
+  public ProblemImpl( int line, int startCharacter, int stopCharacter, String message, String code ) {
     this.line = line;
-    this.character = character;
+    this.startCharacter = startCharacter;
+    this.stopCharacter = stopCharacter;
     this.message = message;
+    this.code = code;
   }
 
   public int getLine() {
     return line;
   }
 
-  public int getCharacter() {
-    return character;
+  public int getStartCharacter() {
+    return startCharacter;
   }
 
   public String getMessage() {
     return message;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public int getStopCharacter() {
+    return stopCharacter;
   }
 
 }

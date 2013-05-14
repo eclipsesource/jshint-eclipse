@@ -20,9 +20,11 @@ public class OptionsPreferences {
   private static final String KEY_SPECIFIC_OPTIONS = "projectSpecificOptions";
   private static final String KEY_GLOBALS = "globals";
   private static final String KEY_OPTIONS = "options";
+  private static final String KEY_ANNOTATION = "annotation";
   private static final boolean DEF_SPECIFIC_OPTIONS = false;
   private static final String DEF_GLOBALS = "";
   private static final String DEF_OPTIONS = "";
+  private static final String DEF_ANNOTATION = "";
 
   private final Preferences node;
   private boolean changed;
@@ -71,6 +73,21 @@ public class OptionsPreferences {
         node.remove( KEY_OPTIONS );
       } else {
         node.put( KEY_OPTIONS, value );
+      }
+      changed = true;
+    }
+  }
+
+  public String getAnnotation() {
+    return node.get( KEY_ANNOTATION, DEF_ANNOTATION );
+  }
+
+  public void setAnnotation( String value ) {
+    if( !value.equals( node.get( KEY_ANNOTATION, DEF_ANNOTATION ) ) ) {
+      if( value.equals( DEF_ANNOTATION ) ) {
+        node.remove( KEY_ANNOTATION );
+      } else {
+        node.put( KEY_ANNOTATION, value );
       }
       changed = true;
     }

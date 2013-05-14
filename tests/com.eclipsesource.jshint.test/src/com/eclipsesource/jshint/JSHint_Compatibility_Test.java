@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,8 @@ import static org.junit.Assume.assumeTrue;
 @RunWith( value = Parameterized.class )
 public class JSHint_Compatibility_Test {
 
-  private ArrayList<Problem> problems;
+  private List<Problem> problems;
+  private List<Task> tasks;
   private TestHandler handler;
   private final String jsHintResource;
   private JSHint jsHint;
@@ -61,6 +63,7 @@ public class JSHint_Compatibility_Test {
   @Before
   public void setUp() throws IOException {
     problems = new ArrayList<Problem>();
+    tasks = new ArrayList<Task>();
     handler = new TestHandler();
     jsHint = new JSHint();
     loadJsHint();
@@ -68,35 +71,35 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void noProblemsForValidCode() {
-    jsHint.check( "var a = 23;", handler );
+    jsHint.check( "var a = 23;", handler, handler );
 
     assertTrue( problems.isEmpty() );
   }
 
   @Test
   public void problemLineIs_1_Relative() {
-    jsHint.check( "#", handler );
+    jsHint.check( "#", handler, handler );
 
     assertEquals( 1, problems.get( 0 ).getLine() );
   }
 
   @Test
   public void problemCharacterIs_0_Relative() {
-    jsHint.check( "#", handler );
+    jsHint.check( "#", handler, handler );
 
-    assertEquals( 0, problems.get( 0 ).getCharacter() );
+    assertEquals( 0, problems.get( 0 ).getStartCharacter() );
   }
 
   @Test
   public void cproblemMessageIsNotEmpty() {
-    jsHint.check( "#", handler );
+    jsHint.check( "#", handler, handler );
 
     assertTrue( problems.get( 0 ).getMessage().length() > 0 );
   }
 
   @Test
   public void undefinedVariable_withoutConfig_succeeds() {
-    jsHint.check( "foo = {};", handler );
+    jsHint.check( "foo = {};", handler, handler );
 
     // seems that the undef option is inverted in jslint
     String expected = isJsLint() ? "1.0:'foo' was used before it was defined" : "";
@@ -105,9 +108,9 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void undefinedVariable_withoutPredefInConfig_fails() {
-    jsHint.configure( new JsonObject().add( "undef", true ) );
+    jsHint.configure( new JsonObject().add( "undef", true ), null, null );
 
-    jsHint.check( "foo = {};", handler );
+    jsHint.check( "foo = {};", handler, handler );
 
     // seems that the undef option is inverted in jslint
     String expected = isJsLint() ? "" : "1.0:'foo' is not defined";
@@ -117,9 +120,9 @@ public class JSHint_Compatibility_Test {
   @Test
   public void undefinedVariable_withPredefInConfig_succeeds() {
     JsonObject predefined = new JsonObject().add( "foo", true );
-    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ) );
+    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ), null, null );
 
-    jsHint.check( "foo = {};", handler );
+    jsHint.check( "foo = {};", handler, handler );
 
     assertEquals( "", getAllProblems() );
   }
@@ -129,16 +132,16 @@ public class JSHint_Compatibility_Test {
     // FIXME [rst] See https://github.com/jshint/jshint/issues/665
     assumeTrue( !isVersion( "r10" ) && !isVersion( "r11" ) && !isVersion( "r12" ) );
     JsonObject predefined = new JsonObject().add( "foo", false );
-    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ) );
+    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ), null, null );
 
-    jsHint.check( "foo = {};", handler );
+    jsHint.check( "foo = {};", handler, handler );
 
     assertEquals( "1.0:Read only", getAllProblems() );
   }
 
   @Test
   public void eqnull_withoutConfig() {
-    jsHint.check( "var x = 23 == null;", handler );
+    jsHint.check( "var x = 23 == null;", handler, handler );
 
     String expected = isJsLint() ? "Expected '===' and instead saw '=='"
                                  : "Use '===' to compare with 'null'";
@@ -147,9 +150,9 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void eqnull_withEmptyConfig() {
-    jsHint.configure( new JsonObject() );
+    jsHint.configure( new JsonObject(), null, null );
 
-    jsHint.check( "var x = 23 == null;", handler );
+    jsHint.check( "var x = 23 == null;", handler, handler );
 
     String expected = isJsLint() ? "Expected '===' and instead saw '=='"
                                    : "Use '===' to compare with 'null'";
@@ -160,16 +163,16 @@ public class JSHint_Compatibility_Test {
   public void eqnull_withEqnullInConfig() {
     // JSLint doesn't get this right
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "eqnull", true ) );
+    jsHint.configure( new JsonObject().add( "eqnull", true ), null, null );
 
-    jsHint.check( "var f = x == null ? null : x + 1;", handler );
+    jsHint.check( "var f = x == null ? null : x + 1;", handler, handler );
 
     assertEquals( "", getAllProblems() );
   }
 
   @Test
   public void positionIsCorrect() {
-    jsHint.check( "var x = 23 == null;", handler );
+    jsHint.check( "var x = 23 == null;", handler, handler );
 
     assertEquals( "1.11", getPositionFromProblem( 0 ) );
   }
@@ -177,8 +180,8 @@ public class JSHint_Compatibility_Test {
   @Test
   public void positionIsCorrectWithLeadingSpace() {
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "white", false ) );
-    jsHint.check( " var x = 23 == null;", handler );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
+    jsHint.check( " var x = 23 == null;", handler, handler );
 
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
   }
@@ -186,8 +189,8 @@ public class JSHint_Compatibility_Test {
   @Test
   public void positionIsCorrectWithLeadingTab() {
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "white", false ) );
-    jsHint.check( "\tvar x = 23 == null;", handler );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
+    jsHint.check( "\tvar x = 23 == null;", handler, handler );
 
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
   }
@@ -195,16 +198,16 @@ public class JSHint_Compatibility_Test {
   @Test
   public void positionIsCorrectWithMultipleTabs() {
     assumeTrue( !isJsLint() );
-    jsHint.configure( new JsonObject().add( "white", false ) );
-    jsHint.check( "\tvar x\t= 23 == null;", handler );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
+    jsHint.check( "\tvar x\t= 23 == null;", handler, handler );
 
     assertEquals( "1.12", getPositionFromProblem( 0 ) );
   }
 
   @Test
   public void toleratesWindowsLineBreaks() {
-    jsHint.configure( new JsonObject().add( "white", false ) );
-    jsHint.check( "var x = 1;\r\nvar y = 2;\r\nvar z = 23 == null;", handler );
+    jsHint.configure( new JsonObject().add( "white", false ), null, null );
+    jsHint.check( "var x = 1;\r\nvar y = 2;\r\nvar z = 23 == null;", handler, handler );
 
     assertEquals( "3.11", getPositionFromProblem( 0 ) );
   }
@@ -229,7 +232,7 @@ public class JSHint_Compatibility_Test {
 
   private String getPositionFromProblem( int n ) {
     Problem problem = problems.get( n );
-    return problem.getLine() + "." + problem.getCharacter();
+    return problem.getLine() + "." + problem.getStartCharacter();
   }
 
   private String getAllProblems() {
@@ -240,18 +243,22 @@ public class JSHint_Compatibility_Test {
       }
       builder.append( problem.getLine() );
       builder.append( '.' );
-      builder.append( problem.getCharacter() );
+      builder.append( problem.getStartCharacter() );
       builder.append( ':' );
       builder.append( problem.getMessage() );
     }
     return builder.toString();
   }
 
-  private class TestHandler implements ProblemHandler {
+  private class TestHandler implements ProblemHandler, TaskHandler {
 
     public void handleProblem( Problem problem ) {
       problems.add( problem );
     }
+
+	public void handleTask(Task task) {
+		tasks.add ( task );
+	}
   }
 
 }
