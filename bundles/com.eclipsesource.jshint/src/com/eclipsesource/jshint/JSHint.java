@@ -176,9 +176,8 @@ public class JSHint {
       context.setOptimizationLevel( 9 );
       context.setLanguageVersion( Context.VERSION_1_5 );
       scope = context.initStandardObjects();
+      context.evaluateString( scope, createShimCode(), "shim", 1, null );
       context.evaluateReader( scope, reader, "jshint library", 1, null );
-      String code = "console = {log:function(){},error:function(){},trace:function(){}};";
-      context.evaluateString( scope, code, "fake console", 1, null );
       jshint = findJSHintFunction( scope );
     } catch( RhinoException exception ) {
       throw new IllegalArgumentException( "Could not evaluate JavaScript input", exception );
@@ -198,21 +197,6 @@ public class JSHint {
       String message = "JavaScript exception caused by JSHint: " + exception.getMessage();
       throw new RuntimeException( message, exception );
     }
-  }
-
-  private Function findJSHintFunction( ScriptableObject scope ) throws IllegalArgumentException {
-    Object object;
-    if( ScriptableObject.hasProperty( scope, "JSHINT" ) ) {
-      object = scope.get( "JSHINT", scope );
-    } else if( ScriptableObject.hasProperty( scope, "JSLINT" ) ) {
-      object = scope.get( "JSLINT", scope );
-    } else {
-      throw new IllegalArgumentException( "Global JSHINT or JSLINT function missing in input" );
-    }
-    if( !( object instanceof Function ) ) {
-      throw new IllegalArgumentException( "Global JSHINT or JSLINT is not a function" );
-    }
-    return (Function)object;
   }
 
   private void handleProblems( ProblemHandler handler, Text text ) {
@@ -253,6 +237,30 @@ public class JSHint {
       charIndex++;
     }
     return charIndex;
+  }
+
+  private static String createShimCode() {
+    // Create shims to prevent problems with JSHint accessing objects that are not available in
+    // Rhino, e.g. https://github.com/jshint/jshint/issues/1038
+    return "console = {log:function(){},error:function(){},trace:function(){}};"
+         + "window = {};";
+  }
+
+  private static Function findJSHintFunction( ScriptableObject scope )
+      throws IllegalArgumentException
+  {
+    Object object;
+    if( ScriptableObject.hasProperty( scope, "JSHINT" ) ) {
+      object = scope.get( "JSHINT", scope );
+    } else if( ScriptableObject.hasProperty( scope, "JSLINT" ) ) {
+      object = scope.get( "JSLINT", scope );
+    } else {
+      throw new IllegalArgumentException( "Global JSHINT or JSLINT function missing in input" );
+    }
+    if( !( object instanceof Function ) ) {
+      throw new IllegalArgumentException( "Global JSHINT or JSLINT is not a function" );
+    }
+    return (Function)object;
   }
 
   private static String getPropertyAsString( ScriptableObject object,
