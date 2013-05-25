@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,6 +51,7 @@ public class JSHint_Compatibility_Test {
     parameters.add( new Object[] { "com/jshint/jshint-r11.js" } );
     parameters.add( new Object[] { "com/jshint/jshint-r12.js" } );
     parameters.add( new Object[] { "com/jshint/jshint-1.1.0.js" } );
+    parameters.add( new Object[] { "com/jshint/jshint-2.1.2.js" } );
     return parameters;
   }
 

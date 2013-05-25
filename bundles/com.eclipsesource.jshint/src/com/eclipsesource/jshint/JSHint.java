@@ -47,7 +47,7 @@ import com.eclipsesource.json.JsonValue;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "1.1.0";
+  private static final String DEFAULT_JSHINT_VERSION = "2.1.2";
   private static final int DEFAULT_JSHINT_INDENT = 4;
   private ScriptableObject scope;
   private Function jshint;
