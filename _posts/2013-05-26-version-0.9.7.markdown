@@ -1,0 +1,18 @@
+---
+layout: post
+title: Version 0.9.7 published
+---
+
+Just a minor update to fix the
+[severe performance drop](https://github.com/eclipsesource/jshint-eclipse/issues/43)
+that has been introduced in the recent version by including jshint 1.1.0.
+The problem has been [fixed in jshint](https://github.com/jshint/jshint/issues/958)
+and the performance is back to normal.
+
+A [bug](https://github.com/eclipsesource/jshint-eclipse/pull/30) that prevented
+the plug-in from starting in Eclipse 3.6  has been fixed.
+
+Builds can now be cancelled if they take too long.
+Thanks [John](https://github.com/eclipsesource/jshint-eclipse/pull/35).
+
+The built-in JSHint has been upgraded to version 2.1.2.
