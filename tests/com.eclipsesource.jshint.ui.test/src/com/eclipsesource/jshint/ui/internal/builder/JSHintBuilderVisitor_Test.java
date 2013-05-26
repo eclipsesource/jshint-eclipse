@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
@@ -35,7 +36,8 @@ public class JSHintBuilderVisitor_Test {
   private IProgressMonitor monitor;
 
   @Before
-  public void setUp() {
+  public void setUp() throws BackingStoreException {
+    PreferencesFactory.getWorkspacePreferences().clear();
     project = createProject( "test" );
     file = createFile( project, "/test.js", "test content" );
     monitor = new NullProgressMonitor();
