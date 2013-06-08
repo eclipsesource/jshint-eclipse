@@ -59,7 +59,9 @@ class ConfigLoader {
 
   private static JsonObject readConfig( IProject project, IFile file ) {
     try {
-      return readFileContents( file );
+      String contents = readFileContents( file );
+      String filtered = new CommentsFilter( contents ).toString();
+      return JsonObject.readFrom( filtered );
     } catch( Exception exception ) {
       String message = "Failed to read jshint configuration for project " + project.getName();
       Activator.logError( message, exception );
@@ -67,11 +69,18 @@ class ConfigLoader {
     return new JsonObject();
   }
 
-  private static JsonObject readFileContents( IFile file ) throws IOException, CoreException {
+  private static String readFileContents( IFile file ) throws IOException, CoreException {
     InputStream inputStream = file.getContents();
     try {
       BufferedReader reader = new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
-      return JsonObject.readFrom( reader );
+      StringBuilder builder = new StringBuilder();
+      String line = reader.readLine();
+      while( line != null ) {
+        builder.append( line );
+        builder.append( '\n' );
+        line = reader.readLine();
+      }
+      return builder.toString();
     } finally {
       inputStream.close();
     }
