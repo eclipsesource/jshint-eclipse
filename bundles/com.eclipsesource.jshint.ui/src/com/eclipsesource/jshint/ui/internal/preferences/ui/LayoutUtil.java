@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,9 +25,9 @@ public class LayoutUtil {
     return composite;
   }
 
-  public static Composite createDefaultComposite( Composite parent ) {
+  public static Composite createDefaultComposite( Composite parent, int columns ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( createGridLayout( 1, false ) );
+    composite.setLayout( createGridLayout( columns, false ) );
     composite.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
     return composite;
   }
@@ -43,6 +43,16 @@ public class LayoutUtil {
     GridData labelData = new GridData( SWT.FILL, SWT.TOP, true, false );
     labelData.horizontalSpan = 2;
     return labelData;
+  }
+
+  public static GridData createHorizontalFillGridData() {
+    return new GridData( SWT.FILL, SWT.CENTER, true, false );
+  }
+
+  public static GridData createHorizontalFillGridDataWithWidth( int width ) {
+    GridData gridData = new GridData( SWT.FILL, SWT.CENTER, true, false );
+    gridData.widthHint = width;
+    return gridData;
   }
 
 }

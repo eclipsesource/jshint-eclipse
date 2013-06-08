@@ -38,23 +38,21 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
-import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
-import com.eclipsesource.json.JsonObject;
 
 
 class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
 
   private final JSHint checker;
   private final ResourceSelector selector;
-  private IProgressMonitor monitor;
+  private final IProgressMonitor monitor;
 
   public JSHintBuilderVisitor( IProject project, IProgressMonitor monitor ) throws CoreException {
     Preferences node = PreferencesFactory.getProjectPreferences( project );
     new EnablementPreferences( node );
     selector = new ResourceSelector( project );
-    checker = selector.allowVisitProject() ? createJSHint( getConfiguration( project ) ) : null;
+    checker = selector.allowVisitProject() ? createJSHint( project ) : null;
     this.monitor = monitor;
   }
 
@@ -79,7 +77,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
     return descend;
   }
 
-  private JSHint createJSHint( JsonObject configuration ) throws CoreException {
+  private JSHint createJSHint( IProject project ) throws CoreException {
     JSHint jshint = new JSHint();
     try {
       InputStream inputStream = getCustomLib();
@@ -92,7 +90,7 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       } else {
         jshint.load();
       }
-      jshint.configure( configuration );
+      jshint.configure( new ConfigLoader( project ).getConfiguration() );
     } catch( IOException exception ) {
       String message = "Failed to intialize JSHint";
       throw new CoreException( new Status( IStatus.ERROR, Activator.PLUGIN_ID, message, exception ) );
@@ -111,20 +109,6 @@ class JSHintBuilderVisitor implements IResourceVisitor, IResourceDeltaVisitor {
       String message = "Failed checking file " + file.getFullPath().toPortableString();
       throw new RuntimeException( message, exception );
     }
-  }
-
-  private static JsonObject getConfiguration( IProject project ) {
-    JsonObject configuration;
-    Preferences projectNode = PreferencesFactory.getProjectPreferences( project );
-    OptionsPreferences projectPreferences = new OptionsPreferences( projectNode );
-    if( projectPreferences.getProjectSpecific() ) {
-      configuration = projectPreferences.getConfiguration();
-    } else {
-      Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
-      OptionsPreferences workspacePreferences = new OptionsPreferences( workspaceNode );
-      configuration = workspacePreferences.getConfiguration();
-    }
-    return configuration;
   }
 
   private static void clean( IResource resource ) throws CoreException {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,16 +20,16 @@ import static org.junit.Assert.*;
 public class OptionsPreferences_Test {
 
   private PreferencesMock node;
+  private OptionsPreferences prefs;
 
   @Before
   public void setUp() {
     node = new PreferencesMock( "test" );
+    prefs = new OptionsPreferences( node );
   }
 
   @Test
   public void defaultPrefsForEmptyProject() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     assertFalse( prefs.getProjectSpecific() );
     assertEquals( "", prefs.getGlobals() );
     assertEquals( "", prefs.getOptions() );
@@ -37,8 +37,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setProjectSpecificOptions() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     prefs.setProjectSpecific( true );
 
     assertTrue( prefs.getProjectSpecific() );
@@ -48,8 +46,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setProjectSpecificOptions_unchanged() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     prefs.setProjectSpecific( false );
 
     assertFalse( prefs.hasChanged() );
@@ -57,7 +53,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setProjectSpecificOptions_reset() throws BackingStoreException {
-    OptionsPreferences prefs = new OptionsPreferences( node );
     prefs.setProjectSpecific( true );
     prefs.clearChanged();
 
@@ -69,8 +64,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setGlobals() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     prefs.setGlobals( "foo" );
 
     assertEquals( "foo", prefs.getGlobals() );
@@ -80,8 +73,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setGlobals_unchanged() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     prefs.setGlobals( prefs.getGlobals() );
 
     assertFalse( prefs.hasChanged() );
@@ -89,7 +80,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setGlobals_reset() throws BackingStoreException {
-    OptionsPreferences prefs = new OptionsPreferences( node );
     prefs.setGlobals( "foo" );
     prefs.clearChanged();
 
@@ -101,8 +91,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setOptions() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     prefs.setOptions( "foo" );
 
     assertEquals( "foo", prefs.getOptions() );
@@ -112,8 +100,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setOptions_unchanged() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
-
     prefs.setOptions( prefs.getOptions() );
 
     assertFalse( prefs.hasChanged() );
@@ -121,7 +107,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void setOptions_reset() throws BackingStoreException {
-    OptionsPreferences prefs = new OptionsPreferences( node );
     prefs.setOptions( "foo" );
     prefs.clearChanged();
 
@@ -133,7 +118,6 @@ public class OptionsPreferences_Test {
 
   @Test
   public void clearChanges() {
-    OptionsPreferences prefs = new OptionsPreferences( node );
     prefs.setOptions( "foo" );
 
     prefs.clearChanged();
