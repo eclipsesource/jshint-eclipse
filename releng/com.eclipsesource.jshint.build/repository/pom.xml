@@ -23,7 +23,7 @@
         <artifactId>tycho-p2-repository-plugin</artifactId>
         <version>${tycho-version}</version>
         <configuration>
-          <repositoryName>JSLint Eclipse Integration</repositoryName>
+          <repositoryName>JSHint Eclipse Integration</repositoryName>
           <includeAllDependencies>false</includeAllDependencies>
           <compress>true</compress>
         </configuration>

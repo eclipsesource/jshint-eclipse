@@ -113,7 +113,7 @@ public class JSHint_Test {
       jsHint.load( new ByteArrayInputStream( "".getBytes() ) );
       fail();
     } catch( IllegalArgumentException exception ) {
-      assertEquals( "Global JSHINT or JSLINT function missing in input", exception.getMessage() );
+      assertEquals( "Global JSHINT function missing in input", exception.getMessage() );
     }
   }
 
@@ -124,7 +124,7 @@ public class JSHint_Test {
       jsHint.load( new ByteArrayInputStream( "var a = 23;".getBytes() ) );
       fail();
     } catch( IllegalArgumentException exception ) {
-      assertEquals( "Global JSHINT or JSLINT function missing in input", exception.getMessage() );
+      assertEquals( "Global JSHINT function missing in input", exception.getMessage() );
     }
   }
 
@@ -135,7 +135,7 @@ public class JSHint_Test {
       jsHint.load( new ByteArrayInputStream( "JSHINT = {};".getBytes() ) );
       fail();
     } catch( IllegalArgumentException exception ) {
-      assertEquals( "Global JSHINT or JSLINT is not a function", exception.getMessage() );
+      assertEquals( "Global JSHINT is not a function", exception.getMessage() );
     }
   }
 

@@ -70,9 +70,6 @@ public class JSHint {
   /**
    * Loads a custom JSHint library. The input stream must provide the contents of the
    * file <code>jshint.js</code> found in the JSHint distribution.
-   * <p>
-   * JSLint is also supported. In this case the file to provide is <code>jslint.js</code>.
-   * </p>
    *
    * @param inputStream
    *          an input stream to load the the JSHint library from
@@ -252,13 +249,11 @@ public class JSHint {
     Object object;
     if( ScriptableObject.hasProperty( scope, "JSHINT" ) ) {
       object = scope.get( "JSHINT", scope );
-    } else if( ScriptableObject.hasProperty( scope, "JSLINT" ) ) {
-      object = scope.get( "JSLINT", scope );
     } else {
-      throw new IllegalArgumentException( "Global JSHINT or JSLINT function missing in input" );
+      throw new IllegalArgumentException( "Global JSHINT function missing in input" );
     }
     if( !( object instanceof Function ) ) {
-      throw new IllegalArgumentException( "Global JSHINT or JSLINT is not a function" );
+      throw new IllegalArgumentException( "Global JSHINT is not a function" );
     }
     return (Function)object;
   }

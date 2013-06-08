@@ -106,7 +106,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
                               + ")" );
     defaultLibButton.setLayoutData( createFillData( 3 ) );
     customLibButton = new Button( parent, SWT.RADIO );
-    customLibButton.setText( "Provide a &custom JSHint library file (JSLint is also supported)" );
+    customLibButton.setText( "Provide a &custom JSHint library file" );
     customLibButton.setLayoutData( createFillData( 3 ) );
     customLibButton.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -133,7 +133,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
       }
     } );
     Text customLibPathLabelText = new Text( parent, SWT.READ_ONLY | SWT.WRAP );
-    customLibPathLabelText.setText( "This file is usually named 'jshint.js' or 'jslint.js'." );
+    customLibPathLabelText.setText( "This file is usually named 'jshint.js'." );
     customLibPathLabelText.setBackground( parent.getBackground() );
     GridData labelTextData = createFillData( 2 );
     labelTextData.horizontalIndent = 25;
