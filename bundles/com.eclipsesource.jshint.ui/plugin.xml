@@ -18,10 +18,10 @@
          </enabledWhen>
       </page>
       <page
+            id="com.eclipsesource.jshint.ui.properties.configPropertyPage"
             category="com.eclipsesource.jshint.ui.properties.projectPropertyPage"
-            class="com.eclipsesource.jshint.ui.internal.preferences.ui.OptionsPropertyPage"
-            id="com.eclipsesource.jshint.ui.properties.optionsPropertyPage"
-            name="Options">
+            class="com.eclipsesource.jshint.ui.internal.preferences.ui.ConfigPropertyPage"
+            name="Configuration">
          <enabledWhen>
             <adapt
                   type="org.eclipse.core.resources.IResource">
@@ -35,15 +35,15 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="com.eclipsesource.jshint.ui.internal.preferences.ui.JSHintPreferencePage"
             id="com.eclipsesource.jshint.ui.mainPreferencePage"
+            class="com.eclipsesource.jshint.ui.internal.preferences.ui.JSHintPreferencePage"
             name="JSHint">
       </page>
       <page
+            id="com.eclipsesource.jshint.ui.configPreferencePage"
             category="com.eclipsesource.jshint.ui.mainPreferencePage"
-            class="com.eclipsesource.jshint.ui.internal.preferences.ui.OptionsPreferencePage"
-            id="com.eclipsesource.jshint.ui.optionsPreferencePage"
-            name="Options">
+            class="com.eclipsesource.jshint.ui.internal.preferences.ui.ConfigPreferencePage"
+            name="Configuration">
       </page>
    </extension>
    <extension
