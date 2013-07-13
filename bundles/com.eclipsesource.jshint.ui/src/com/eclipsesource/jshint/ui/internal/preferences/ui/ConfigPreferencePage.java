@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -86,6 +87,7 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
 
   private void createConfigText( Composite composite ) {
     configText = new StyledText( composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
+    configText.setFont( JFaceResources.getFont( JFaceResources.TEXT_FONT ) );
     GridData layoutData = new GridData( SWT.FILL, SWT.FILL, true, true );
     layoutData.widthHint = 400;
     layoutData.heightHint = 400;

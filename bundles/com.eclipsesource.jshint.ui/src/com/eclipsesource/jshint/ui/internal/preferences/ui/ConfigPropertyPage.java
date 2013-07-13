@@ -13,6 +13,7 @@ package com.eclipsesource.jshint.ui.internal.preferences.ui;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -95,6 +96,7 @@ public class ConfigPropertyPage extends AbstractPropertyPage {
 
   private void createConfigText( Composite parent ) {
     configText = new StyledText( parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
+    configText.setFont( JFaceResources.getFont( JFaceResources.TEXT_FONT ) );
     GridData layoutData = new GridData( SWT.FILL, SWT.FILL, true, true );
     layoutData.widthHint = 400;
     layoutData.heightHint = 400;
