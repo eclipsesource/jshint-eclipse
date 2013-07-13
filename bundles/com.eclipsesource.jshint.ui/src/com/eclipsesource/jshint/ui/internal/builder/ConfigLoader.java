@@ -10,14 +10,8 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.builder;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
@@ -26,7 +20,7 @@ import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
 import com.eclipsesource.json.JsonObject;
 
 
-class ConfigLoader {
+public class ConfigLoader {
 
   private final IProject project;
 
@@ -38,28 +32,32 @@ class ConfigLoader {
     Preferences projectNode = PreferencesFactory.getProjectPreferences( project );
     OptionsPreferences projectPreferences = new OptionsPreferences( projectNode );
     if( projectPreferences.getProjectSpecific() ) {
-      return getProjectConfig( project, projectPreferences );
+      return getProjectConfig( projectPreferences );
     }
     return getWorkspaceConfig();
   }
 
   private static JsonObject getWorkspaceConfig() {
     Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
-    return new OptionsPreferences( workspaceNode ).getConfiguration();
+    return JsonObject.readFrom( new OptionsPreferences( workspaceNode ).getConfig() );
   }
 
-  private static JsonObject getProjectConfig( IProject project, OptionsPreferences projectPrefs ) {
-    IFile configFile = project.getFile( ".jshintrc" );
+  private JsonObject getProjectConfig( OptionsPreferences projectPrefs ) {
+    IFile configFile = getConfigFile();
     // compatibility
     if( !configFile.exists() ) {
-      return projectPrefs.getConfiguration();
+      return JsonObject.readFrom( projectPrefs.getConfig() );
     }
-    return readConfig( project, configFile );
+    return readConfig( configFile );
   }
 
-  private static JsonObject readConfig( IProject project, IFile file ) {
+  private IFile getConfigFile() {
+    return project.getFile( ".jshintrc" );
+  }
+
+  private JsonObject readConfig( IFile file ) {
     try {
-      String contents = readFileContents( file );
+      String contents = IOUtil.readFileUtf8( file );
       String filtered = new CommentsFilter( contents ).toString();
       return JsonObject.readFrom( filtered );
     } catch( Exception exception ) {
@@ -67,23 +65,6 @@ class ConfigLoader {
       Activator.logError( message, exception );
     }
     return new JsonObject();
-  }
-
-  private static String readFileContents( IFile file ) throws IOException, CoreException {
-    InputStream inputStream = file.getContents();
-    try {
-      BufferedReader reader = new BufferedReader( new InputStreamReader( inputStream, "UTF-8" ) );
-      StringBuilder builder = new StringBuilder();
-      String line = reader.readLine();
-      while( line != null ) {
-        builder.append( line );
-        builder.append( '\n' );
-        line = reader.readLine();
-      }
-      return builder.toString();
-    } finally {
-      inputStream.close();
-    }
   }
 
 }

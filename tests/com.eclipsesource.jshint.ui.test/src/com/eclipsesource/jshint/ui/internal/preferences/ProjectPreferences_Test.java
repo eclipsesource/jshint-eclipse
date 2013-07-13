@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -62,8 +62,9 @@ public class ProjectPreferences_Test {
 
     OptionsPreferences optionPrefs = new OptionsPreferences( node );
 
-    assertEquals( "org: true, com: false", optionPrefs.getGlobals() );
-    assertEquals( "bitwise: true, curly: true, eqnull: true", optionPrefs.getOptions() );
+    String expected
+      = "{\"bitwise\":true,\"curly\":true,\"eqnull\":true,\"predef\":{\"org\":true,\"com\":false}}";
+    assertEquals( expected, optionPrefs.getConfig() );
     assertFalse( optionPrefs.hasChanged() );
   }
 

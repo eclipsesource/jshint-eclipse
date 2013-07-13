@@ -12,23 +12,24 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 
 import org.osgi.service.prefs.Preferences;
 
-import com.eclipsesource.json.JsonObject;
-
 
 public class OptionsPreferences {
 
   private static final String KEY_PROJ_SPECIFIC_OPTIONS = "projectSpecificOptions";
   public static final boolean DEFAULT_PROJ_SPECIFIC_OPTIONS = false;
   private static final String KEY_GLOBALS = "globals";
-  private static final String DEF_GLOBALS = "";
   private static final String KEY_OPTIONS = "options";
-  private static final String DEF_OPTIONS = "";
+  private static final String KEY_CONFIG = "config";
 
   private final Preferences node;
   private boolean changed;
 
   public OptionsPreferences( Preferences node ) {
     this.node = node;
+  }
+
+  public Preferences getNode() {
+    return node;
   }
 
   public boolean getProjectSpecific() {
@@ -46,40 +47,22 @@ public class OptionsPreferences {
     }
   }
 
-  public String getGlobals() {
-    return node.get( KEY_GLOBALS, DEF_GLOBALS );
+  public String getConfig() {
+    String config = node.get( KEY_CONFIG, null );
+    return config != null ? config : getOldConfig();
   }
 
-  public void setGlobals( String value ) {
-    if( !value.equals( node.get( KEY_GLOBALS, DEF_GLOBALS ) ) ) {
-      if( DEF_GLOBALS.equals( value ) ) {
-        node.remove( KEY_GLOBALS );
-      } else {
-        node.put( KEY_GLOBALS, value );
-      }
+  private String getOldConfig() {
+    String options = node.get( KEY_OPTIONS, "" );
+    String globals = node.get( KEY_GLOBALS, "" );
+    return OptionParserUtil.createConfiguration( options, globals ).toString();
+  }
+
+  public void setConfig( String value ) {
+    if( !value.equals( node.get( KEY_CONFIG, null ) ) ) {
+      node.put( KEY_CONFIG, value );
       changed = true;
     }
-  }
-
-  public String getOptions() {
-    return node.get( KEY_OPTIONS, DEF_OPTIONS );
-  }
-
-  public void setOptions( String value ) {
-    if( !value.equals( node.get( KEY_OPTIONS, DEF_OPTIONS ) ) ) {
-      if( value.equals( DEF_OPTIONS ) ) {
-        node.remove( KEY_OPTIONS );
-      } else {
-        node.put( KEY_OPTIONS, value );
-      }
-      changed = true;
-    }
-  }
-
-  public JsonObject getConfiguration() {
-    String options = getOptions();
-    String globals = getGlobals();
-    return OptionParserUtil.createConfiguration( options, globals );
   }
 
   public boolean hasChanged() {

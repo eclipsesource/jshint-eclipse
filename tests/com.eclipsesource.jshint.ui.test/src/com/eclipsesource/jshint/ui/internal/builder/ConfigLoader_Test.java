@@ -45,7 +45,7 @@ public class ConfigLoader_Test {
 
   @Test
   public void usesWorkspaceOptionsByDefault() {
-    workspacePrefs.setOptions( "a: 1, b: 1" );
+    workspacePrefs.getNode().put( "options", "a: 1, b: 1" );
     createProjectConfig( new JsonObject().add( "b", 2 ).add( "c", 2 ) );
 
     JsonObject configuration = new ConfigLoader( project ).getConfiguration();
@@ -57,7 +57,7 @@ public class ConfigLoader_Test {
 
   @Test
   public void ignoresWorkspaceOptions_ifProjectSpecific() {
-    workspacePrefs.setOptions( "a: 1, b: 1" );
+    workspacePrefs.getNode().put( "options", "a: 1, b: 1" );
     createProjectConfig( new JsonObject().add( "b", 2 ).add( "c", 2 ) );
     projectPrefs.setProjectSpecific( true );
 
@@ -71,8 +71,8 @@ public class ConfigLoader_Test {
   @Test
   public void fallsBackToOldProjectProperties_ifConfigFileMissing() {
     projectPrefs.setProjectSpecific( true );
-    projectPrefs.setOptions( "a: 1" );
-    projectPrefs.setGlobals( "foo: true" );
+    projectPrefs.getNode().put( "options", "a: 1" );
+    projectPrefs.getNode().put( "globals", "foo: true" );
 
     JsonObject configuration = new ConfigLoader( project ).getConfiguration();
 
@@ -83,7 +83,7 @@ public class ConfigLoader_Test {
   @Test
   public void ignoresOldProjectProperties_ifConfigFilePresent() {
     projectPrefs.setProjectSpecific( true );
-    projectPrefs.setOptions( "a: 1, b: 1" );
+    projectPrefs.getNode().put( "options", "a: 1, b: 1" );
     createProjectConfig( new JsonObject().add( "b", 2 ).add( "c", 2 ) );
 
     JsonObject configuration = new ConfigLoader( project ).getConfiguration();

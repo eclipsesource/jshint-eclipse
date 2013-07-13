@@ -29,10 +29,14 @@ public class OptionsPreferences_Test {
   }
 
   @Test
+  public void getNode() {
+    assertSame( node, prefs.getNode() );
+  }
+
+  @Test
   public void defaultPrefsForEmptyProject() {
     assertFalse( prefs.getProjectSpecific() );
-    assertEquals( "", prefs.getGlobals() );
-    assertEquals( "", prefs.getOptions() );
+    assertEquals( "{}", prefs.getConfig() );
   }
 
   @Test
@@ -63,62 +67,36 @@ public class OptionsPreferences_Test {
   }
 
   @Test
-  public void setGlobals() {
-    prefs.setGlobals( "foo" );
+  public void getConfig_fallsBackToOldPreferences() {
+    prefs.getNode().put( "options", "foo: true, bar: false" );
+    prefs.getNode().put( "globals", "org: true, com: false" );
 
-    assertEquals( "foo", prefs.getGlobals() );
+    String expected = "{\"foo\":true,\"bar\":false,\"predef\":{\"org\":true,\"com\":false}}";
+    assertEquals( expected, prefs.getConfig() );
+  }
+
+  @Test
+  public void setConfig() {
+    prefs.setConfig( "foo" );
+
+    assertEquals( "foo", prefs.getConfig() );
     assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getGlobals(), new OptionsPreferences( node ).getGlobals() );
+    assertEquals( prefs.getConfig(), new OptionsPreferences( node ).getConfig() );
   }
 
   @Test
-  public void setGlobals_unchanged() {
-    prefs.setGlobals( prefs.getGlobals() );
-
-    assertFalse( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setGlobals_reset() throws BackingStoreException {
-    prefs.setGlobals( "foo" );
+  public void setConfig_unchanged() {
+    prefs.setConfig( "{ \"foo\": true }" );
     prefs.clearChanged();
 
-    prefs.setGlobals( "" );
-
-    assertTrue( prefs.hasChanged() );
-    assertEquals( 0, node.keys().length );
-  }
-
-  @Test
-  public void setOptions() {
-    prefs.setOptions( "foo" );
-
-    assertEquals( "foo", prefs.getOptions() );
-    assertTrue( prefs.hasChanged() );
-    assertEquals( prefs.getOptions(), new OptionsPreferences( node ).getOptions() );
-  }
-
-  @Test
-  public void setOptions_unchanged() {
-    prefs.setOptions( prefs.getOptions() );
+    prefs.setConfig( prefs.getConfig() );
 
     assertFalse( prefs.hasChanged() );
-  }
-
-  @Test
-  public void setOptions_reset() throws BackingStoreException {
-    prefs.setOptions( "foo" );
-    prefs.clearChanged();
-
-    prefs.setOptions( "" );
-
-    assertTrue( prefs.hasChanged() );
-    assertEquals( 0, node.keys().length );
   }
 
   @Test
   public void clearChanges() {
-    prefs.setOptions( "foo" );
+    prefs.setConfig( "foo" );
 
     prefs.clearChanged();
 
