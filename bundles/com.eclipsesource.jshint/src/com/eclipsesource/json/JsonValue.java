@@ -12,6 +12,7 @@ package com.eclipsesource.json;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -49,7 +50,8 @@ import java.io.Writer;
  * This class is <strong>not supposed to be extended</strong> by clients.
  * </p>
  */
-public abstract class JsonValue {
+@SuppressWarnings( "serial" ) // use default serial UID
+public abstract class JsonValue implements Serializable {
 
   /**
    * Represents the JSON literal <code>true</code>.
@@ -73,8 +75,8 @@ public abstract class JsonValue {
   /**
    * Reads a JSON value from the given reader.
    *
-   * @param the
-   *          reader to read the JSON value from
+   * @param reader
+   *          the reader to read the JSON value from
    * @return the JSON value that has been read
    * @throws IOException
    *           if an I/O error occurs in the reader
@@ -88,7 +90,7 @@ public abstract class JsonValue {
   /**
    * Reads a JSON value from the given string.
    *
-   * @param string
+   * @param text
    *          the string that contains the JSON value
    * @return the JSON value that has been read
    * @throws ParseException
@@ -125,7 +127,7 @@ public abstract class JsonValue {
     if( Float.isInfinite( value ) || Float.isNaN( value ) ) {
       throw new IllegalArgumentException( "Infinite and NaN values not permitted in JSON" );
     }
-    return new JsonNumber( Float.toString( value ) );
+    return new JsonNumber( cutOffPointZero( Float.toString( value ) ) );
   }
 
   /**
@@ -139,7 +141,7 @@ public abstract class JsonValue {
     if( Double.isInfinite( value ) || Double.isNaN( value ) ) {
       throw new IllegalArgumentException( "Infinite and NaN values not permitted in JSON" );
     }
-    return new JsonNumber( Double.toString( value ) );
+    return new JsonNumber( cutOffPointZero( Double.toString( value ) ) );
   }
 
   /**
@@ -372,6 +374,10 @@ public abstract class JsonValue {
     write( new JsonWriter( writer ) );
   }
 
+  public void writeTo( JsonWriter writer ) throws IOException {
+    write( writer );
+  }
+
   /**
    * Returns the JSON string for this value in its minimal form, without any additional whitespace.
    * The result is guaranteed to be a valid input for the method {@link #readFrom(String)} and to
@@ -410,6 +416,18 @@ public abstract class JsonValue {
     return super.equals( object );
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   protected abstract void write( JsonWriter writer ) throws IOException;
+
+  private static String cutOffPointZero( String string ) {
+    if( string.endsWith( ".0" ) ) {
+      return string.substring( 0, string.length() - 2 );
+    }
+    return string;
+  }
 
 }

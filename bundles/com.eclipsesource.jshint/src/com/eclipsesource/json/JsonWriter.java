@@ -13,15 +13,18 @@ package com.eclipsesource.json;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.eclipsesource.json.JsonObject.Member;
 
-class JsonWriter {
+
+public class JsonWriter {
 
   private static final int CONTROL_CHARACTERS_START = 0x0000;
   private static final int CONTROL_CHARACTERS_END = 0x001f;
 
   protected final Writer writer;
+  private boolean first;
 
-  JsonWriter( Writer writer ) {
+  public JsonWriter( Writer writer ) {
     this.writer = writer;
   }
 
@@ -66,6 +69,42 @@ class JsonWriter {
     writer.write( '"' );
   }
 
+  void writeObject( JsonObject object ) throws IOException {
+    first = true;
+    writeBeginObject();
+    for( Member member : object ) {
+      writeObjectMember( member.getName(), member.getValue() );
+    }
+    writeEndObject();
+  }
+
+  void writeObjectMember( String name, JsonValue value ) throws IOException {
+    if( !first ) {
+      writeObjectValueSeparator();
+    }
+    writeString( name );
+    writeNameSeparator();
+    value.write( this );
+    first = false;
+  }
+
+  void writeArray( JsonArray array ) throws IOException {
+    first = true;
+    writeBeginArray();
+    for( JsonValue value : array ) {
+      writeArrayElement( value );
+    }
+    writeEndArray();
+  }
+
+  void writeArrayElement( JsonValue value ) throws IOException {
+    if( !first ) {
+      writeArrayValueSeparator();
+    }
+    value.write( this );
+    first = false;
+  }
+
   protected void writeBeginObject() throws IOException {
     writer.write( '{' );
   }
@@ -74,7 +113,7 @@ class JsonWriter {
     writer.write( '}' );
   }
 
-  protected void writeNameValueSeparator() throws IOException {
+  protected void writeNameSeparator() throws IOException {
     writer.write( ':' );
   }
 
