@@ -11,10 +11,10 @@
 package com.eclipsesource.jshint.ui.internal;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.BundleContext;
 
 
@@ -57,7 +57,7 @@ public class Activator extends AbstractUIPlugin {
 
   public static void logError( String message, Exception exception ) {
     Status status = new Status( IStatus.ERROR, PLUGIN_ID, message, exception );
-    Platform.getLog( getDefault().getBundle() ).log( status );
+    StatusManager.getManager().handle( status );
   }
 
 }
