@@ -17,7 +17,7 @@
 
   <groupId>com.eclipsesource.jshint</groupId>
   <artifactId>com.eclipsesource.jshint.releng</artifactId>
-  <version>0.9.7-SNAPSHOT</version>
+  <version>0.9.8-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>

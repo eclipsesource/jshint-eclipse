@@ -2,7 +2,7 @@
 <feature
       id="com.eclipsesource.jshint.feature"
       label="JSHint Eclipse Integration"
-      version="0.9.7.qualifier"
+      version="0.9.8.qualifier"
       provider-name="EclipseSource">
 
    <description url="http://www.example.com/description">
