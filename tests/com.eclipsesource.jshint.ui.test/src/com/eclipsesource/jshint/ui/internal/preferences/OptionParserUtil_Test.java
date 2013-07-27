@@ -26,9 +26,9 @@ public class OptionParserUtil_Test {
 
   @Test
   public void createConfiguration() {
-    JsonObject result = OptionParserUtil.createConfiguration( "opt1: true", "predef1: false" );
+    JsonObject result = OptionParserUtil.createConfiguration( "foo: true", "org: false" );
 
-    assertEquals( "{\"opt1\":true,\"predef\":{\"predef1\":false}}",result.toString() );
+    assertEquals( "{\"foo\":true,\"globals\":{\"org\":false}}", result.toString() );
   }
 
   @Test

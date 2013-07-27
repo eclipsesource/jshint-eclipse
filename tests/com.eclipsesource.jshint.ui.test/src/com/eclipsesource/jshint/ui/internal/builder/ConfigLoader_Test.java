@@ -77,7 +77,7 @@ public class ConfigLoader_Test {
     JsonObject configuration = new ConfigLoader( project ).getConfiguration();
 
     assertEquals( 1, configuration.get( "a" ).asInt() );
-    assertTrue( configuration.get( "predef" ).asObject().get( "foo" ).asBoolean() );
+    assertTrue( configuration.get( "globals" ).asObject().get( "foo" ).asBoolean() );
   }
 
   @Test

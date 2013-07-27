@@ -29,12 +29,12 @@ public class OptionParserUtil {
     for( Entry entry : parseOptionString( options ) ) {
       configuration.add( entry.name, entry.value );
     }
-    JsonObject predefined = new JsonObject();
+    JsonObject globalsObject = new JsonObject();
     for( Entry entry : parseOptionString( globals ) ) {
-      predefined.add( entry.name, entry.value == JsonValue.TRUE );
+      globalsObject.add( entry.name, entry.value == JsonValue.TRUE );
     }
-    if( !predefined.isEmpty() ) {
-      configuration.add( "predef", predefined );
+    if( !globalsObject.isEmpty() ) {
+      configuration.add( "globals", globalsObject );
     }
     return configuration;
   }

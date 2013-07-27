@@ -51,7 +51,8 @@ public class JSHint {
   private static final int DEFAULT_JSHINT_INDENT = 4;
   private ScriptableObject scope;
   private Function jshint;
-  private Object opts;
+  private Object options;
+  private Object globals;
   private int indent = DEFAULT_JSHINT_INDENT;
 
   /**
@@ -100,8 +101,14 @@ public class JSHint {
     Context context = Context.enter();
     try {
       ScriptableObject scope = context.initStandardObjects();
-      String optionsString = configuration.toString();
-      opts = context.evaluateString( scope, "opts = " + optionsString + ";", "[options]", 1, null );
+      JsonValue globalsValue = configuration.get( "globals" );
+      if( globalsValue != null ) {
+        String globalsExpr = "globals = " + globalsValue.toString() + ";";
+        globals = context.evaluateString( scope, globalsExpr, "[globals]", 1, null );
+      }
+      configuration.remove( "globals" );
+      String optionsExpr = "options = " + configuration.toString() + ";";
+      options = context.evaluateString( scope, optionsExpr, "[options]", 1, null );
       indent = determineIndent( configuration );
     } finally {
       Context.exit();
@@ -185,7 +192,7 @@ public class JSHint {
 
   private boolean checkCode( Context context, String code ) {
     try {
-      Object[] args = new Object[] { code, opts };
+      Object[] args = new Object[] { code, options, globals };
       return ( (Boolean)jshint.call( context, scope, null, args ) ).booleanValue();
     } catch( JavaScriptException exception ) {
       String message = "JavaScript exception thrown by JSHint: " + exception.getMessage();

@@ -25,7 +25,6 @@ import com.eclipsesource.json.JsonObject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 
 @RunWith( value = Parameterized.class )
@@ -112,8 +111,8 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void undefinedVariable_withPredefInConfig_succeeds() {
-    JsonObject predefined = new JsonObject().add( "foo", true );
-    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ) );
+    JsonObject globals = new JsonObject().add( "foo", true );
+    jsHint.configure( new JsonObject().add( "undef", true ).add( "globals", globals ) );
 
     jsHint.check( "foo = {};", handler );
 
@@ -122,10 +121,8 @@ public class JSHint_Compatibility_Test {
 
   @Test
   public void undefinedVariable_withReadOnlyPredefInConfig_fails() {
-    // See https://github.com/jshint/jshint/issues/665
-    assumeTrue( !isVersion( "r10" ) && !isVersion( "r11" ) && !isVersion( "r12" ) );
-    JsonObject predefined = new JsonObject().add( "foo", false );
-    jsHint.configure( new JsonObject().add( "undef", true ).add( "predef", predefined ) );
+    JsonObject globals = new JsonObject().add( "foo", false );
+    jsHint.configure( new JsonObject().add( "undef", true ).add( "globals", globals ) );
 
     jsHint.check( "foo = {};", handler );
 
@@ -204,10 +201,6 @@ public class JSHint_Compatibility_Test {
     } finally {
       stream.close();
     }
-  }
-
-  private boolean isVersion( String version ) {
-    return jsHintResource.contains( version );
   }
 
   private String getPositionFromProblem( int n ) {

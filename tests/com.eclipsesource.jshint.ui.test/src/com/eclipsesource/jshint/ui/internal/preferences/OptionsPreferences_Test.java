@@ -94,7 +94,7 @@ public class OptionsPreferences_Test {
     String expected = "{\n"
         + "  \"foo\": true,\n"
         + "  \"bar\": false,\n"
-        + "  \"predef\": {\n"
+        + "  \"globals\": {\n"
         + "    \"org\": true,\n"
         + "    \"com\": false\n"
         + "  }\n"

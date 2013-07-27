@@ -66,7 +66,7 @@ public class ProjectPreferences_Test {
         + "  \"bitwise\": true,\n"
         + "  \"curly\": true,\n"
         + "  \"eqnull\": true,\n"
-        + "  \"predef\": {\n"
+        + "  \"globals\": {\n"
         + "    \"org\": true,\n"
         + "    \"com\": false\n"
         + "  }\n"
