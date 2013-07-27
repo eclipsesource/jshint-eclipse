@@ -34,11 +34,6 @@ public abstract class AbstractPropertyPage extends PropertyPage {
     return ( IResource )element.getAdapter( IResource.class );
   }
 
-  protected void hideButtons() {
-    getDefaultsButton().setVisible( false );
-    getApplyButton().setVisible( false );
-  }
-
   protected Preferences getPreferences() {
     IProject project = getResource().getProject();
     return PreferencesFactory.getProjectPreferences( project );

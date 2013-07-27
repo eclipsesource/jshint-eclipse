@@ -13,13 +13,14 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
 
 public class OptionsPreferences_Test {
 
-  private PreferencesMock node;
+  private Preferences node;
   private OptionsPreferences prefs;
 
   @Before
@@ -36,11 +37,11 @@ public class OptionsPreferences_Test {
   @Test
   public void defaultPrefsForEmptyProject() {
     assertFalse( prefs.getProjectSpecific() );
-    assertEquals( "{}", prefs.getConfig() );
+    assertEquals( "{\n  \n}", prefs.getConfig() );
   }
 
   @Test
-  public void setProjectSpecificOptions() {
+  public void setProjectSpecific() {
     prefs.setProjectSpecific( true );
 
     assertTrue( prefs.getProjectSpecific() );
@@ -49,14 +50,14 @@ public class OptionsPreferences_Test {
   }
 
   @Test
-  public void setProjectSpecificOptions_unchanged() {
+  public void setProjectSpecific_unchanged() {
     prefs.setProjectSpecific( false );
 
     assertFalse( prefs.hasChanged() );
   }
 
   @Test
-  public void setProjectSpecificOptions_reset() throws BackingStoreException {
+  public void setProjectSpecific_reset() throws BackingStoreException {
     prefs.setProjectSpecific( true );
     prefs.clearChanged();
 
@@ -64,15 +65,6 @@ public class OptionsPreferences_Test {
 
     assertTrue( prefs.hasChanged() );
     assertEquals( 0, node.keys().length );
-  }
-
-  @Test
-  public void getConfig_fallsBackToOldPreferences() {
-    prefs.getNode().put( "options", "foo: true, bar: false" );
-    prefs.getNode().put( "globals", "org: true, com: false" );
-
-    String expected = "{\"foo\":true,\"bar\":false,\"predef\":{\"org\":true,\"com\":false}}";
-    assertEquals( expected, prefs.getConfig() );
   }
 
   @Test
@@ -92,6 +84,22 @@ public class OptionsPreferences_Test {
     prefs.setConfig( prefs.getConfig() );
 
     assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void getConfig_fallsBackToOldPreferences() {
+    prefs.getNode().put( "options", "foo: true, bar: false" );
+    prefs.getNode().put( "globals", "org: true, com: false" );
+
+    String expected = "{\n"
+        + "  \"foo\": true,\n"
+        + "  \"bar\": false,\n"
+        + "  \"predef\": {\n"
+        + "    \"org\": true,\n"
+        + "    \"com\": false\n"
+        + "  }\n"
+        + "}";
+    assertEquals( expected, prefs.getConfig() );
   }
 
   @Test

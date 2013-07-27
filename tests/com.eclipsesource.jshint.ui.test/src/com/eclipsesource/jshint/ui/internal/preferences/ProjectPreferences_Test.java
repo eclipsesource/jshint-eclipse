@@ -62,8 +62,15 @@ public class ProjectPreferences_Test {
 
     OptionsPreferences optionPrefs = new OptionsPreferences( node );
 
-    String expected
-      = "{\"bitwise\":true,\"curly\":true,\"eqnull\":true,\"predef\":{\"org\":true,\"com\":false}}";
+    String expected = "{\n"
+        + "  \"bitwise\": true,\n"
+        + "  \"curly\": true,\n"
+        + "  \"eqnull\": true,\n"
+        + "  \"predef\": {\n"
+        + "    \"org\": true,\n"
+        + "    \"com\": false\n"
+        + "  }\n"
+        + "}";
     assertEquals( expected, optionPrefs.getConfig() );
     assertFalse( optionPrefs.hasChanged() );
   }

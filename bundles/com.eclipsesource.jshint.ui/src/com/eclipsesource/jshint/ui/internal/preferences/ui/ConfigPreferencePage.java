@@ -15,14 +15,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
@@ -32,17 +25,18 @@ import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
-import com.eclipsesource.jshint.ui.internal.builder.CommentsFilter;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.ParseException;
+
+import static com.eclipsesource.jshint.ui.internal.preferences.ui.JsonUtil.jsonEquals;
+import static com.eclipsesource.jshint.ui.internal.preferences.ui.LayoutUtil.createGridDataFillWithMinSize;
 
 
 public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-  private StyledText configText;
+  private ConfigEditor configEditor;
+  private String origConfig;
 
   public ConfigPreferencePage() {
     setDescription( "Global JSHint configuration" );
@@ -52,24 +46,45 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
   }
 
   @Override
-  protected IPreferenceStore doGetPreferenceStore() {
-    return null;
+  protected Control createContents( Composite parent ) {
+    Composite composite = LayoutUtil.createMainComposite( parent );
+    createConfigText( composite );
+    loadPreferences();
+    return composite;
+  }
+
+  private void createConfigText( Composite composite ) {
+    configEditor = new ConfigEditor( composite ) {
+      @Override
+      public void handleError( String message ) {
+        setErrorMessage( message );
+        setValid( message == null );
+      }
+    };
+    configEditor.getControl().setLayoutData( createGridDataFillWithMinSize( 360, 180 ) );
+  }
+
+  private void loadPreferences() {
+    OptionsPreferences optionsPreferences = new OptionsPreferences( getPreferences() );
+    origConfig = optionsPreferences.getConfig();
+    configEditor.setText( origConfig );
   }
 
   @Override
   protected void performDefaults() {
     super.performDefaults();
-    configText.setText( "" ); // TODO set sensible default config
+    configEditor.setText( OptionsPreferences.DEFAULT_CONFIG );
   }
 
   @Override
   public boolean performOk() {
     try {
-      boolean preferencesChanged = storePreferences();
-      if( preferencesChanged ) {
+      storePreferences();
+      if( !jsonEquals( configEditor.getText(), origConfig ) ) {
         triggerRebuild();
       }
     } catch( CoreException exception ) {
+      // TODO revise error handling
       String message = "Failed to store settings";
       Activator.logError( message, exception );
       return false;
@@ -77,56 +92,15 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
     return true;
   }
 
-  @Override
-  protected Control createContents( Composite parent ) {
-    Composite composite = LayoutUtil.createDefaultComposite( parent, 2 );
-    createConfigText( composite );
-    loadPreferences();
-    return composite;
-  }
-
-  private void createConfigText( Composite composite ) {
-    configText = new StyledText( composite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
-    configText.setFont( JFaceResources.getFont( JFaceResources.TEXT_FONT ) );
-    GridData layoutData = new GridData( SWT.FILL, SWT.FILL, true, true );
-    layoutData.widthHint = 400;
-    layoutData.heightHint = 400;
-    configText.setLayoutData( layoutData );
-    configText.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        validateConfigText();
-      }
-    } );
-  }
-
-  private void validateConfigText() {
-    String config = new CommentsFilter( configText.getText() ).toString();
-    try {
-      JsonObject.readFrom( config );
-      setErrorMessage( null );
-    } catch( ParseException exception ) {
-      int line = exception.getLine();
-      int column = exception.getColumn();
-      setErrorMessage( "Syntax error in configuration " + line + ":" + column );
-    }
-  }
-
-  private void loadPreferences() {
+  private void storePreferences() throws CoreException {
     OptionsPreferences optionsPreferences = new OptionsPreferences( getPreferences() );
-    configText.setText( optionsPreferences.getConfig() );
-  }
-
-  private boolean storePreferences() throws CoreException {
-    OptionsPreferences optionsPreferences = new OptionsPreferences( getPreferences() );
-    optionsPreferences.setConfig( configText.getText() );
-    boolean changed = optionsPreferences.hasChanged();
-    if( changed ) {
+    optionsPreferences.setConfig( configEditor.getText() );
+    if( optionsPreferences.hasChanged() ) {
       savePreferences();
     }
-    return changed;
   }
 
-  private static void savePreferences() throws CoreException {
+  private void savePreferences() throws CoreException {
     Preferences node = getPreferences();
     try {
       node.flush();
@@ -137,16 +111,19 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
     }
   }
 
-  private static void triggerRebuild() throws CoreException {
-    IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-    for( IProject project : projects ) {
+  private void triggerRebuild() throws CoreException {
+    for( IProject project : getProjects() ) {
       if( project.isAccessible() ) {
         BuilderUtil.triggerClean( project, JSHintBuilder.ID );
       }
     }
   }
 
-  private static Preferences getPreferences() {
+  IProject[] getProjects() {
+    return ResourcesPlugin.getWorkspace().getRoot().getProjects();
+  }
+
+  Preferences getPreferences() {
     return PreferencesFactory.getWorkspacePreferences();
   }
 

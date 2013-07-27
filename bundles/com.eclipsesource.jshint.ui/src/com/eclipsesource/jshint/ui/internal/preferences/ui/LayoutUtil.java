@@ -19,40 +19,36 @@ import org.eclipse.swt.widgets.Composite;
 public class LayoutUtil {
 
   public static Composite createMainComposite( Composite parent ) {
+    return createMainComposite( parent, 1 );
+  }
+
+  public static Composite createMainComposite( Composite parent, int columns ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( createGridLayout( 1, false ) );
+    composite.setLayout( createGridLayoutWithoutMargins( columns, false ) );
     composite.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
     return composite;
   }
 
-  public static Composite createDefaultComposite( Composite parent, int columns ) {
-    Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( createGridLayout( columns, false ) );
-    composite.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
-    return composite;
-  }
-
-  public static GridLayout createGridLayout( int numColumns, boolean makeColumnsEqualWidth ) {
+  public static GridLayout createGridLayoutWithoutMargins( int numColumns,
+                                                           boolean makeColumnsEqualWidth )
+  {
     GridLayout layout = new GridLayout( numColumns, makeColumnsEqualWidth );
     layout.marginHeight = 0;
     layout.marginWidth = 0;
     return layout;
   }
 
-  public static GridData createSpanGridData() {
-    GridData labelData = new GridData( SWT.FILL, SWT.TOP, true, false );
-    labelData.horizontalSpan = 2;
-    return labelData;
+  public static GridData createGridDataFillWithMinSize( int minWidth, int minHeight ) {
+    GridData layoutData = new GridData( SWT.FILL, SWT.FILL, true, true );
+    layoutData.widthHint = minWidth;
+    layoutData.heightHint = minHeight;
+    return layoutData;
   }
 
-  public static GridData createHorizontalFillGridData() {
-    return new GridData( SWT.FILL, SWT.CENTER, true, false );
-  }
-
-  public static GridData createHorizontalFillGridDataWithWidth( int width ) {
-    GridData gridData = new GridData( SWT.FILL, SWT.CENTER, true, false );
-    gridData.widthHint = width;
-    return gridData;
+  public static GridData createGridDataHFillWithMinWidth( int minWidth ) {
+    GridData layoutData = new GridData( SWT.FILL, SWT.BEGINNING, true, false );
+    layoutData.widthHint = minWidth;
+    return layoutData;
   }
 
 }
