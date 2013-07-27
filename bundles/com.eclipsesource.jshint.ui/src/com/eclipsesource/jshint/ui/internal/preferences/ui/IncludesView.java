@@ -173,7 +173,8 @@ public class IncludesView extends Composite {
   }
 
   private void addPattern( Table table ) {
-    String pattern = showPatternDialogForTable( table, null );
+    String defaultPattern = table == includeTable ? "//*.js" : "//*.min.js";
+    String pattern = showPatternDialogForTable( table, defaultPattern );
     if( pattern != null ) {
       ArrayList<String> patterns = getPatterns( table );
       if( !patterns.contains( pattern ) ) {
