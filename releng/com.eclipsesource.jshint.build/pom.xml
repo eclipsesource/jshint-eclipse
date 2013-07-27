@@ -40,12 +40,17 @@
       <!-- need stable orbit repository, since latest release does not contain rhino 1.7.4 -->
       <id>orbit-stable-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/tools/orbit/downloads/drops/S20130308121626/repository/</url>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/</url>
     </repository>
     <repository>
       <id>swtbot-repo</id>
       <layout>p2</layout>
       <url>http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site</url>
+    </repository>
+    <repository>
+      <id>mockito-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipsesource.com/~rsternberg/mockito-all/</url>
     </repository>
   </repositories>
 
