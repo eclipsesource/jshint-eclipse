@@ -22,6 +22,7 @@ import org.eclipse.swtbot.swt.finder.widgets.SWTBotCheckBox;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotStyledText;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.service.prefs.Preferences;
 
@@ -251,6 +252,7 @@ public class ConfigPropertyPage_Test {
     verify( project, never() ).build( CLEAN_BUILD, JSHintBuilder.ID, null, null );
   }
 
+  @Ignore( "does not work on Eclipse 3.6" )
   @Test
   public void performOk_failsIfWritingFails() throws CoreException {
     new OptionsPreferences( getPreferences() ).setProjectSpecific( true );
