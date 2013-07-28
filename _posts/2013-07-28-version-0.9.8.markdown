@@ -1,0 +1,17 @@
+---
+layout: post
+title: Version 0.9.8 published
+---
+
+Project specific configurations are now read from a `.jshintrc` file in the project root.
+This allows to share configurations with other tools.
+
+JSHint configuration files are simple JSON that contains options for JSHint and global variables.
+Details on the format and available options can be found on the
+[jshint pages](http://www.jshint.com/docs/config/).
+
+This configuration format replaces the "options" and "globals" settings.
+The JSHint property pages allow to edit the config files directly and initialize them with the
+old project settings.
+
+In order to support this configuration style, it was necessary to drop support for legacy JSLint.
