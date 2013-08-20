@@ -23,38 +23,39 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.eclipsesource.json.JsonObject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.*;
 
 
 @RunWith( value = Parameterized.class )
 public class JSHint_Compatibility_Test {
 
+  private final String version;
   private ArrayList<Problem> problems;
   private TestHandler handler;
-  private final String jsHintResource;
   private JSHint jsHint;
 
   @Parameters
   public static Collection<Object[]> getParameters() {
     ArrayList<Object[]> parameters = new ArrayList<Object[]>();
-    parameters.add( new Object[] { "com/jshint/jshint-r03.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r04.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r05.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r06.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r07.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r08.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r09.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r10.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r11.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-r12.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-1.1.0.js" } );
-    parameters.add( new Object[] { "com/jshint/jshint-2.1.2.js" } );
+    parameters.add( new Object[] { "r03" } );
+    parameters.add( new Object[] { "r04" } );
+    parameters.add( new Object[] { "r05" } );
+    parameters.add( new Object[] { "r06" } );
+    parameters.add( new Object[] { "r07" } );
+    parameters.add( new Object[] { "r08" } );
+    parameters.add( new Object[] { "r09" } );
+    parameters.add( new Object[] { "r10" } );
+    parameters.add( new Object[] { "r11" } );
+    parameters.add( new Object[] { "r12" } );
+    parameters.add( new Object[] { "1.1.0" } );
+    parameters.add( new Object[] { "2.1.2" } );
+    parameters.add( new Object[] { "2.1.10" } );
     return parameters;
   }
 
-  public JSHint_Compatibility_Test( String jsHintResource ) {
-    this.jsHintResource = jsHintResource;
+  public JSHint_Compatibility_Test( String version ) {
+    this.version = version;
   }
 
   @Before
@@ -155,6 +156,19 @@ public class JSHint_Compatibility_Test {
   }
 
   @Test
+  public void extraComma() {
+    JsonObject config = new JsonObject();
+    if( versionGreaterThan( "2.0.0" ) ) {
+      config.add( "es3", true );
+    }
+    jsHint.configure( config );
+
+    jsHint.check( "var o = { x: 1, y: 2, z: 3, };", handler );
+
+    assertThat( getAllProblems(), startsWith( "1.26:Extra comma" ) );
+  }
+
+  @Test
   public void positionIsCorrect() {
     jsHint.check( "var x = 23 == null;", handler );
 
@@ -195,7 +209,11 @@ public class JSHint_Compatibility_Test {
 
   private void loadJsHint() throws IOException {
     ClassLoader classLoader = getClass().getClassLoader();
-    InputStream stream = classLoader.getResourceAsStream( jsHintResource );
+    String resource = "com/jshint/jshint-" + version + ".js";
+    InputStream stream = classLoader.getResourceAsStream( resource );
+    if( stream == null ) {
+      throw new IllegalArgumentException( "JSHint resource not found: " + resource );
+    }
     try {
       jsHint.load( stream );
     } finally {
@@ -206,6 +224,49 @@ public class JSHint_Compatibility_Test {
   private String getPositionFromProblem( int n ) {
     Problem problem = problems.get( n );
     return problem.getLine() + "." + problem.getCharacter();
+  }
+
+  @Test
+  public void testVersions() {
+    assertEquals( 0, compareVersion( "1.2.3", "1.2.3" ) );
+    assertEquals( 0, compareVersion( "r10", "r10" ) );
+    assertEquals( -1, compareVersion( "r9", "r10" ) );
+    assertEquals( -1, compareVersion( "r10", "1.0.0" ) );
+    assertEquals( -1, compareVersion( "2.0.0", "3.0.0" ) );
+    assertEquals( -1, compareVersion( "2.0.0", "2.1.0" ) );
+    assertEquals( -1, compareVersion( "2.0.0", "2.0.1" ) );
+    assertEquals( 1, compareVersion( "r10", "r9" ) );
+    assertEquals( 1, compareVersion( "1.0.0", "r10" ) );
+    assertEquals( 1, compareVersion( "2.0.0", "1.0.0" ) );
+    assertEquals( 1, compareVersion( "2.1.0", "2.0.0" ) );
+    assertEquals( 1, compareVersion( "2.0.1", "2.0.0" ) );
+  }
+
+  private boolean versionGreaterThan( String version ) {
+    return compareVersion( this.version, version ) > 0;
+  }
+
+  private static int compareVersion( String version1, String version2 ) {
+    int[] parts1 = transformVersion( version1 );
+    int[] parts2 = transformVersion( version2 );
+    for( int i = 0; i < 3; i++ ) {
+      if( parts1[i] < parts2[i] ) {
+        return -1;
+      }
+      if( parts1[i] > parts2[i] ) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  private static int[] transformVersion( String version ) {
+    String[] parts = version.replaceAll( "r", "0.0." ).split( "\\." );
+    int[] result = new int[3];
+    for( int i = 0; i < 3; i++ ) {
+      result[i] = Integer.parseInt( parts[i] );
+    }
+    return result;
   }
 
   private String getAllProblems() {
