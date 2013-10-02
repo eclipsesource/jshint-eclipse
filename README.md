@@ -2,7 +2,8 @@ JSHint integration for the Eclipse IDE
 ======================================
 
 ![](jshint-blue.png)
-<a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=1157104" title="Drag and drop into a running Eclipse Indigo workspace to install JSHint Eclipse">
+<a href="http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=1157104"
+ title="Drag and drop into a running Eclipse to install JSHint Eclipse">
   <img src="http://marketplace.eclipse.org/sites/all/modules/custom/marketplace/images/installbutton.png"/>
 </a>
 
