@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <tycho-version>0.16.0</tycho-version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <name>jshint-eclipse</name>
+
+  <groupId>com.eclipsesource.jshint</groupId>
+  <artifactId>com.eclipsesource.jshint.releng</artifactId>
+  <version>0.9.8-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>bundles/com.eclipsesource.jshint</module>
+    <module>bundles/com.eclipsesource.jshint.ui</module>
+    <module>tests/com.eclipsesource.jshint.test</module>
+    <module>tests/com.eclipsesource.jshint.ui.test</module>
+    <module>releng/com.eclipsesource.jshint.feature</module>
+    <module>releng/com.eclipsesource.jshint.build/repository</module>
+  </modules>
+
+  <!-- repositories to get pre-built pieces from -->
+  <repositories>
+    <repository>
+      <id>target-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/releases/indigo/</url>
+    </repository>
+    <repository>
+      <!-- need stable orbit repository, since latest release does not contain rhino 1.7.4 -->
+      <id>orbit-stable-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/</url>
+    </repository>
+    <repository>
+      <id>swtbot-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site</url>
+    </repository>
+    <repository>
+      <id>mockito-repo</id>
+      <layout>p2</layout>
+      <url>http://download.eclipsesource.com/~rsternberg/mockito-all/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven.eclipse.org</id>
+      <url>http://maven.eclipse.org/nexus/content/repositories/milestone-indigo</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <!-- Enable tycho -->
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <extensions>true</extensions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-packaging-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <format>yyyyMMdd-HHmm</format>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-source-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <executions>
+          <execution>
+            <id>plugin-source</id>
+            <goals>
+              <goal>plugin-source</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>${tycho-version}</version>
+        <configuration>
+          <useUIHarness>true</useUIHarness>
+          <appArgLine>-nl en -consoleLog</appArgLine>
+          <includes>
+            <include>**/*Test.*</include>
+          </includes>
+          <runOrder>random</runOrder>
+          <dependency>
+            <type>eclipse-feature</type>
+            <artifactId>org.eclipse.rcp</artifactId>
+            <version>0.0.0</version>
+          </dependency>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
