@@ -21,12 +21,12 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>../../bundles/com.eclipsesource.jshint</module>
-    <module>../../bundles/com.eclipsesource.jshint.ui</module>
-    <module>../../tests/com.eclipsesource.jshint.test</module>
-    <module>../../tests/com.eclipsesource.jshint.ui.test</module>
-    <module>../com.eclipsesource.jshint.feature</module>
-    <module>repository</module>
+    <module>bundles/com.eclipsesource.jshint</module>
+    <module>bundles/com.eclipsesource.jshint.ui</module>
+    <module>tests/com.eclipsesource.jshint.test</module>
+    <module>tests/com.eclipsesource.jshint.ui.test</module>
+    <module>releng/com.eclipsesource.jshint.feature</module>
+    <module>releng/com.eclipsesource.jshint.build/repository</module>
   </modules>
 
   <!-- repositories to get pre-built pieces from -->
@@ -53,6 +53,13 @@
       <url>http://download.eclipsesource.com/~rsternberg/mockito-all/</url>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven.eclipse.org</id>
+      <url>http://maven.eclipse.org/nexus/content/repositories/milestone-indigo</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <build>
     <plugins>
