@@ -13,6 +13,7 @@ package com.eclipsesource.jshint;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Before;
@@ -35,23 +36,22 @@ public class JSHint_Compatibility_Test {
   private TestHandler handler;
   private JSHint jsHint;
 
-  @Parameters
+  @Parameters( name = "{0}" )
   public static Collection<Object[]> getParameters() {
-    ArrayList<Object[]> parameters = new ArrayList<Object[]>();
-    parameters.add( new Object[] { "r03" } );
-    parameters.add( new Object[] { "r04" } );
-    parameters.add( new Object[] { "r05" } );
-    parameters.add( new Object[] { "r06" } );
-    parameters.add( new Object[] { "r07" } );
-    parameters.add( new Object[] { "r08" } );
-    parameters.add( new Object[] { "r09" } );
-    parameters.add( new Object[] { "r10" } );
-    parameters.add( new Object[] { "r11" } );
-    parameters.add( new Object[] { "r12" } );
-    parameters.add( new Object[] { "1.1.0" } );
-    parameters.add( new Object[] { "2.1.2" } );
-    parameters.add( new Object[] { "2.1.10" } );
-    return parameters;
+    return Arrays.asList( new Object[][] {
+      { "r03" },
+      { "r04" },
+      { "r05" },
+      { "r06" },
+      { "r07" },
+      { "r08" },
+      { "r09" },
+      { "r10" },
+      { "r11" },
+      { "r12" },
+      { "1.1.0" },
+      { "2.1.2" },
+      { "2.1.10" } } );
   }
 
   public JSHint_Compatibility_Test( String version ) {
