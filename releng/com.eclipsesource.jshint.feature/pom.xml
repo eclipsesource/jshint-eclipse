@@ -11,9 +11,9 @@
 
   <parent>
     <groupId>com.eclipsesource.jshint</groupId>
-    <artifactId>com.eclipsesource.jshint.releng</artifactId>
+    <artifactId>com.eclipsesource.jshint.build</artifactId>
     <version>0.9.8-SNAPSHOT</version>
-    <relativePath>../com.eclipsesource.jshint.build/pom.xml</relativePath>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
 </project>

@@ -7,6 +7,8 @@ JSHint integration for the Eclipse IDE
   <img src="http://marketplace.eclipse.org/sites/all/modules/custom/marketplace/images/installbutton.png"/>
 </a>
 
+[![Build Status](https://secure.travis-ci.org/eclipsesource/jshint-eclipse.png)](http://travis-ci.org/eclipsesource/jshint-eclipse)
+
 [JSHint](http://www.jshint.com/about/) is a popular, community-driven tool to detect
 errors and potential problems in JavaScript code.  This project integrates JSHint into
 the Eclipse IDE.  It automatically validates \*.js files and adds warning markers for
@@ -29,15 +31,6 @@ Installation
 ------------
 
 Install from this Eclipse update site: http://github.eclipsesource.com/jshint-eclipse/updates/
-
-Travis CI build
----------------
-
-EclipseSource: [![Build Status](https://secure.travis-ci.org/eclipsesource/jshint-eclipse.png)](http://travis-ci.org/eclipsesource/jshint-eclipse)
- Nodeclipse: [![Build Status](https://secure.travis-ci.org/Nodeclipse/jshint-eclipse.png)](http://travis-ci.org/Nodeclipse/jshint-eclipse)
-
-For Travis CI `pom.xml` from `releng\com.eclipsesource.jshint.build` was copied into base folder,
- paths in this pom.xml changes, all other files untouched.
 
 License
 -------

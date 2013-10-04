@@ -16,7 +16,7 @@
   <name>jshint-eclipse</name>
 
   <groupId>com.eclipsesource.jshint</groupId>
-  <artifactId>com.eclipsesource.jshint.releng</artifactId>
+  <artifactId>com.eclipsesource.jshint.build</artifactId>
   <version>0.9.8-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -26,7 +26,7 @@
     <module>tests/com.eclipsesource.jshint.test</module>
     <module>tests/com.eclipsesource.jshint.ui.test</module>
     <module>releng/com.eclipsesource.jshint.feature</module>
-    <module>releng/com.eclipsesource.jshint.build/repository</module>
+    <module>releng/com.eclipsesource.jshint.repository</module>
   </modules>
 
   <!-- repositories to get pre-built pieces from -->
@@ -53,13 +53,6 @@
       <url>http://download.eclipsesource.com/~rsternberg/mockito-all/</url>
     </repository>
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>maven.eclipse.org</id>
-      <url>http://maven.eclipse.org/nexus/content/repositories/milestone-indigo</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <build>
     <plugins>
