@@ -54,13 +54,6 @@
     </repository>
   </repositories>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>maven.eclipse.org</id>
-      <url>http://maven.eclipse.org/nexus/content/repositories/milestone-indigo</url>
-    </pluginRepository>
-  </pluginRepositories>
-
   <build>
     <plugins>
 
