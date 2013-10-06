@@ -269,12 +269,16 @@ public class JSHint_Test {
   }
 
   @Test
-  public void errorAfterTabHasCorrectPosition() {
+  public void errorAfterTabHasSamePositionAsAfterSpace() {
     jsHint.configure( new JsonObject().add( "undef", true ) );
+    jsHint.check( "var x = 1, # y = 2;", handler );
+    Problem problemWithSpace = problems.get( 0 );
+    problems.clear();
 
     jsHint.check( "var x = 1,\t# y = 2;", handler );
 
-    assertEquals( 11, problems.get( 0 ).getCharacter() );
+    Problem problemWithTab = problems.get( 0 );
+    assertEquals( problemWithSpace.getCharacter(), problemWithTab.getCharacter() );
   }
 
   @Test
@@ -309,6 +313,32 @@ public class JSHint_Test {
     jsHint.check( "var x = 1;\t#", handler );
     jsHint.check( "var x = 1;\t#", handler );
     jsHint.check( "var x = 1;\t#", handler );
+  }
+
+  /*
+   * index:  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| 11|
+   * char:   | a | » | b | » | c |
+   * visual:     | a | »             | b | »             | c |
+   */
+  @Test
+  public void visualToCharIndex() {
+    Text text = new Text( "a\tb\tc" );
+
+    assertEquals( 0, jsHint.visualToCharIndex( text, 1, 1 ) );
+    assertEquals( 1, jsHint.visualToCharIndex( text, 1, 2 ) );
+    assertEquals( 2, jsHint.visualToCharIndex( text, 1, 6 ) );
+    assertEquals( 3, jsHint.visualToCharIndex( text, 1, 7 ) );
+    assertEquals( 4, jsHint.visualToCharIndex( text, 1, 11 ) );
+  }
+
+  public void visualToCharIndex_withoutTabs() {
+    Text text = new Text( "a b c" );
+
+    assertEquals( 0, jsHint.visualToCharIndex( text, 1, 1 ) );
+    assertEquals( 1, jsHint.visualToCharIndex( text, 1, 2 ) );
+    assertEquals( 2, jsHint.visualToCharIndex( text, 1, 3 ) );
+    assertEquals( 3, jsHint.visualToCharIndex( text, 1, 4 ) );
+    assertEquals( 4, jsHint.visualToCharIndex( text, 1, 5 ) );
   }
 
   private static class LoggingHandler implements ProblemHandler {

@@ -221,23 +221,31 @@ public class JSHint {
     int line = getPropertyAsInt( error, "line", -1 );
     int character = getPropertyAsInt( error, "character", -1 );
     if( character > 0 ) {
-      character = fixPosition( text, line, character );
+      character = visualToCharIndex( text, line, character );
     }
     String message = reason.endsWith( "." ) ? reason.substring( 0, reason.length() - 1 ) : reason;
     return new ProblemImpl( line, character, message );
   }
 
-  private int fixPosition( Text text, int line, int character ) {
-    // JSHint reports physical character positions instead of a character index,
-    // i.e. every tab character is multiplied with the indent.
+  /*
+   * JSHint reports "visual" character positions instead of a character index, i.e. the first
+   * character is 1 and every tab character is multiplied by the indent with.
+   *
+   * Example: "a\tb\tc"
+   *
+   *   index:  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10|
+   *   char:   | a | » | b | » | c |
+   *   visual:     | a | »             | b | »             | c |
+   */
+  int visualToCharIndex( Text text, int line, int character ) {
     String string = text.getContent();
     int offset = text.getLineOffset( line - 1 );
-    int indentIndex = 0;
     int charIndex = 0;
-    int maxIndex = Math.min( character, string.length() - offset ) - 1;
-    while( indentIndex < maxIndex ) {
+    int visualIndex = 1;
+    int maxCharIndex = string.length() - offset - 1;
+    while( visualIndex != character && charIndex < maxCharIndex ) {
       boolean isTab = string.charAt( offset + charIndex ) == '\t';
-      indentIndex += isTab ? indent : 1;
+      visualIndex += isTab ? indent : 1;
       charIndex++;
     }
     return charIndex;
