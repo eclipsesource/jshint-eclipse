@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -44,36 +44,46 @@ public class MarkerAdapter_Test {
   }
 
   @Test
-  public void createMarker() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test" );
+  public void createWarning() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, 0, 0, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( 1, markers.length );
     assertEquals( file, markers[ 0 ].getResource() );
     assertEquals( TYPE_PROBLEM, markers[ 0 ].getType() );
-    assertEquals( Integer.valueOf( IMarker.SEVERITY_WARNING ),
-                  markers[ 0 ].getAttribute( IMarker.SEVERITY ) );
+    assertEquals( IMarker.SEVERITY_WARNING, markers[ 0 ].getAttribute( IMarker.SEVERITY, -1 ) );
   }
 
   @Test
-  public void createMarkerWithValidLine() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test" );
+  public void createError() throws CoreException {
+    new MarkerAdapter( file ).createError( 1, 0, 0, "test" );
+
+    IMarker[] markers = findMarkers( file );
+    assertEquals( 1, markers.length );
+    assertEquals( file, markers[ 0 ].getResource() );
+    assertEquals( TYPE_PROBLEM, markers[ 0 ].getType() );
+    assertEquals( IMarker.SEVERITY_ERROR, markers[ 0 ].getAttribute( IMarker.SEVERITY, -1 ) );
+  }
+
+  @Test
+  public void createMarker_withValidLine() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, 0, 0, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( Integer.valueOf( 1 ), markers[ 0 ].getAttribute( IMarker.LINE_NUMBER ) );
   }
 
   @Test
-  public void createMarkerWithInvalidLine() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 0, 0, 0, "test" );
+  public void createMarker_withInvalidLine() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 0, 0, 0, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertNull( markers[ 0 ].getAttribute( IMarker.LINE_NUMBER ) );
   }
 
   @Test
-  public void createMarkerWithValidRange() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 3, 5, "test" );
+  public void createMarker_withValidRange() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, 3, 5, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( Integer.valueOf( 3 ), markers[ 0 ].getAttribute( IMarker.CHAR_START ) );
@@ -81,8 +91,8 @@ public class MarkerAdapter_Test {
   }
 
   @Test
-  public void createMarkerWithNegativeStart() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, -1, 5, "test" );
+  public void createMarker_withNegativeStart() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, -1, 5, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertNull( markers[ 0 ].getAttribute( IMarker.CHAR_START ) );
@@ -90,8 +100,8 @@ public class MarkerAdapter_Test {
   }
 
   @Test
-  public void createMarkerWithEndLowerThanStart() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 3, 2, "test" );
+  public void createMarker_withEndLowerThanStart() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, 3, 2, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( Integer.valueOf( 3 ), markers[ 0 ].getAttribute( IMarker.CHAR_START ) );
@@ -99,20 +109,20 @@ public class MarkerAdapter_Test {
   }
 
   @Test
-  public void createMarkerWithMessage() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 0, 0, "test" );
+  public void createMarker_withMessage() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, 0, 0, "test" );
 
     IMarker[] markers = findMarkers( file );
     assertEquals( "test", markers[ 0 ].getAttribute( IMarker.MESSAGE ) );
   }
 
   @Test( expected=NullPointerException.class )
-  public void createMarkerWithNullMessage() throws CoreException {
-    new MarkerAdapter( file ).createMarker( 1, 3, 5, null );
+  public void createMarker_withNullMessage() throws CoreException {
+    new MarkerAdapter( file ).createWarning( 1, 3, 5, null );
   }
 
   @Test
-  public void markersAreDeleted() throws CoreException {
+  public void removeMarkers_deletesMarkers() throws CoreException {
     file.createMarker( TYPE_PROBLEM );
     file.createMarker( TYPE_PROBLEM );
 
@@ -123,7 +133,7 @@ public class MarkerAdapter_Test {
   }
 
   @Test
-  public void oldMarkersAreDeleted() throws CoreException {
+  public void removeMarkers_deletesOldMarkers() throws CoreException {
     file.createMarker( TYPE_PROBLEM_OLD );
     file.createMarker( TYPE_PROBLEM_OLD );
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,11 +17,13 @@ public class ProblemImpl implements Problem {
   private final int line;
   private final int character;
   private final String message;
+  private final String code;
 
-  public ProblemImpl( int line, int character, String message ) {
+  public ProblemImpl( int line, int character, String message, String code ) {
     this.line = line;
     this.character = character;
     this.message = message;
+    this.code = code;
   }
 
   public int getLine() {
@@ -34,6 +36,14 @@ public class ProblemImpl implements Problem {
 
   public String getMessage() {
     return message;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  public boolean isError() {
+    return code != null && code.length() > 0 && code.charAt( 0 ) == 'E';
   }
 
 }

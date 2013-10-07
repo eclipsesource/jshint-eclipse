@@ -202,11 +202,19 @@ public class JSHint_Test {
   }
 
   @Test
-  public void checkWithFaultyCode() {
+  public void checkWithSyntaxError() {
     boolean result = jsHint.check( "cheese!", handler );
 
     assertFalse( result );
-    assertFalse( problems.isEmpty() );
+    assertTrue( problems.get( 0 ).isError() );
+  }
+
+  @Test
+  public void checkWithWarning() {
+    boolean result = jsHint.check( "x = 23", handler ); // missing semicolon
+
+    assertFalse( result );
+    assertFalse( problems.get( 0 ).isError() );
   }
 
   @Test
@@ -239,6 +247,12 @@ public class JSHint_Test {
       assertThat( exception.getMessage(), startsWith( expected ) );
       assertSame( EcmaError.class, exception.getCause().getClass() );
     }
+  }
+
+  public void createdProblemsContainErrorCode() {
+    jsHint.check( "x = 1", handler );
+
+    problems.get( 0 ).getCode().matches( "^W\\d+" );
   }
 
   @Test

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,21 +31,26 @@ final class MarkerHandler implements ProblemHandler {
   public void handleProblem( Problem problem ) {
     int line = problem.getLine();
     int character = problem.getCharacter();
-    String message = problem.getMessage();
     if( isValidLine( line ) ) {
-      int start = -1;
+      int offset = -1;
       if( isValidCharacter( line, character ) ) {
-        start = code.getLineOffset( line - 1 ) + character;
+        offset = code.getLineOffset( line - 1 ) + character;
       }
-      createMarker( line, start, message );
+      createMarker( line, offset, problem.getMessage(), problem.isError() );
     } else {
-      createMarker( -1, -1, message );
+      createMarker( -1, -1, problem.getMessage(), problem.isError() );
     }
   }
 
-  private void createMarker( int line, int start, String message ) throws CoreExceptionWrapper {
+  private void createMarker( int line, int character, String message, boolean isError )
+      throws CoreExceptionWrapper
+  {
     try {
-      markerAdapter.createMarker( line, start, start, message );
+      if( isError ) {
+        markerAdapter.createError( line, character, character, message );
+      } else {
+        markerAdapter.createWarning( line, character, character, message );
+      }
     } catch( CoreException ce ) {
       throw new CoreExceptionWrapper( ce );
     }
