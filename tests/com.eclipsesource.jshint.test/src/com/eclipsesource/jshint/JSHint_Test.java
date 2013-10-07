@@ -20,12 +20,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import com.eclipsesource.json.JsonObject;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class JSHint_Test {
@@ -329,6 +336,54 @@ public class JSHint_Test {
     jsHint.check( "var x = 1;\t#", handler );
   }
 
+  @Test
+  public void createProblem() {
+    Text text = new Text( "line1\nline2\n" );
+    ScriptableObject error = mockError( "foo", 1, 3, "T001" );
+
+    Problem problem = jsHint.createProblem( error, text );
+
+    assertEquals( "foo", problem.getMessage() );
+    assertEquals( 1, problem.getLine() );
+    assertEquals( 2, problem.getCharacter() );
+    assertEquals( "T001", problem.getCode() );
+  }
+
+  @Test
+  public void createProblem_cutsOffTrailingPeriodFromMessage() {
+    Text text = new Text( "line1\nline2\n" );
+    ScriptableObject error = mockError( "Foo.", 1, 3, "T001" );
+
+    Problem problem = jsHint.createProblem( error, text );
+
+    assertEquals( "Foo", problem.getMessage() );
+  }
+
+  @Test
+  public void createProblem_mapsVisualToRealIndex() {
+    Text text = new Text( "\tline1\n" );
+    ScriptableObject error = mockError( "foo", 1, 6, "T001" );
+
+    Problem problem = jsHint.createProblem( error, text );
+
+    assertEquals( 1, problem.getLine() );
+    assertEquals( 2, problem.getCharacter() );
+  }
+
+  @Test
+  public void createProblem_toleratesIllegalLine() {
+    // Protect against the case that jshint reports illegal lines
+    // See https://github.com/eclipsesource/jshint-eclipse/issues/27
+    //     https://github.com/eclipsesource/jshint-eclipse/issues/60
+    Text text = new Text( "line1\nline2\n" );
+    ScriptableObject error = mockError( "Foo.", 4, 7, "T001" );
+
+    Problem problem = jsHint.createProblem( error, text );
+
+    assertEquals( -1, problem.getLine() );
+    assertEquals( -1, problem.getCharacter() );
+  }
+
   /*
    * index:  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| 11|
    * char:   | a | » | b | » | c |
@@ -353,6 +408,16 @@ public class JSHint_Test {
     assertEquals( 2, jsHint.visualToCharIndex( text, 1, 3 ) );
     assertEquals( 3, jsHint.visualToCharIndex( text, 1, 4 ) );
     assertEquals( 4, jsHint.visualToCharIndex( text, 1, 5 ) );
+  }
+
+  private static ScriptableObject mockError( String message, int line, int character, String code )
+  {
+    ScriptableObject error = mock( ScriptableObject.class );
+    when( error.get( eq( "reason" ), any( Scriptable.class ) ) ).thenReturn( message );
+    when( error.get( eq( "line" ), any( Scriptable.class ) ) ).thenReturn( Integer.valueOf( line ) );
+    when( error.get( eq( "character" ), any( Scriptable.class ) ) ).thenReturn( Integer.valueOf( character ) );
+    when( error.get( eq( "code" ), any( Scriptable.class ) ) ).thenReturn( code );
+    return error;
   }
 
   private static class LoggingHandler implements ProblemHandler {

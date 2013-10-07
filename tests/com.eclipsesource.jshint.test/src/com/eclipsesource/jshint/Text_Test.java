@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,120 +25,152 @@ import static org.junit.Assert.assertThat;
 public class Text_Test {
 
   @Test( expected = NullPointerException.class )
-  public void createWithNullStringFails() {
+  public void creation_failsWithNullString() {
     new Text( (String)null );
   }
 
   @Test( expected = NullPointerException.class )
-  public void createWithNullReaderFails() throws IOException {
+  public void creaion_failsWithNullReader() throws IOException {
     new Text( (Reader)null );
   }
 
   @Test
-  public void createWithString() {
-    Text textFile = new Text( "" );
+  public void creation_withString() {
+    Text text = new Text( "foo\nbar" );
 
-    assertEquals( "", textFile.getContent() );
-    assertEquals( 1, textFile.getLineCount() );
+    assertEquals( "foo\nbar", text.getContent() );
+    assertEquals( 2, text.getLineCount() );
+    assertEquals( "0, 4", getAllLineOffsets( text ) );
+    assertEquals( "4, 3", getAllLineLengths( text ) );
   }
 
   @Test
-  public void emptyString() throws Exception {
-    Reader reader = new StringReader( "" );
-    Text textFile = new Text( reader );
+  public void creation_withReader() throws Exception {
+    Text text = new Text( new StringReader( "foo\nbar" ) );
 
-    assertEquals( "", textFile.getContent() );
-    assertEquals( 1, textFile.getLineCount() );
-    assertEquals( "0", getAllLineOffsets( textFile ) );
-    assertEquals( "0", getAllLineLengths( textFile ) );
+    assertEquals( "foo\nbar", text.getContent() );
+    assertEquals( 2, text.getLineCount() );
+    assertEquals( "0, 4", getAllLineOffsets( text ) );
+    assertEquals( "4, 3", getAllLineLengths( text ) );
   }
 
   @Test
-  public void oneLine() throws Exception {
-    Reader reader = new StringReader( "foo" );
-    Text textFile = new Text( reader );
+  public void emptyString() {
+    Text text = new Text( "" );
 
-    assertEquals( "foo", textFile.getContent() );
-    assertEquals( 1, textFile.getLineCount() );
-    assertEquals( "0", getAllLineOffsets( textFile ) );
-    assertEquals( "3", getAllLineLengths( textFile ) );
+    assertEquals( "", text.getContent() );
+    assertEquals( 1, text.getLineCount() );
+    assertEquals( "0", getAllLineOffsets( text ) );
+    assertEquals( "0", getAllLineLengths( text ) );
   }
 
   @Test
-  public void oneLineTerminated() throws Exception {
-    Reader reader = new StringReader( "foo\n" );
-    Text textFile = new Text( reader );
+  public void oneLine() {
+    Text text = new Text( "foo" );
 
-    assertEquals( "foo\n", textFile.getContent() );
-    assertEquals( 2, textFile.getLineCount() );
-    assertEquals( "0, 4", getAllLineOffsets( textFile ) );
-    assertEquals( "4, 0", getAllLineLengths( textFile ) );
+    assertEquals( "foo", text.getContent() );
+    assertEquals( 1, text.getLineCount() );
+    assertEquals( "0", getAllLineOffsets( text ) );
+    assertEquals( "3", getAllLineLengths( text ) );
   }
 
   @Test
-  public void twoLines() throws Exception {
-    Reader reader = new StringReader( "line1\nline2" );
-    Text textFile = new Text( reader );
+  public void oneLineTerminated() {
+    Text text = new Text( "foo\n" );
 
-    assertEquals( "line1\nline2", textFile.getContent() );
-    assertEquals( 2, textFile.getLineCount() );
-    assertEquals( "0, 6", getAllLineOffsets( textFile ) );
-    assertEquals( "6, 5", getAllLineLengths( textFile ) );
+    assertEquals( "foo\n", text.getContent() );
+    assertEquals( 2, text.getLineCount() );
+    assertEquals( "0, 4", getAllLineOffsets( text ) );
+    assertEquals( "4, 0", getAllLineLengths( text ) );
   }
 
   @Test
-  public void twoLinesTerminated() throws Exception {
-    Reader reader = new StringReader( "line1\nline2\n" );
-    Text textFile = new Text( reader );
+  public void twoLines() {
+    Text text = new Text( "line1\nline2" );
 
-    assertEquals( "line1\nline2\n", textFile.getContent() );
-    assertEquals( 3, textFile.getLineCount() );
-    assertEquals( "0, 6, 12", getAllLineOffsets( textFile ) );
-    assertEquals( "6, 6, 0", getAllLineLengths( textFile ) );
+    assertEquals( "line1\nline2", text.getContent() );
+    assertEquals( 2, text.getLineCount() );
+    assertEquals( "0, 6", getAllLineOffsets( text ) );
+    assertEquals( "6, 5", getAllLineLengths( text ) );
   }
 
   @Test
-  public void twoSubsequentNewlines() throws Exception {
-    Reader reader = new StringReader( "line1\n\nline3" );
-    Text textFile = new Text( reader );
+  public void twoLinesTerminated() {
+    Text text = new Text( "line1\nline2\n" );
 
-    assertEquals( "line1\n\nline3", textFile.getContent() );
-    assertEquals( 3, textFile.getLineCount() );
-    assertEquals( "0, 6, 7", getAllLineOffsets( textFile ) );
-    assertEquals( "6, 1, 5", getAllLineLengths( textFile ) );
+    assertEquals( "line1\nline2\n", text.getContent() );
+    assertEquals( 3, text.getLineCount() );
+    assertEquals( "0, 6, 12", getAllLineOffsets( text ) );
+    assertEquals( "6, 6, 0", getAllLineLengths( text ) );
   }
 
   @Test
-  public void windowsNewlines() throws Exception {
-    Reader reader = new StringReader( "line1\r\nline2\r\n" );
-    Text textFile = new Text( reader );
+  public void twoSubsequentNewlines() {
+    Text text = new Text( "line1\n\nline3" );
 
-    assertEquals( "line1\r\nline2\r\n", textFile.getContent() );
-    assertEquals( 3, textFile.getLineCount() );
-    assertEquals( "0, 7, 14", getAllLineOffsets( textFile ) );
-    assertEquals( "7, 7, 0", getAllLineLengths( textFile ) );
+    assertEquals( "line1\n\nline3", text.getContent() );
+    assertEquals( 3, text.getLineCount() );
+    assertEquals( "0, 6, 7", getAllLineOffsets( text ) );
+    assertEquals( "6, 1, 5", getAllLineLengths( text ) );
   }
 
   @Test
-  public void readLongFile() throws Exception {
+  public void windowsNewlines() {
+    Text text = new Text( "line1\r\nline2\r\n" );
+
+    assertEquals( "line1\r\nline2\r\n", text.getContent() );
+    assertEquals( 3, text.getLineCount() );
+    assertEquals( "0, 7, 14", getAllLineOffsets( text ) );
+    assertEquals( "7, 7, 0", getAllLineLengths( text ) );
+  }
+
+  @Test
+  public void readLongFile() {
     StringBuilder builder = new StringBuilder();
     for( int i = 1; i <= 5000; i++ ) {
       builder.append( "line " + i + "\n" );
     }
-    Reader reader = new StringReader( builder.toString() );
-    Text textFile = new Text( reader );
+    Text text = new Text( builder.toString() );
 
-    assertThat( textFile.getContent(), startsWith( "line 1\n" ) );
-    assertThat( textFile.getContent(), endsWith( "line 5000\n" ) );
-    assertEquals( 5001, textFile.getLineCount() );
+    assertThat( text.getContent(), startsWith( "line 1\n" ) );
+    assertThat( text.getContent(), endsWith( "line 5000\n" ) );
+    assertEquals( 5001, text.getLineCount() );
   }
 
-  private static String getAllLineOffsets( Text textFile ) {
+  @Test( expected = IndexOutOfBoundsException.class )
+  public void getLineOffset_failsWithNegativeLine() {
+    Text text = new Text( "line1\nline2\n" );
+
+    text.getLineOffset( -1 );
+  }
+
+  @Test( expected = IndexOutOfBoundsException.class )
+  public void getLineOffset_failsWithExceedingLine() {
+    Text text = new Text( "line1\nline2\n" );
+
+    text.getLineOffset( 3 );
+  }
+
+  @Test( expected = IndexOutOfBoundsException.class )
+  public void getLineLength_failsWithNegativeLine() {
+    Text text = new Text( "line1\nline2\n" );
+
+    text.getLineLength( -1 );
+  }
+
+  @Test( expected = IndexOutOfBoundsException.class )
+  public void getLineLength_failsWithExceedingLine() {
+    Text text = new Text( "line1\nline2\n" );
+
+    text.getLineLength( 3 );
+  }
+
+  private static String getAllLineOffsets( Text text ) {
     StringBuilder result = new StringBuilder();
     int line = 0;
     while( true ) {
       try {
-        int offset = textFile.getLineOffset( line++ );
+        int offset = text.getLineOffset( line++ );
         if( result.length() > 0 ) {
           result.append( ", " );
         }
@@ -150,12 +182,12 @@ public class Text_Test {
     return result.toString();
   }
 
-  private static String getAllLineLengths( Text textFile ) {
+  private static String getAllLineLengths( Text text ) {
     StringBuilder result = new StringBuilder();
     int line = 0;
     while( true ) {
       try {
-        int length = textFile.getLineLength( line++ );
+        int length = text.getLineLength( line++ );
         if( result.length() > 0 ) {
           result.append( ", " );
         }

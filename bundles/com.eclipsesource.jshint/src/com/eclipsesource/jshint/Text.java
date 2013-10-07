@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -61,7 +61,7 @@ public class Text {
    * @return the line offset
    */
   public int getLineOffset( int line ) {
-    if( line >= lineCount ) {
+    if( line < 0 || line >= lineCount ) {
       throw new IndexOutOfBoundsException( "line does not exist: " + line );
     }
     return lineOffsets[ line ];
@@ -75,8 +75,8 @@ public class Text {
    * @return the line length in characters
    */
   public int getLineLength( int line ) {
-    if( line >= lineCount ) {
-      throw new IndexOutOfBoundsException( "line does not exist" );
+    if( line < 0 || line >= lineCount ) {
+      throw new IndexOutOfBoundsException( "line does not exist: " + line );
     }
     int nextOffset = line + 1 == lineCount ? code.length() : lineOffsets[ line + 1 ];
     return nextOffset - lineOffsets[ line ];
