@@ -87,7 +87,7 @@ public class MarkerHandler_Test {
   public void handleProblem_createsProblemAtLineWhenCharacterExceedsLine() throws CoreException {
     MarkerHandler handler = new MarkerHandler( adapter, new Text( "line1\nline2\n" ) );
 
-    handler.handleProblem( mockWarning( 1, 7, "test" ) );
+    handler.handleProblem( mockWarning( 1, 6, "test" ) );
 
     verify( adapter ).createWarning( 1, -1, -1, "test" );
   }

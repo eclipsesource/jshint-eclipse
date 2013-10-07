@@ -61,7 +61,7 @@ final class MarkerHandler implements ProblemHandler {
   }
 
   private boolean isValidCharacter( int line, int character ) {
-    return character >= 0 && character <= code.getLineLength( line - 1 );
+    return character >= 0 && character < code.getLineLength( line - 1 );
   }
 
 }
