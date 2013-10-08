@@ -16,8 +16,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -54,6 +56,9 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
   }
 
   private void createConfigText( Composite composite ) {
+    Link link = new Link( composite, SWT.WRAP );
+    link.setText( "For syntax, see <a>http://www.jshint.com/docs/</a>." );
+    BrowserSupport.INSTANCE.enableHyperlinks( link );
     configEditor = new ConfigEditor( composite ) {
       @Override
       public void handleError( String message ) {

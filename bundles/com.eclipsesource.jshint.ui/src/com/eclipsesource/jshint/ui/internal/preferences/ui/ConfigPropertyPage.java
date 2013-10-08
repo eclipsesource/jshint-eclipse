@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
@@ -57,11 +57,12 @@ public class ConfigPropertyPage extends AbstractPropertyPage {
           prefsChanged();
         }
       } );
-      Label label = new Label( parent, SWT.WRAP );
-      label.setText( "The project specific configuration will be read from a file named .jshintrc"
+      Link link = new Link( parent, SWT.WRAP );
+      link.setText( "The project specific configuration will be read from a file named .jshintrc"
                      + " in the project root."
-                     + " For the syntax of this file, see http://www.jshint.com/docs/" );
-      label.setLayoutData( createGridDataHFillWithMinWidth( 360 ) );
+                     + " For the syntax of this file, see <a>http://www.jshint.com/docs/</a>." );
+      BrowserSupport.INSTANCE.enableHyperlinks( link );
+      link.setLayoutData( createGridDataHFillWithMinWidth( 360 ) );
     }
 
   private void createConfigText( Composite parent ) {
