@@ -10,6 +10,9 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.preferences.ui;
 
+import java.io.IOException;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -18,9 +21,13 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 
+import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.CommentsFilter;
+import com.eclipsesource.jshint.ui.internal.util.IOUtil;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.ParseException;
 
@@ -61,7 +68,7 @@ public class ConfigEditor {
   }
 
   public String getText() {
-    return styledText.getText();
+    return styledText.getText().trim();
   }
 
   public void setEnabled( boolean enabled ) {
@@ -80,6 +87,38 @@ public class ConfigEditor {
       int column = exception.getColumn();
       handleError( "Syntax error in config at " + line + ":" + column );
       setErrorMarker( line, column );
+    }
+  }
+
+  public void importConfig() {
+    Shell shell = styledText.getShell();
+    FileDialog dialog = new FileDialog( shell, SWT.OPEN );
+    String file = dialog.open();
+    if( file != null ) {
+      try {
+        setText( IOUtil.readFromFileUtf8( file ) );
+      } catch( IOException exception ) {
+        String message = "Could not read from file " + file;
+        MessageDialog.openError( shell, "Import Failed", message + "\nSee log for details." );
+        Activator.logError( message, exception );
+      }
+    }
+  }
+
+  public void exportConfig() {
+    Shell shell = styledText.getShell();
+    FileDialog dialog = new FileDialog( shell, SWT.SAVE );
+    dialog.setOverwrite( true );
+    String file = dialog.open();
+    if( file != null ) {
+      String text = getText();
+      try {
+        IOUtil.writeToFileUtf8( file, text );
+      } catch( IOException exception ) {
+        String message = "Could not write to file " + file;
+        MessageDialog.openError( shell, "Export Failed", message + "\nSee log for details." );
+        Activator.logError( message, exception );
+      }
     }
   }
 

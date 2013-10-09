@@ -84,6 +84,16 @@ public class ConfigEditor_Test {
   }
 
   @Test
+  public void getText_returnsTrimmedTextWithTrailingLinebreak() {
+    ConfigEditor editor = new ConfigEditor( shell );
+    editor.setText( "  foo bar  " );
+
+    String text = editor.getText();
+
+    assertEquals( "foo bar", text );
+  }
+
+  @Test
   public void validatesOnType() {
     final AtomicReference<String> errorMessage = new AtomicReference<String>();
     ConfigEditor editor = new ConfigEditor( shell ) {

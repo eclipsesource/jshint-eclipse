@@ -19,7 +19,9 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -53,10 +55,12 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
     Composite composite = new Composite( parent, SWT.NONE );
     Control labelPart = createLabelPart( composite );
     Control configTextPart = createConfigTextPart( composite );
+    Control buttonsPart = createButtonsPart( composite );
     gridData( composite ).fillBoth();
-    gridLayout( composite ).spacing( 3 );
-    gridData( labelPart ).fillHorizontal().widthHint( 360 );
+    gridLayout( composite ).columns( 2 ).spacing( 3 );
+    gridData( labelPart ).span( 2, 1 ).fillHorizontal().widthHint( 360 );
     gridData( configTextPart ).fillBoth().sizeHint( 360, 180 );
+    gridData( buttonsPart ).align( SWT.BEGINNING, SWT.BEGINNING );
     loadPreferences();
     return composite;
   }
@@ -77,6 +81,21 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
       }
     };
     return configEditor.getControl();
+  }
+
+  private Control createButtonsPart( Composite parent ) {
+    ButtonBar buttonBar = new ButtonBar( parent, SWT.NONE );
+    buttonBar.addButton( "I&mport", new Listener() {
+      public void handleEvent( Event event ) {
+        configEditor.importConfig();
+      }
+    });
+    buttonBar.addButton( "E&xport", new Listener() {
+      public void handleEvent( Event event ) {
+        configEditor.exportConfig();
+      }
+    });
+    return buttonBar;
   }
 
   private void loadPreferences() {

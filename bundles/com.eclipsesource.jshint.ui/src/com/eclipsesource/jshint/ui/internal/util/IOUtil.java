@@ -10,11 +10,16 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.resources.IFile;
@@ -44,6 +49,30 @@ public class IOUtil {
     } else {
       file.create( inputStream, true, null );
       file.setCharset( UTF_8, null );
+    }
+  }
+
+  public static String readFromFileUtf8( String fileName ) throws IOException {
+    InputStream inputStream = null;
+    try {
+      inputStream = new BufferedInputStream( new FileInputStream( fileName ) );
+      return readStringUtf8( inputStream );
+    } finally {
+      if( inputStream != null ) {
+        inputStream.close();
+      }
+    }
+  }
+
+  public static void writeToFileUtf8( String fileName, String content ) throws IOException {
+    OutputStream outputStream = null;
+    try {
+      outputStream = new BufferedOutputStream( new FileOutputStream( fileName ) );
+      outputStream.write( content.getBytes( UTF_8 ) );
+    } finally {
+      if( outputStream != null ) {
+        outputStream.close();
+      }
     }
   }
 

@@ -48,11 +48,13 @@ public class ConfigPropertyPage extends AbstractPropertyPage {
     Control projectSpecificPart = createProjectSpecificPart( composite );
     Control labelPart = createLabelPart( composite );
     Control configTextPart = createConfigTextPart( composite );
+    Control buttonsPart = createButtonsPart( composite );
     gridData( composite ).fillBoth();
-    gridLayout( composite ).spacing( 3 );
+    gridLayout( composite ).columns( 2 ).spacing( 3 );
     gridData( projectSpecificPart );
-    gridData( labelPart ).fillHorizontal().widthHint( 360 );
+    gridData( labelPart ).span( 2, 1 ).fillHorizontal().widthHint( 360 );
     gridData( configTextPart ).fillBoth().sizeHint( 360, 180 );
+    gridData( buttonsPart ).align( SWT.BEGINNING, SWT.BEGINNING );
     loadPreferences();
     return composite;
   }
@@ -88,6 +90,21 @@ public class ConfigPropertyPage extends AbstractPropertyPage {
       }
     };
     return configEditor.getControl();
+  }
+
+  private Control createButtonsPart( Composite parent ) {
+    ButtonBar buttonBar = new ButtonBar( parent, SWT.NONE );
+    buttonBar.addButton( "I&mport", new Listener() {
+      public void handleEvent( Event event ) {
+        configEditor.importConfig();
+      }
+    });
+    buttonBar.addButton( "E&xport", new Listener() {
+      public void handleEvent( Event event ) {
+        configEditor.exportConfig();
+      }
+    });
+    return buttonBar;
   }
 
   @Override

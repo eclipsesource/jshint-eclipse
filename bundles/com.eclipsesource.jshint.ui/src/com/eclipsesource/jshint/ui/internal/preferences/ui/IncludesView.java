@@ -17,8 +17,6 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -33,7 +31,8 @@ import org.eclipse.ui.PlatformUI;
 
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 
-import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.*;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridData;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 
 
 public class IncludesView extends Composite {
@@ -111,55 +110,43 @@ public class IncludesView extends Composite {
   }
 
   private void createButtonsBar( final Table table ) {
-    Composite buttons = new Composite( this, SWT.NONE );
-    rowLayout( buttons ).vertical().fill( true ).spacing( 3 );
-    createAddButton( table, buttons );
-    createEditButton( table, buttons );
-    createRemoveButton( table, buttons );
+    ButtonBar buttonBar = new ButtonBar( this, SWT.NONE );
+    createAddButton( table, buttonBar );
+    createEditButton( table, buttonBar );
+    createRemoveButton( table, buttonBar );
   }
 
-  private void createAddButton( final Table table, Composite buttons ) {
-    Button button = new Button( buttons, SWT.PUSH );
-    button.setText( "Add" );
-    button.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent event ) {
+  private void createAddButton( final Table table, ButtonBar buttonBar ) {
+    buttonBar.addButton( "Add", new Listener() {
+      public void handleEvent( Event event ) {
         addPattern( table );
       }
     } );
   }
 
-  private void createEditButton( final Table table, Composite buttons ) {
-    final Button button = new Button( buttons, SWT.PUSH );
-    button.setText( "Edit" );
-    button.setEnabled( false );
-    button.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent event ) {
+  private void createEditButton( final Table table, ButtonBar buttonBar ) {
+    final Button button = buttonBar.addButton( "Edit", new Listener() {
+      public void handleEvent( Event event ) {
         editSelectedPattern( table );
       }
     } );
-    table.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
+    button.setEnabled( false );
+    table.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
         button.setEnabled( table.getSelectionCount() > 0 );
       }
     } );
   }
 
-  private void createRemoveButton( final Table table, Composite buttons ) {
-    final Button button = new Button( buttons, SWT.PUSH );
-    button.setText( "Remove" );
-    button.setEnabled( false );
-    button.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent event ) {
+  private void createRemoveButton( final Table table, ButtonBar buttonBar ) {
+    final Button button = buttonBar.addButton( "Remove", new Listener() {
+      public void handleEvent( Event event ) {
         removeSelectedPattern( table );
       }
     } );
-    table.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
+    button.setEnabled( false );
+    table.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
         button.setEnabled( table.getSelectionCount() > 0 );
       }
     } );
