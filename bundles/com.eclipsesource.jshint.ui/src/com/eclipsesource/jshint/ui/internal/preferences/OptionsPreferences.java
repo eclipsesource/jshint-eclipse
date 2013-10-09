@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,7 @@ package com.eclipsesource.jshint.ui.internal.preferences;
 
 import org.osgi.service.prefs.Preferences;
 
-import static com.eclipsesource.jshint.ui.internal.preferences.ui.JsonUtil.prettyPrint;
+import static com.eclipsesource.jshint.ui.internal.util.JsonUtil.prettyPrint;
 
 
 public class OptionsPreferences {
