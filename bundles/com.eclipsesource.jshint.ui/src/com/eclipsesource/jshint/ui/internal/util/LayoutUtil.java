@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 EclipseSource and others.
+ * Copyright (c) 2012, 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,45 +10,52 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.util;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 
 public class LayoutUtil {
 
-  public static Composite createMainComposite( Composite parent ) {
-    return createMainComposite( parent, 1 );
+  public static FillLayoutConfig fillLayout( Composite composite ) {
+    FillLayoutConfig config = new FillLayoutConfig();
+    composite.setLayout( config.getLayout() );
+    return config;
   }
 
-  public static Composite createMainComposite( Composite parent, int columns ) {
-    Composite composite = new Composite( parent, SWT.NONE );
-    composite.setLayout( createGridLayoutWithoutMargins( columns, false ) );
-    composite.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, false ) );
-    return composite;
+  public static FormLayoutConfig formLayout( Composite composite ) {
+    FormLayoutConfig config = new FormLayoutConfig();
+    composite.setLayout( config.getLayout() );
+    return config;
   }
 
-  public static GridLayout createGridLayoutWithoutMargins( int numColumns,
-                                                           boolean makeColumnsEqualWidth )
-  {
-    GridLayout layout = new GridLayout( numColumns, makeColumnsEqualWidth );
-    layout.marginHeight = 0;
-    layout.marginWidth = 0;
-    return layout;
+  public static RowLayoutConfig rowLayout( Composite composite ) {
+    RowLayoutConfig config = new RowLayoutConfig();
+    composite.setLayout( config.getLayout() );
+    return config;
   }
 
-  public static GridData createGridDataFillWithMinSize( int minWidth, int minHeight ) {
-    GridData layoutData = new GridData( SWT.FILL, SWT.FILL, true, true );
-    layoutData.widthHint = minWidth;
-    layoutData.heightHint = minHeight;
-    return layoutData;
+  public static GridLayoutConfig gridLayout( Composite composite ) {
+    GridLayoutConfig config = new GridLayoutConfig();
+    composite.setLayout( config.getLayout() );
+    return config;
   }
 
-  public static GridData createGridDataHFillWithMinWidth( int minWidth ) {
-    GridData layoutData = new GridData( SWT.FILL, SWT.BEGINNING, true, false );
-    layoutData.widthHint = minWidth;
-    return layoutData;
+  public static FormDataConfig formData( Control control ) {
+    FormDataConfig config = new FormDataConfig();
+    control.setLayoutData( config.getLayoutData() );
+    return config;
+  }
+
+  public static GridDataConfig gridData( Control control ) {
+    GridDataConfig config = new GridDataConfig();
+    control.setLayoutData( config.getLayoutData() );
+    return config;
+  }
+
+  public static RowDataConfig rowData( Control control ) {
+    RowDataConfig config = new RowDataConfig();
+    control.setLayoutData( config.getLayoutData() );
+    return config;
   }
 
 }

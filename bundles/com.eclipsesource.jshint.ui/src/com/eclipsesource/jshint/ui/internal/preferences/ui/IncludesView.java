@@ -20,15 +20,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -36,6 +32,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
+
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.*;
 
 
 public class IncludesView extends Composite {
@@ -46,7 +44,7 @@ public class IncludesView extends Composite {
 
   public IncludesView( Composite parent, int style, IProject project ) {
     super( parent, style );
-    super.setLayout( createGridLayout( 2, false ) );
+    gridLayout( this ).columns( 2 ).spacing( 5, 3 );
     createImages();
     createIncludeControls();
     createExcludeControls();
@@ -71,11 +69,6 @@ public class IncludesView extends Composite {
     preferences.setExcludePatterns( excludePatterns );
   }
 
-  @Override
-  public void setLayout( Layout layout ) {
-    // prevent changing the default layout
-  }
-
   private void createImages() {
     Display display = getDisplay();
     ISharedImages images = PlatformUI.getWorkbench().getSharedImages();
@@ -85,9 +78,9 @@ public class IncludesView extends Composite {
   private void createIncludeControls() {
     Label label = new Label( this, SWT.NONE );
     label.setText( "Enable JSHint for these files and folders:" );
-    label.setLayoutData( createHorSpanData() );
+    gridData( label ).span( 2, 1 );
     includeTable = new Table( this, SWT.BORDER );
-    includeTable.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    gridData( includeTable ).fillBoth();
     createButtonsBar( includeTable );
     addListeners( includeTable );
   }
@@ -95,9 +88,9 @@ public class IncludesView extends Composite {
   private void createExcludeControls() {
     Label label = new Label( this, SWT.NONE );
     label.setText( "But exclude these files and folders from validation:" );
-    label.setLayoutData( createHorSpanData() );
+    gridData( label ).span( 2, 1 );
     excludeTable = new Table( this, SWT.BORDER );
-    excludeTable.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    gridData( excludeTable ).fillBoth();
     createButtonsBar( excludeTable );
     addListeners( excludeTable );
   }
@@ -119,7 +112,7 @@ public class IncludesView extends Composite {
 
   private void createButtonsBar( final Table table ) {
     Composite buttons = new Composite( this, SWT.NONE );
-    buttons.setLayout( createButtonsLayout() );
+    rowLayout( buttons ).vertical().fill( true ).spacing( 3 );
     createAddButton( table, buttons );
     createEditButton( table, buttons );
     createRemoveButton( table, buttons );
@@ -264,25 +257,6 @@ public class IncludesView extends Composite {
       result.add( item.getText() );
     }
     return result;
-  }
-
-  private static RowLayout createButtonsLayout() {
-    RowLayout layout = new RowLayout( SWT.VERTICAL );
-    layout.fill = true;
-    return layout;
-  }
-
-  private static GridLayout createGridLayout( int numColumns, boolean makeColumnsEqualWidth ) {
-    GridLayout layout = new GridLayout( numColumns, makeColumnsEqualWidth );
-    layout.marginHeight = 0;
-    layout.marginWidth = 0;
-    return layout;
-  }
-
-  private static GridData createHorSpanData() {
-    GridData labelData = new GridData();
-    labelData.horizontalSpan = 2;
-    return labelData;
   }
 
 }

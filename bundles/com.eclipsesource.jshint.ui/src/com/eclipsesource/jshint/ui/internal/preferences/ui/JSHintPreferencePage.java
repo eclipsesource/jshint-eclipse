@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -27,8 +27,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -43,6 +41,9 @@ import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
+
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridData;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 
 
 public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
@@ -70,9 +71,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    GridLayout mainLayout = createMainLayout();
-    mainLayout.marginTop = 10;
-    composite.setLayout( mainLayout );
+    gridLayout( composite ).columns( 3 ).marginTop( 10 );
     createCustomJSHintArea( composite );
     updateControls();
     return composite;
@@ -104,10 +103,10 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     defaultLibButton.setText( "Use the &built-in JSHint library (version "
                               + JSHint.getDefaultLibraryVersion()
                               + ")" );
-    defaultLibButton.setLayoutData( createFillData( 3 ) );
+    gridData( defaultLibButton ).fillBoth().span( 3, 1 );
     customLibButton = new Button( parent, SWT.RADIO );
     customLibButton.setText( "Provide a &custom JSHint library file" );
-    customLibButton.setLayoutData( createFillData( 3 ) );
+    gridData( customLibButton ).fillBoth().span( 3, 1 );
     customLibButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
@@ -116,9 +115,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
       }
     } );
     customLibPathText = new Text( parent, SWT.BORDER );
-    GridData textData = createFillData( 2 );
-    textData.horizontalIndent = 25;
-    customLibPathText.setLayoutData( textData );
+    gridData( customLibPathText ).fillBoth().span( 2, 1 ).indent( 25, 0 );
     customLibPathText.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         updateValuesFromControls();
@@ -135,9 +132,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     Text customLibPathLabelText = new Text( parent, SWT.READ_ONLY | SWT.WRAP );
     customLibPathLabelText.setText( "This file is usually named 'jshint.js'." );
     customLibPathLabelText.setBackground( parent.getBackground() );
-    GridData labelTextData = createFillData( 2 );
-    labelTextData.horizontalIndent = 25;
-    customLibPathLabelText.setLayoutData( labelTextData );
+    gridData( customLibPathLabelText ).fillBoth().span( 2, 1 ).indent( 25, 1 );
   }
 
   private void selectFile() {
@@ -235,19 +230,6 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
         BuilderUtil.triggerClean( project, JSHintBuilder.ID );
       }
     }
-  }
-
-  private static GridLayout createMainLayout() {
-    GridLayout layout = new GridLayout( 3, false );
-    layout.marginWidth = 0;
-    layout.marginHeight = 0;
-    return layout;
-  }
-
-  private static GridData createFillData( int span ) {
-    GridData data = new GridData( SWT.FILL, SWT.CENTER, true, false );
-    data.horizontalSpan = span;
-    return data;
   }
 
 }

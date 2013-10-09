@@ -32,7 +32,8 @@ import com.eclipsesource.jshint.ui.internal.util.JsonUtil;
 
 import static com.eclipsesource.jshint.ui.internal.util.IOUtil.readFileUtf8;
 import static com.eclipsesource.jshint.ui.internal.util.IOUtil.writeFileUtf8;
-import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.*;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridData;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 
 
 public class ConfigPropertyPage extends AbstractPropertyPage {
@@ -43,30 +44,40 @@ public class ConfigPropertyPage extends AbstractPropertyPage {
 
   @Override
   protected Control createContents( Composite parent ) {
-    Composite composite = createMainComposite( parent );
-    createProjectSpecificSection( composite );
-    createConfigText( composite );
+    Composite composite = new Composite( parent, SWT.NONE );
+    Control projectSpecificPart = createProjectSpecificPart( composite );
+    Control labelPart = createLabelPart( composite );
+    Control configTextPart = createConfigTextPart( composite );
+    gridData( composite ).fillBoth();
+    gridLayout( composite ).spacing( 3 );
+    gridData( projectSpecificPart );
+    gridData( labelPart ).fillHorizontal().widthHint( 360 );
+    gridData( configTextPart ).fillBoth().sizeHint( 360, 180 );
     loadPreferences();
     return composite;
   }
 
-  private void createProjectSpecificSection( Composite parent ) {
-      projectSpecificCheckbox = new Button( parent, SWT.CHECK );
-      projectSpecificCheckbox.setText( "Enable project specific configuration" );
-      projectSpecificCheckbox.addListener( SWT.Selection, new Listener() {
-        public void handleEvent( Event event ) {
-          prefsChanged();
-        }
-      } );
-      Link link = new Link( parent, SWT.WRAP );
-      link.setText( "The project specific configuration will be read from a file named .jshintrc"
-                     + " in the project root."
-                     + " For the syntax of this file, see <a>http://www.jshint.com/docs/</a>." );
-      BrowserSupport.INSTANCE.enableHyperlinks( link );
-      link.setLayoutData( createGridDataHFillWithMinWidth( 360 ) );
-    }
+  private Control createProjectSpecificPart( Composite parent ) {
+    projectSpecificCheckbox = new Button( parent, SWT.CHECK );
+    projectSpecificCheckbox.setText( "Enable project specific configuration" );
+    projectSpecificCheckbox.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        prefsChanged();
+      }
+    });
+    return projectSpecificCheckbox;
+  }
 
-  private void createConfigText( Composite parent ) {
+  private Control createLabelPart( Composite parent ) {
+    Link link = new Link( parent, SWT.WRAP );
+    link.setText( "The project specific configuration will be read from a file named .jshintrc"
+                   + " in the project root."
+                   + " For the syntax of this file, see <a>http://www.jshint.com/docs/</a>." );
+    BrowserSupport.INSTANCE.enableHyperlinks( link );
+    return link;
+  }
+
+  private Control createConfigTextPart( Composite parent ) {
     configEditor = new ConfigEditor( parent ) {
       @Override
       public void handleError( String message ) {
@@ -76,7 +87,7 @@ public class ConfigPropertyPage extends AbstractPropertyPage {
         }
       }
     };
-    configEditor.getControl().setLayoutData( createGridDataFillWithMinSize( 360, 180 ) );
+    return configEditor.getControl();
   }
 
   @Override

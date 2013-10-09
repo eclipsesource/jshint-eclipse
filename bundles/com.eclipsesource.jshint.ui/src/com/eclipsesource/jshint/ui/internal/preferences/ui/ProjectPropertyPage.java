@@ -13,7 +13,6 @@ package com.eclipsesource.jshint.ui.internal.preferences.ui;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.osgi.service.prefs.Preferences;
@@ -23,7 +22,9 @@ import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.EnablementPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.ResourceSelector;
-import com.eclipsesource.jshint.ui.internal.util.LayoutUtil;
+
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridData;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 
 
 public class ProjectPropertyPage extends AbstractPropertyPage {
@@ -54,9 +55,11 @@ public class ProjectPropertyPage extends AbstractPropertyPage {
 
   @Override
   protected Control createContents( Composite parent ) {
-    Composite composite = LayoutUtil.createMainComposite( parent );
+    Composite composite = new Composite( parent, SWT.NONE );
+    gridLayout( composite ).margin( 0, 0 ).columns( 1 );
+    gridData( composite ).fillBoth();
     includesView = new IncludesView( composite, SWT.NONE, getResource().getProject() );
-    includesView.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
+    gridData( includesView ).fillBoth();
     loadPreferences();
     return composite;
   }

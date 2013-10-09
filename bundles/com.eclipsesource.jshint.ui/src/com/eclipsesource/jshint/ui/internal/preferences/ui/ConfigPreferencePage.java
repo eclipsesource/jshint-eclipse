@@ -30,10 +30,10 @@ import com.eclipsesource.jshint.ui.internal.builder.BuilderUtil;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
-import com.eclipsesource.jshint.ui.internal.util.LayoutUtil;
 
 import static com.eclipsesource.jshint.ui.internal.util.JsonUtil.jsonEquals;
-import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.createGridDataFillWithMinSize;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridData;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 
 
 public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
@@ -50,24 +50,33 @@ public class ConfigPreferencePage extends PreferencePage implements IWorkbenchPr
 
   @Override
   protected Control createContents( Composite parent ) {
-    Composite composite = LayoutUtil.createMainComposite( parent );
-    createConfigText( composite );
+    Composite composite = new Composite( parent, SWT.NONE );
+    Control labelPart = createLabelPart( composite );
+    Control configTextPart = createConfigTextPart( composite );
+    gridData( composite ).fillBoth();
+    gridLayout( composite ).spacing( 3 );
+    gridData( labelPart ).fillHorizontal().widthHint( 360 );
+    gridData( configTextPart ).fillBoth().sizeHint( 360, 180 );
     loadPreferences();
     return composite;
   }
 
-  private void createConfigText( Composite composite ) {
-    Link link = new Link( composite, SWT.WRAP );
+  private Control createLabelPart( Composite parent ) {
+    Link link = new Link( parent, SWT.WRAP );
     link.setText( "For syntax, see <a>http://www.jshint.com/docs/</a>." );
     BrowserSupport.INSTANCE.enableHyperlinks( link );
-    configEditor = new ConfigEditor( composite ) {
+    return link;
+  }
+
+  private Control createConfigTextPart( Composite parent ) {
+    configEditor = new ConfigEditor( parent ) {
       @Override
       public void handleError( String message ) {
         setErrorMessage( message );
         setValid( message == null );
       }
     };
-    configEditor.getControl().setLayoutData( createGridDataFillWithMinSize( 360, 180 ) );
+    return configEditor.getControl();
   }
 
   private void loadPreferences() {

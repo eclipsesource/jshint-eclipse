@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,8 +13,6 @@ package com.eclipsesource.jshint.ui.internal.preferences.ui;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,6 +24,9 @@ import org.eclipse.swt.widgets.Text;
 
 import com.eclipsesource.jshint.ui.internal.preferences.PathPattern;
 import com.eclipsesource.jshint.ui.internal.preferences.PathSegmentPattern;
+
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridData;
+import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 
 
 public class PathPatternDialog extends TitleAreaDialog {
@@ -72,11 +73,12 @@ public class PathPatternDialog extends TitleAreaDialog {
   protected Control createDialogArea( Composite parent ) {
     Control composite = super.createDialogArea( parent );
     Composite contentArea = new Composite( parent, SWT.NONE );
-    contentArea.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-    GridLayout mainLayout = createMainLayout();
-    contentArea.setLayout( mainLayout );
-    createFileArea( contentArea );
-    createFolderArea( contentArea );
+    Control fileArea = createFileArea( contentArea );
+    Control folderArea = createFolderArea( contentArea );
+    gridData( contentArea ).fillBoth();
+    gridLayout( contentArea ).columns( 2, true ).margin( 10 ).spacing( 10 );
+    gridData( fileArea ).fillBoth();
+    gridData( folderArea ).fillBoth();
     initializeUI();
     return composite;
   }
@@ -91,13 +93,13 @@ public class PathPatternDialog extends TitleAreaDialog {
     return title;
   }
 
-  private void createFileArea( Composite parent ) {
+  private Control createFileArea( Composite parent ) {
     Composite area = new Composite( parent, SWT.NONE );
-    area.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
-    area.setLayout( new GridLayout() );
+    gridLayout( area ).spacing( 3 );
     createFileAreaControls( area );
     addFileRadioListeners();
     addFileTextListener();
+    return area;
   }
 
   private void createFileAreaControls( Composite area ) {
@@ -106,11 +108,10 @@ public class PathPatternDialog extends TitleAreaDialog {
     matchingFilesRadiobox = new Button( area, SWT.RADIO );
     matchingFilesRadiobox.setText( "Files matching" );
     filePatternText = new Text( area, SWT.BORDER );
-    filePatternText.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-    addIndent( filePatternText );
+    gridData( filePatternText ).fillHorizontal().indent( 20, 0 );
     Label label = new Label( area, SWT.NONE );
     label.setText( "(* = any string, ? = any character)" );
-    addIndent( label );
+    gridData( label ).indent( 20, 0 );
   }
 
   private void addFileRadioListeners() {
@@ -133,13 +134,13 @@ public class PathPatternDialog extends TitleAreaDialog {
     filePatternText.addListener( SWT.Modify, listener );
   }
 
-  private void createFolderArea( Composite parent ) {
+  private Control createFolderArea( Composite parent ) {
     Composite area = new Composite( parent, SWT.NONE );
-    area.setLayoutData( new GridData( SWT.FILL, SWT.TOP, true, false ) );
-    area.setLayout( new GridLayout() );
+    gridLayout( area ).spacing( 3 );
     createFolderAreaControls( area );
     addFolderRadioListeners();
     addFolderTextListener();
+    return area;
   }
 
   private void createFolderAreaControls( Composite area ) {
@@ -148,14 +149,13 @@ public class PathPatternDialog extends TitleAreaDialog {
     selectedFolderRadiobox = new Button( area, SWT.RADIO );
     selectedFolderRadiobox.setText( "in folder" );
     folderPatternText = new Text( area, SWT.BORDER );
-    folderPatternText.setLayoutData( new GridData( SWT.FILL, SWT.CENTER, true, false ) );
-    addIndent( folderPatternText );
+    gridData( folderPatternText ).fillHorizontal().indent( 20, 0 );
     Label label = new Label( area, SWT.NONE );
     label.setText( "(empty for project root folder)" );
-    addIndent( label );
+    gridData( label ).indent( 20, 0 );
     includeSubFoldersCheckbox = new Button( area, SWT.CHECK );
     includeSubFoldersCheckbox.setText( "including all subfolders" );
-    addIndent( includeSubFoldersCheckbox );
+    gridData( includeSubFoldersCheckbox ).indent( 20, 0 );
   }
 
   private void addFolderRadioListeners() {
@@ -301,21 +301,6 @@ public class PathPatternDialog extends TitleAreaDialog {
       }
     }
     return errorMessage;
-  }
-
-  private static void addIndent( Control control ) {
-    GridData layoutData = (GridData)control.getLayoutData();
-    if( layoutData == null ) {
-      layoutData = new GridData();
-    }
-    layoutData.horizontalIndent = 20;
-    control.setLayoutData( layoutData );
-  }
-
-  private static GridLayout createMainLayout() {
-    GridLayout mainLayout = new GridLayout( 2, true );
-    mainLayout.horizontalSpacing = 10;
-    return mainLayout;
   }
 
 }
