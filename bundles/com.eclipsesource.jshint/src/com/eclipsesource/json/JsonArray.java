@@ -86,6 +86,11 @@ public class JsonArray extends JsonValue implements Iterable<JsonValue> {
 
   /**
    * Reads a JSON array from the given reader.
+   * <p>
+   * Characters are read in chunks and buffered internally, therefore wrapping an existing reader in
+   * an additional <code>BufferedReader</code> does <strong>not</strong> improve reading
+   * performance.
+   * </p>
    *
    * @param reader
    *          the reader to read the JSON array from
@@ -130,6 +135,18 @@ public class JsonArray extends JsonValue implements Iterable<JsonValue> {
    */
   public static JsonArray unmodifiableArray( JsonArray array ) {
     return new JsonArray( array, true );
+  }
+
+  /**
+   * Adds the JSON representation of the specified <code>int</code> value to the array.
+   *
+   * @param value
+   *          the value to add to the array
+   * @return the array itself, to enable method chaining
+   */
+  public JsonArray add( int value ) {
+    values.add( valueOf( value ) );
+    return this;
   }
 
   /**

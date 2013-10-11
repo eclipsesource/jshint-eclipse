@@ -12,36 +12,59 @@ package com.eclipsesource.json;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 
 class JsonParser {
 
+  private static final int MIN_BUFFER_SIZE = 10;
+  private static final int DEFAULT_BUFFER_SIZE = 1024;
+
   private final Reader reader;
-  private final StringBuilder recorder;
-  private int current;
+  private final char[] buffer;
+  private int bufferOffset;
+  private int index;
+  private int fill;
   private int line;
-  private int column;
+  private int lineOffset;
+  private int current;
+  private StringBuilder captureBuffer;
+  private int captureStart;
+
+  /*
+   * |                      bufferOffset
+   *                        v
+   * [a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t]        < input
+   *                       [l|m|n|o|p|q|r|s|t|?|?]    < buffer
+   *                          ^               ^
+   *                       |  index           fill
+   */
+
+  JsonParser( String string ) {
+    this( new StringReader( string ),
+          Math.max( MIN_BUFFER_SIZE, Math.min( DEFAULT_BUFFER_SIZE, string.length() ) ) );
+  }
 
   JsonParser( Reader reader ) {
+    this( reader, DEFAULT_BUFFER_SIZE );
+  }
+
+  JsonParser( Reader reader, int buffersize ) {
     this.reader = reader;
-    recorder = new StringBuilder();
+    buffer = new char[ buffersize ];
+    line = 1;
+    captureStart = -1;
   }
 
   JsonValue parse() throws IOException {
-    start();
+    read();
     skipWhiteSpace();
     JsonValue result = readValue();
     skipWhiteSpace();
-    if( !endOfText() ) {
+    if( !isEndOfText() ) {
       throw error( "Unexpected character" );
     }
     return result;
-  }
-
-  private void start() throws IOException {
-    line = 1;
-    column = -1;
-    read();
   }
 
   private JsonValue readValue() throws IOException {
@@ -117,6 +140,13 @@ class JsonParser {
     return object;
   }
 
+  private String readName() throws IOException {
+    if( current != '"' ) {
+      throw expected( "name" );
+    }
+    return readStringInternal();
+  }
+
   private JsonValue readNull() throws IOException {
     read();
     readRequiredChar( 'u' );
@@ -149,20 +179,26 @@ class JsonParser {
   }
 
   private JsonValue readString() throws IOException {
+    return new JsonString( readStringInternal() );
+  }
+
+  private String readStringInternal() throws IOException {
     read();
-    recorder.setLength( 0 );
+    startCapture();
     while( current != '"' ) {
       if( current == '\\' ) {
+        pauseCapture();
         readEscape();
+        startCapture();
       } else if( current < 0x20 ) {
         throw expected( "valid string character" );
       } else {
-        recorder.append( (char)current );
         read();
       }
     }
+    String string = endCapture();
     read();
-    return new JsonString( recorder.toString() );
+    return string;
   }
 
   private void readEscape() throws IOException {
@@ -171,33 +207,33 @@ class JsonParser {
     case '"':
     case '/':
     case '\\':
-      recorder.append( (char)current );
+      captureBuffer.append( (char)current );
       break;
     case 'b':
-      recorder.append( '\b' );
+      captureBuffer.append( '\b' );
       break;
     case 'f':
-      recorder.append( '\f' );
+      captureBuffer.append( '\f' );
       break;
     case 'n':
-      recorder.append( '\n' );
+      captureBuffer.append( '\n' );
       break;
     case 'r':
-      recorder.append( '\r' );
+      captureBuffer.append( '\r' );
       break;
     case 't':
-      recorder.append( '\t' );
+      captureBuffer.append( '\t' );
       break;
     case 'u':
       char[] hexChars = new char[4];
       for( int i = 0; i < 4; i++ ) {
         read();
-        if( !isHexDigit( current ) ) {
+        if( !isHexDigit() ) {
           throw expected( "hexadecimal digit" );
         }
         hexChars[i] = (char)current;
       }
-      recorder.append( (char)Integer.parseInt( String.valueOf( hexChars ), 16 ) );
+      captureBuffer.append( (char)Integer.parseInt( String.valueOf( hexChars ), 16 ) );
       break;
     default:
       throw expected( "valid escape sequence" );
@@ -206,62 +242,45 @@ class JsonParser {
   }
 
   private JsonValue readNumber() throws IOException {
-    recorder.setLength( 0 );
-    readAndAppendChar( '-' );
+    startCapture();
+    readChar( '-' );
     int firstDigit = current;
-    if( !readAndAppendDigit() ) {
+    if( !readDigit() ) {
       throw expected( "digit" );
     }
     if( firstDigit != '0' ) {
-      while( readAndAppendDigit() ) {
+      while( readDigit() ) {
       }
     }
     readFraction();
     readExponent();
-    return new JsonNumber( recorder.toString() );
+    return new JsonNumber( endCapture() );
   }
 
   private boolean readFraction() throws IOException {
-    if( !readAndAppendChar( '.' ) ) {
+    if( !readChar( '.' ) ) {
       return false;
     }
-    if( !readAndAppendDigit() ) {
+    if( !readDigit() ) {
       throw expected( "digit" );
     }
-    while( readAndAppendDigit() ) {
+    while( readDigit() ) {
     }
     return true;
   }
 
   private boolean readExponent() throws IOException {
-    if( !readAndAppendChar( 'e' ) && !readAndAppendChar( 'E' ) ) {
+    if( !readChar( 'e' ) && !readChar( 'E' ) ) {
       return false;
     }
-    if( !readAndAppendChar( '+' ) ) {
-      readAndAppendChar( '-' );
+    if( !readChar( '+' ) ) {
+      readChar( '-' );
     }
-    if( !readAndAppendDigit() ) {
+    if( !readDigit() ) {
       throw expected( "digit" );
     }
-    while( readAndAppendDigit() ) {
+    while( readDigit() ) {
     }
-    return true;
-  }
-
-  private String readName() throws IOException {
-    if( current != '"' ) {
-      throw expected( "name" );
-    }
-    readString();
-    return recorder.toString();
-  }
-
-  private boolean readAndAppendChar( char ch ) throws IOException {
-    if( current != ch ) {
-      return false;
-    }
-    recorder.append( ch );
-    read();
     return true;
   }
 
@@ -273,59 +292,101 @@ class JsonParser {
     return true;
   }
 
-  private boolean readAndAppendDigit() throws IOException {
-    if( !isDigit( current ) ) {
+  private boolean readDigit() throws IOException {
+    if( !isDigit() ) {
       return false;
     }
-    recorder.append( (char)current );
     read();
     return true;
   }
 
   private void skipWhiteSpace() throws IOException {
-    while( isWhiteSpace( current ) && !endOfText() ) {
+    while( isWhiteSpace() ) {
       read();
     }
   }
 
   private void read() throws IOException {
-    if( endOfText() ) {
+    if( isEndOfText() ) {
       throw error( "Unexpected end of input" );
+    }
+    if( index == fill ) {
+      if( captureStart != -1 ) {
+        captureBuffer.append( buffer, captureStart, fill - captureStart );
+        captureStart = 0;
+      }
+      bufferOffset += fill;
+      fill = reader.read( buffer, 0, buffer.length );
+      index = 0;
+      if( fill == -1 ) {
+        current = -1;
+        return;
+      }
     }
     if( current == '\n' ) {
       line++;
-      column = 0;
-    } else {
-      column++;
+      lineOffset = bufferOffset + index;
     }
-    current = reader.read();
+    current = buffer[index++];
   }
 
-  private boolean endOfText() {
-    return current == -1;
+  private void startCapture() {
+    if( captureBuffer == null ) {
+      captureBuffer = new StringBuilder();
+    }
+    captureStart = index - 1;
+  }
+
+  private void pauseCapture() {
+    int end = current == -1 ? index : index - 1;
+    captureBuffer.append( buffer, captureStart, end - captureStart );
+    captureStart = -1;
+  }
+
+  private String endCapture() {
+    int end = current == -1 ? index : index - 1;
+    String captured;
+    if( captureBuffer.length() > 0 ) {
+      captureBuffer.append( buffer, captureStart, end - captureStart );
+      captured = captureBuffer.toString();
+      captureBuffer.setLength( 0 );
+    } else {
+      captured = new String( buffer, captureStart, end - captureStart );
+    }
+    captureStart = -1;
+    return captured;
   }
 
   private ParseException expected( String expected ) {
-    if( endOfText() ) {
+    if( isEndOfText() ) {
       return error( "Unexpected end of input" );
     }
     return error( "Expected " + expected );
   }
 
   private ParseException error( String message ) {
-    return new ParseException( message, line, column );
+    int absIndex = bufferOffset + index;
+    int column = absIndex - lineOffset;
+    int offset = isEndOfText() ? absIndex : absIndex - 1;
+    return new ParseException( message, offset, line, column - 1 );
   }
 
-  private static boolean isWhiteSpace( int ch ) {
-    return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
+  private boolean isWhiteSpace() {
+    return current == ' ' || current == '\t' || current == '\n' || current == '\r';
   }
 
-  private static boolean isDigit( int ch ) {
-    return ch >= '0' && ch <= '9';
+  private boolean isDigit() {
+    return current >= '0' && current <= '9';
   }
 
-  private static boolean isHexDigit( int ch ) {
-    return ch >= '0' && ch <= '9' || ch >= 'a' && ch <= 'f' || ch >= 'A' && ch <= 'F';
+  private boolean isHexDigit() {
+    return current >= '0' && current <= '9'
+        || current >= 'a' && current <= 'f'
+        || current >= 'A' && current <= 'F';
+  }
+
+  private boolean isEndOfText() {
+    return current == -1;
   }
 
 }

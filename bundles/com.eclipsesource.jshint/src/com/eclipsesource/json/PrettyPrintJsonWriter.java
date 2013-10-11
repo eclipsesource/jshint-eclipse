@@ -37,8 +37,8 @@ public class PrettyPrintJsonWriter extends JsonWriter {
   }
 
   @Override
-  protected void writeNameSeparator() throws IOException {
-    super.writeNameSeparator();
+  protected void writeNameValueSeparator() throws IOException {
+    super.writeNameValueSeparator();
     writer.write( ' ' );
   }
 

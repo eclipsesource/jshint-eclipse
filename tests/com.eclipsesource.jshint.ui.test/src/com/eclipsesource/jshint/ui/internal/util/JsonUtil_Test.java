@@ -12,7 +12,7 @@ package com.eclipsesource.jshint.ui.internal.util;
 
 import org.junit.Test;
 
-import com.eclipsesource.jshint.ui.internal.util.JsonUtil;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 
 import static org.junit.Assert.*;
@@ -33,10 +33,17 @@ public class JsonUtil_Test {
   }
 
   @Test
-  public void prettyPrint() {
+  public void prettyPrint_emptyObject() {
     assertEquals( "{\n  \n}", JsonUtil.prettyPrint( new JsonObject() ) );
-    assertEquals( "{\n  \"foo\": true\n}",
-                  JsonUtil.prettyPrint( new JsonObject().add( "foo", true ) ) );
+  }
+
+  @Test
+  public void prettyPrint_withNestedArray() {
+    JsonObject object = new JsonObject()
+      .add( "foo", true )
+      .add( "bar", new JsonArray().add( 23 ).add( 42 ) );
+
+    assertEquals( "{\n  \"foo\": true,\n  \"bar\": [23, 42]\n}", JsonUtil.prettyPrint( object ) );
   }
 
 }

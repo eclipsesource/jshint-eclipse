@@ -13,7 +13,6 @@ package com.eclipsesource.json;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -74,6 +73,11 @@ public abstract class JsonValue implements Serializable {
 
   /**
    * Reads a JSON value from the given reader.
+   * <p>
+   * Characters are read in chunks and buffered internally, therefore wrapping an existing reader in
+   * an additional <code>BufferedReader</code> does <strong>not</strong> improve reading
+   * performance.
+   * </p>
    *
    * @param reader
    *          the reader to read the JSON value from
@@ -98,11 +102,22 @@ public abstract class JsonValue implements Serializable {
    */
   public static JsonValue readFrom( String text ) {
     try {
-      return new JsonParser( new StringReader( text ) ).parse();
+      return new JsonParser( text ).parse();
     } catch( IOException exception ) {
-      // StringReader does not throw IOException
+      // JsonParser does not throw IOException for String
       throw new RuntimeException( exception );
     }
+  }
+
+  /**
+   * Returns a JsonValue instance that represents the given <code>int</code> value.
+   *
+   * @param value
+   *          the value to get a JSON representation for
+   * @return a JSON value that represents the given value
+   */
+  public static JsonValue valueOf( int value ) {
+    return new JsonNumber( Integer.toString( value, 10 ) );
   }
 
   /**
@@ -364,6 +379,11 @@ public abstract class JsonValue implements Serializable {
 
   /**
    * Writes the JSON representation for this object to the given writer.
+   * <p>
+   * Single elements are passed directly to the given writer. Therefore, if the writer is not
+   * buffered, wrapping it in a {@link java.io.BufferedWriter BufferedWriter} can drastically
+   * improve writing performance.
+   * </p>
    *
    * @param writer
    *          the writer to write this value to
