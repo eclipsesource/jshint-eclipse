@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JSHint
 Bundle-SymbolicName: com.eclipsesource.jshint
-Bundle-Version: 0.9.9.qualifier
+Bundle-Version: 0.9.10.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: EclipseSource
 Bundle-ActivationPolicy: lazy
-Export-Package: com.eclipsesource.jshint;version="0.9.9",
- com.eclipsesource.jshint.internal;version="0.9.9";x-friends:="com.eclipsesource.jshint.test",
+Export-Package: com.eclipsesource.jshint;version="0.9.10",
+ com.eclipsesource.jshint.internal;version="0.9.10";x-friends:="com.eclipsesource.jshint.test",
  com.eclipsesource.json;version="0.9.0"
 Require-Bundle: org.mozilla.javascript;bundle-version="1.7.4"
