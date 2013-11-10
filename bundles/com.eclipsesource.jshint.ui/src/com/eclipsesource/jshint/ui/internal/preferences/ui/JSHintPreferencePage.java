@@ -103,10 +103,10 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     defaultLibButton.setText( "Use the &built-in JSHint library (version "
                               + JSHint.getDefaultLibraryVersion()
                               + ")" );
-    gridData( defaultLibButton ).fillBoth().span( 3, 1 );
+    gridData( defaultLibButton ).fillHorizontal().span( 3, 1 );
     customLibButton = new Button( parent, SWT.RADIO );
     customLibButton.setText( "Provide a &custom JSHint library file" );
-    gridData( customLibButton ).fillBoth().span( 3, 1 );
+    gridData( customLibButton ).fillHorizontal().span( 3, 1 );
     customLibButton.addSelectionListener( new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent e ) {
@@ -115,7 +115,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
       }
     } );
     customLibPathText = new Text( parent, SWT.BORDER );
-    gridData( customLibPathText ).fillBoth().span( 2, 1 ).indent( 25, 0 );
+    gridData( customLibPathText ).fillHorizontal().span( 2, 1 ).indent( 25, 0 );
     customLibPathText.addModifyListener( new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
         updateValuesFromControls();
