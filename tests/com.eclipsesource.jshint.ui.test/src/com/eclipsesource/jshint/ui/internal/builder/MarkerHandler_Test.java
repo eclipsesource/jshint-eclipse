@@ -11,11 +11,13 @@
 package com.eclipsesource.jshint.ui.internal.builder;
 
 import org.eclipse.core.runtime.CoreException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.Text;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 
 import static org.mockito.Mockito.*;
 
@@ -29,6 +31,13 @@ public class MarkerHandler_Test {
     adapter = mock( MarkerAdapter.class );
   }
 
+  @After
+  public void tearDown() throws CoreException {
+    JSHintPreferences prefs = new JSHintPreferences();
+    prefs.resetToDefaults();
+    prefs.save();
+  }
+
   @Test
   public void handleProblem_createsWarning() throws CoreException {
     MarkerHandler handler = new MarkerHandler( adapter, new Text( "test" ) );
@@ -39,7 +48,19 @@ public class MarkerHandler_Test {
   }
 
   @Test
-  public void handleProblem_createsError() throws CoreException {
+  public void handleProblem_createsWarningForError() throws CoreException {
+    MarkerHandler handler = new MarkerHandler( adapter, new Text( "test" ) );
+
+    handler.handleProblem( mockError( 1, 2, "foo" ) );
+
+    verify( adapter ).createWarning( 1, 2, 2, "foo" );
+  }
+
+  @Test
+  public void handleProblem_createsError_ifEnabled() throws CoreException {
+    JSHintPreferences prefs = new JSHintPreferences();
+    prefs.setEnableErrorMarkers( true );
+    prefs.save();
     MarkerHandler handler = new MarkerHandler( adapter, new Text( "test" ) );
 
     handler.handleProblem( mockError( 1, 2, "foo" ) );

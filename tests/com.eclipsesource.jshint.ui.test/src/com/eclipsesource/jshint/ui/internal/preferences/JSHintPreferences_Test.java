@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,6 +32,7 @@ public class JSHintPreferences_Test {
 
     assertFalse( prefs.getUseCustomLib() );
     assertEquals( "", prefs.getCustomLibPath() );
+    assertFalse( prefs.getEnableErrorMarkers() );
   }
 
   @Test
@@ -39,6 +40,7 @@ public class JSHintPreferences_Test {
     JSHintPreferences prefs = new JSHintPreferences();
     prefs.setUseCustomLib( true );
     prefs.setCustomLibPath( "foo" );
+    prefs.setEnableErrorMarkers( true );
     prefs.save();
 
     prefs.resetToDefaults();
@@ -46,6 +48,7 @@ public class JSHintPreferences_Test {
     assertTrue( prefs.hasChanged() );
     assertFalse( prefs.getUseCustomLib() );
     assertEquals( "", prefs.getCustomLibPath() );
+    assertFalse( prefs.getEnableErrorMarkers() );
   }
 
   @Test
@@ -64,6 +67,26 @@ public class JSHintPreferences_Test {
     JSHintPreferences prefs = new JSHintPreferences();
 
     prefs.setUseCustomLib( prefs.getUseCustomLib() );
+
+    assertFalse( prefs.hasChanged() );
+  }
+
+  @Test
+  public void setEnableErrorMarkers() {
+    JSHintPreferences prefs = new JSHintPreferences();
+
+    prefs.setEnableErrorMarkers( true );
+
+    assertTrue( prefs.hasChanged() );
+    assertTrue( prefs.getEnableErrorMarkers() );
+    assertFalse( new JSHintPreferences().getEnableErrorMarkers() );
+  }
+
+  @Test
+  public void setEnableErrorMarkers_unchanged() {
+    JSHintPreferences prefs = new JSHintPreferences();
+
+    prefs.setEnableErrorMarkers( prefs.getEnableErrorMarkers() );
 
     assertFalse( prefs.hasChanged() );
   }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 EclipseSource.
+ * Copyright (c) 2012, 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,14 +37,17 @@ public class JSHintPreferences {
 
   private static final String KEY_USE_CUSTOM_LIB = "useCustomJshint";
   private static final String KEY_CUSTOM_LIB_PATH = "customJshintPath";
+  private static final String KEY_ENABLE_ERROR_MARKERS = "enableErrorMarkers";
   private static final boolean DEF_USE_CUSTOM_LIB = false;
   private static final String DEF_CUSTOM_LIB_PATH = "";
+  private static final boolean DEF_ENABLE_ERROR_MARKERS = false;
 
   private final Lock readLock;
   private final Lock writeLock;
   private final Preferences node;
   private boolean useCustomLib;
   private String customLibPath;
+  private boolean enableErrorMarkers;
   private boolean dirty;
 
   public JSHintPreferences() {
@@ -54,12 +57,14 @@ public class JSHintPreferences {
     node = PreferencesFactory.getWorkspacePreferences();
     useCustomLib = node.getBoolean( KEY_USE_CUSTOM_LIB, DEF_USE_CUSTOM_LIB );
     customLibPath = node.get( KEY_CUSTOM_LIB_PATH, DEF_CUSTOM_LIB_PATH );
+    enableErrorMarkers = node.getBoolean( KEY_ENABLE_ERROR_MARKERS, DEF_ENABLE_ERROR_MARKERS );
     dirty = false;
   }
 
   public void resetToDefaults() {
     setUseCustomLib( DEF_USE_CUSTOM_LIB );
     setCustomLibPath( DEF_CUSTOM_LIB_PATH );
+    setEnableErrorMarkers( DEF_ENABLE_ERROR_MARKERS );
   }
 
   public boolean getUseCustomLib() {
@@ -104,6 +109,27 @@ public class JSHintPreferences {
     }
   }
 
+  public boolean getEnableErrorMarkers() {
+    try {
+      readLock.lock();
+      return enableErrorMarkers;
+    } finally {
+      readLock.unlock();
+    }
+  }
+
+  public void setEnableErrorMarkers( boolean enableErrorMarkers ) {
+    try {
+      writeLock.lock();
+      if( enableErrorMarkers != this.enableErrorMarkers ) {
+        this.enableErrorMarkers = enableErrorMarkers;
+        dirty = true;
+      }
+    } finally {
+      writeLock.unlock();
+    }
+  }
+
   public boolean hasChanged() {
     try {
       readLock.lock();
@@ -116,6 +142,7 @@ public class JSHintPreferences {
   public void save() throws CoreException {
     putUseCustomLib();
     putCustomLibPath();
+    putEnableErrorMarkers();
     flushNode();
     try {
       writeLock.lock();
@@ -151,6 +178,19 @@ public class JSHintPreferences {
     }
   }
 
+  private void putEnableErrorMarkers() {
+    try {
+      readLock.lock();
+      if( enableErrorMarkers == DEF_ENABLE_ERROR_MARKERS ) {
+        node.remove( KEY_ENABLE_ERROR_MARKERS );
+      } else {
+        node.putBoolean( KEY_ENABLE_ERROR_MARKERS, enableErrorMarkers );
+      }
+    } finally {
+      readLock.unlock();
+    }
+  }
+
   private void flushNode() throws CoreException {
     try {
       node.flush();
@@ -160,4 +200,5 @@ public class JSHintPreferences {
       throw new CoreException( status );
     }
   }
+
 }

@@ -23,15 +23,15 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -49,10 +49,11 @@ import static com.eclipsesource.jshint.ui.internal.util.LayoutUtil.gridLayout;
 public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
   private final JSHintPreferences preferences;
-  private Button defaultLibButton;
-  private Button customLibButton;
+  private Button defaultLibRadio;
+  private Button customLibRadio;
   private Text customLibPathText;
   private Button customLibPathButton;
+  private Button enableErrorsCheckbox;
 
   public JSHintPreferencePage() {
     setPreferenceStore( Activator.getDefault().getPreferenceStore() );
@@ -71,9 +72,11 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   @Override
   protected Control createContents( Composite parent ) {
     Composite composite = new Composite( parent, SWT.NONE );
-    gridLayout( composite ).columns( 3 ).marginTop( 10 );
+    gridLayout( composite ).columns( 3 ).spacing( 3 ).marginTop( 10 );
     createCustomJSHintArea( composite );
-    updateControls();
+    createEnableErrorMarkersArea( composite );
+    updateControlsFromPrefs();
+    updateControlsEnabled();
     return composite;
   }
 
@@ -94,45 +97,59 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   @Override
   protected void performDefaults() {
     preferences.resetToDefaults();
-    updateControls();
+    updateControlsFromPrefs();
+    updateControlsEnabled();
     super.performDefaults();
   }
 
   private void createCustomJSHintArea( Composite parent ) {
-    defaultLibButton = new Button( parent, SWT.RADIO );
-    defaultLibButton.setText( "Use the &built-in JSHint library (version "
-                              + JSHint.getDefaultLibraryVersion()
-                              + ")" );
-    gridData( defaultLibButton ).fillHorizontal().span( 3, 1 );
-    customLibButton = new Button( parent, SWT.RADIO );
-    customLibButton.setText( "Provide a &custom JSHint library file" );
-    gridData( customLibButton ).fillHorizontal().span( 3, 1 );
-    customLibButton.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
-        updateValuesFromControls();
-        updateControls();
+    defaultLibRadio = new Button( parent, SWT.RADIO );
+    String version = JSHint.getDefaultLibraryVersion();
+    defaultLibRadio.setText( "Use the &built-in JSHint library (version " + version + ")" );
+    gridData( defaultLibRadio ).fillHorizontal().span( 3, 1 );
+    customLibRadio = new Button( parent, SWT.RADIO );
+    customLibRadio.setText( "Provide a &custom JSHint library file" );
+    gridData( customLibRadio ).fillHorizontal().span( 3, 1 );
+    customLibRadio.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        preferences.setUseCustomLib( customLibRadio.getSelection() );
+        validate();
+        updateControlsEnabled();
       }
     } );
     customLibPathText = new Text( parent, SWT.BORDER );
     gridData( customLibPathText ).fillHorizontal().span( 2, 1 ).indent( 25, 0 );
-    customLibPathText.addModifyListener( new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        updateValuesFromControls();
+    customLibPathText.addListener( SWT.Modify, new Listener() {
+      public void handleEvent( Event event ) {
+        preferences.setCustomLibPath( customLibPathText.getText() );
+        validate();
       }
     } );
     customLibPathButton = new Button( parent, SWT.PUSH );
     customLibPathButton.setText( "Select" );
-    customLibPathButton.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent e ) {
+    customLibPathButton.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
         selectFile();
       }
     } );
     Text customLibPathLabelText = new Text( parent, SWT.READ_ONLY | SWT.WRAP );
     customLibPathLabelText.setText( "This file is usually named 'jshint.js'." );
     customLibPathLabelText.setBackground( parent.getBackground() );
-    gridData( customLibPathLabelText ).fillBoth().span( 2, 1 ).indent( 25, 1 );
+    gridData( customLibPathLabelText ).fillHorizontal().span( 3, 1 ).indent( 25, 1 );
+  }
+
+  private void createEnableErrorMarkersArea( Composite parent ) {
+    enableErrorsCheckbox = new Button( parent, SWT.CHECK );
+    enableErrorsCheckbox.setText( "Enable JSHint errors" );
+    enableErrorsCheckbox.setToolTipText( "If unchecked, errors will be shown as warnings" );
+    gridData( enableErrorsCheckbox ).fillHorizontal().span( 3, 1 );
+    enableErrorsCheckbox.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        preferences.setEnableErrorMarkers( enableErrorsCheckbox.getSelection() );
+        validate();
+      }
+    } );
   }
 
   private void selectFile() {
@@ -145,15 +162,8 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     fileDialog.setFilterExtensions( new String[] { "*.js", "" } );
     String selectedPath = fileDialog.open();
     if( selectedPath != null ) {
-      preferences.setCustomLibPath( selectedPath );
-      updateControls();
+      customLibPathText.setText( selectedPath );
     }
-  }
-
-  private void updateValuesFromControls() {
-    preferences.setUseCustomLib( customLibButton.getSelection() );
-    preferences.setCustomLibPath( customLibPathText.getText() );
-    validate();
   }
 
   private void validate() {
@@ -189,8 +199,7 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
   private void validatePrefs() {
     if( preferences.getUseCustomLib() ) {
       String path = preferences.getCustomLibPath();
-      File file = new File( path );
-      validateFile( file );
+      validateFile( new File( path ) );
     }
   }
 
@@ -214,13 +223,17 @@ public class JSHintPreferencePage extends PreferencePage implements IWorkbenchPr
     }
   }
 
-  private void updateControls() {
-    boolean useCustomLib = preferences.getUseCustomLib();
-    defaultLibButton.setSelection( !useCustomLib );
-    customLibButton.setSelection( useCustomLib );
+  private void updateControlsFromPrefs() {
+    customLibRadio.setSelection( preferences.getUseCustomLib() );
+    defaultLibRadio.setSelection( !customLibRadio.getSelection() );
     customLibPathText.setText( preferences.getCustomLibPath() );
-    customLibPathText.setEnabled( useCustomLib );
-    customLibPathButton.setEnabled( useCustomLib );
+    enableErrorsCheckbox.setSelection( preferences.getEnableErrorMarkers() );
+  }
+
+  private void updateControlsEnabled() {
+    boolean enabled = customLibRadio.getSelection();
+    customLibPathText.setEnabled( enabled );
+    customLibPathButton.setEnabled( enabled );
   }
 
   private void triggerRebuild() throws CoreException {

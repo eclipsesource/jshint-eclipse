@@ -16,16 +16,19 @@ import com.eclipsesource.jshint.Problem;
 import com.eclipsesource.jshint.ProblemHandler;
 import com.eclipsesource.jshint.Text;
 import com.eclipsesource.jshint.ui.internal.builder.JSHintBuilder.CoreExceptionWrapper;
+import com.eclipsesource.jshint.ui.internal.preferences.JSHintPreferences;
 
 
 final class MarkerHandler implements ProblemHandler {
 
   private final MarkerAdapter markerAdapter;
   private final Text code;
+  private final boolean enableErrorMarkers;
 
   MarkerHandler( MarkerAdapter markerAdapter, Text code ) {
     this.markerAdapter = markerAdapter;
     this.code = code;
+    enableErrorMarkers = new JSHintPreferences().getEnableErrorMarkers();
   }
 
   public void handleProblem( Problem problem ) {
@@ -46,7 +49,7 @@ final class MarkerHandler implements ProblemHandler {
       throws CoreExceptionWrapper
   {
     try {
-      if( isError ) {
+      if( enableErrorMarkers && isError ) {
         markerAdapter.createError( line, character, character, message );
       } else {
         markerAdapter.createWarning( line, character, character, message );
