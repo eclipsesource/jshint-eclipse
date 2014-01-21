@@ -38,3 +38,5 @@ License
 The code is published under the terms of the [Eclipse Public License, version 1.0](http://www.eclipse.org/legal/epl-v10.html).
 
 Includes code from [jshint](https://github.com/jshint/jshint/), which is published under the terms of the MIT license with the addition "The Software shall be used for Good, not Evil."
+
+<a href="http://with-eclipse.github.io/" target="_blank"><img alt="with-Eclipse logo" src="http://with-eclipse.github.io/with-eclipse-1.jpg" /></a>
