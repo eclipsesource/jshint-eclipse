@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2014 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,6 @@
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.builder;
-
 
 
 public class CommentsFilter {
@@ -54,6 +53,10 @@ public class CommentsFilter {
   @Override
   public String toString() {
     return new String( chars );
+  }
+
+  public static String filterComments( String input ) {
+    return new CommentsFilter( input ).toString();
   }
 
 }

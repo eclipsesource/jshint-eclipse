@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2014 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,15 +10,20 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.builder;
 
+import java.io.IOException;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.osgi.service.prefs.Preferences;
 
 import com.eclipsesource.jshint.ui.internal.Activator;
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
-import com.eclipsesource.jshint.ui.internal.util.IOUtil;
 import com.eclipsesource.json.JsonObject;
+
+import static com.eclipsesource.jshint.ui.internal.builder.CommentsFilter.filterComments;
+import static com.eclipsesource.jshint.ui.internal.util.IOUtil.readFileUtf8;
 
 
 public class ConfigLoader {
@@ -38,34 +43,46 @@ public class ConfigLoader {
     return getWorkspaceConfig();
   }
 
-  private static JsonObject getWorkspaceConfig() {
-    Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
-    return JsonObject.readFrom( new OptionsPreferences( workspaceNode ).getConfig() );
-  }
-
   private JsonObject getProjectConfig( OptionsPreferences projectPrefs ) {
-    IFile configFile = getConfigFile();
-    // compatibility
-    if( !configFile.exists() ) {
-      return JsonObject.readFrom( projectPrefs.getConfig() );
-    }
-    return readConfig( configFile );
-  }
-
-  private IFile getConfigFile() {
-    return project.getFile( ".jshintrc" );
-  }
-
-  private JsonObject readConfig( IFile file ) {
     try {
-      String contents = IOUtil.readFileUtf8( file );
-      String filtered = new CommentsFilter( contents ).toString();
-      return JsonObject.readFrom( filtered );
+      String json = getProjectConfigJson( projectPrefs );
+      return JsonObject.readFrom( filterComments( json ) );
     } catch( Exception exception ) {
       String message = "Failed to read jshint configuration for project " + project.getName();
       Activator.logError( message, exception );
+      return new JsonObject();
     }
-    return new JsonObject();
+  }
+
+  private String getProjectConfigJson( OptionsPreferences projectPrefs ) throws CoreException,
+      IOException
+  {
+    IFile configFile = getProjectConfigFile();
+    if( !configFile.exists() ) {
+      // compatibility
+      return projectPrefs.getConfig();
+    }
+    return readFileUtf8( configFile );
+  }
+
+  private IFile getProjectConfigFile() {
+    return project.getFile( ".jshintrc" );
+  }
+
+  private static JsonObject getWorkspaceConfig() {
+    try {
+      String json = getWorkspaceConfigJson();
+      return JsonObject.readFrom( filterComments( json ) );
+    } catch( Exception exception ) {
+      String message = "Failed to read jshint configuration from workspace preferences";
+      Activator.logError( message, exception );
+      return new JsonObject();
+    }
+  }
+
+  private static String getWorkspaceConfigJson() {
+    Preferences workspaceNode = PreferencesFactory.getWorkspacePreferences();
+    return new OptionsPreferences( workspaceNode ).getConfig();
   }
 
 }

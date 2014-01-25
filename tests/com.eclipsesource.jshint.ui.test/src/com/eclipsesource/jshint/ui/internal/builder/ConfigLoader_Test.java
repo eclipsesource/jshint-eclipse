@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource.
+ * Copyright (c) 2013, 2014 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,13 @@
  ******************************************************************************/
 package com.eclipsesource.jshint.ui.internal.builder;
 
+import java.util.Arrays;
+
 import org.eclipse.core.resources.IProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.service.prefs.BackingStoreException;
 
 import com.eclipsesource.jshint.ui.internal.preferences.OptionsPreferences;
 import com.eclipsesource.jshint.ui.internal.preferences.PreferencesFactory;
@@ -39,8 +42,9 @@ public class ConfigLoader_Test {
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws BackingStoreException {
     deleteProject( project );
+    PreferencesFactory.getWorkspacePreferences().clear();
   }
 
   @Test
@@ -56,7 +60,7 @@ public class ConfigLoader_Test {
   }
 
   @Test
-  public void ignoresWorkspaceOptions_ifProjectSpecific() {
+  public void ignoresWorkspaceOptionsIfProjectSpecific() {
     workspacePrefs.getNode().put( "options", "a: 1, b: 1" );
     createProjectConfig( new JsonObject().add( "b", 2 ).add( "c", 2 ) );
     projectPrefs.setProjectSpecific( true );
@@ -66,6 +70,18 @@ public class ConfigLoader_Test {
     assertNull( configuration.get( "a" ) );
     assertEquals( 2, configuration.get( "b" ).asInt() );
     assertEquals( 2, configuration.get( "c" ).asInt() );
+  }
+
+  @Test
+  public void usesWorkspaceConfigIfNotProjectSpecific() {
+    workspacePrefs.setConfig( "{\"a\": 1, \"b\": 1}" );
+    createProjectConfig( new JsonObject().add( "b", 2 ).add( "c", 2 ) );
+
+    JsonObject configuration = new ConfigLoader( project ).getConfiguration();
+
+    assertEquals( 1, configuration.get( "a" ).asInt() );
+    assertEquals( 1, configuration.get( "b" ).asInt() );
+    assertNull( configuration.get( "c" ) );
   }
 
   @Test
@@ -100,6 +116,27 @@ public class ConfigLoader_Test {
     JsonObject configuration = new ConfigLoader( project ).getConfiguration();
 
     assertEquals( new JsonObject(), configuration );
+  }
+
+  @Test
+  public void filtersCommentsFromProjectConfig() {
+    projectPrefs.setConfig( "{\n// \"a\": 1,\n\"b\": 2 /*, \"c\": 3*/}" );
+    projectPrefs.setProjectSpecific( true );
+
+    JsonObject configuration = new ConfigLoader( project ).getConfiguration();
+
+    assertEquals( new JsonObject().add( "b", 2 ), configuration );
+    assertEquals( Arrays.asList( "b" ), configuration.names() );
+  }
+
+  @Test
+  public void filtersCommentsFromWorkspaceConfig() {
+    workspacePrefs.setConfig( "{\n// \"a\": 1,\n\"b\": 2 /*, \"c\": 3*/}" );
+
+    JsonObject configuration = new ConfigLoader( project ).getConfiguration();
+
+    assertEquals( new JsonObject().add( "b", 2 ), configuration );
+    assertEquals( Arrays.asList( "b" ), configuration.names() );
   }
 
   private void createProjectConfig( JsonObject projectConfig ) {
