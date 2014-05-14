@@ -238,8 +238,8 @@ public class JSHint {
    * Example: "a\tb\tc"
    *
    *   index:  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10|
-   *   char:   | a | �� | b | �� | c |
-   *   visual:     | a | ��             | b | ��             | c |
+   *   char:   | a | » | b | » | c |
+   *   visual:     | a | »             | b | »             | c |
    */
   int visualToCharIndex( Text text, int line, int character ) {
     String string = text.getContent();
