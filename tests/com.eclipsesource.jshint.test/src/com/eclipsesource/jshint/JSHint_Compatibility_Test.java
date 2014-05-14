@@ -51,7 +51,8 @@ public class JSHint_Compatibility_Test {
       { "r12" },
       { "1.1.0" },
       { "2.1.2" },
-      { "2.1.10" } } );
+      { "2.1.10" },
+      { "2.4.3" } } );
   }
 
   public JSHint_Compatibility_Test( String version ) {

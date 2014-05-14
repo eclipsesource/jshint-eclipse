@@ -47,7 +47,7 @@ import com.eclipsesource.json.JsonValue;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "2.1.10";
+  private static final String DEFAULT_JSHINT_VERSION = "2.4.3";
   private static final int DEFAULT_JSHINT_INDENT = 4;
   private ScriptableObject scope;
   private Function jshint;
@@ -238,8 +238,8 @@ public class JSHint {
    * Example: "a\tb\tc"
    *
    *   index:  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10|
-   *   char:   | a | » | b | » | c |
-   *   visual:     | a | »             | b | »             | c |
+   *   char:   | a | �� | b | �� | c |
+   *   visual:     | a | ��             | b | ��             | c |
    */
   int visualToCharIndex( Text text, int line, int character ) {
     String string = text.getContent();
