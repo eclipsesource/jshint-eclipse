@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.6.0",
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Import-Package: com.eclipsesource.jshint;version="[0.9.10,1.0.0)",
- com.eclipsesource.json;version="0.9.0"
+ com.eclipsesource.json;version="[0.9.0.jshint,0.9.0.jshint]"
 Export-Package: com.eclipsesource.jshint.ui.internal;version="0.9.10";x-internal:=true,
  com.eclipsesource.jshint.ui.internal.builder;version="0.9.10";x-internal:=true,
  com.eclipsesource.jshint.ui.internal.preferences;version="0.9.10";x-internal:=true,
