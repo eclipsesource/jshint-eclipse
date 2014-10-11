@@ -1,0 +1,6 @@
+---
+layout: post
+title: Version 0.9.10 published
+---
+
+For details, please see the [github release page](https://github.com/eclipsesource/jshint-eclipse/releases).
