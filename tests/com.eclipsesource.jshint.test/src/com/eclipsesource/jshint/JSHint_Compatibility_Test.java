@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 EclipseSource.
+ * Copyright (c) 2012, 2014 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,6 +9,9 @@
  *    Ralf Sternberg - initial implementation and API
  ******************************************************************************/
 package com.eclipsesource.jshint;
+
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,9 +26,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import com.eclipsesource.json.JsonObject;
-
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.*;
 
 
 @RunWith( value = Parameterized.class )
@@ -52,7 +52,8 @@ public class JSHint_Compatibility_Test {
       { "1.1.0" },
       { "2.1.2" },
       { "2.1.10" },
-      { "2.4.3" } } );
+      { "2.4.3" },
+      { "2.5.6" } } );
   }
 
   public JSHint_Compatibility_Test( String version ) {

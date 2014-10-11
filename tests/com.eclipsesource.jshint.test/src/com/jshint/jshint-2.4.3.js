@@ -13491,5 +13491,3 @@ exports.yui = {
 JSHINT = require('jshint').JSHINT;
 if (typeof exports === 'object' && exports) exports.JSHINT = JSHINT;
 }());
-/*jshint boss: true, rhino: true, unused: true, undef: true, white: true, quotmark: double */
-/*global JSHINT */
