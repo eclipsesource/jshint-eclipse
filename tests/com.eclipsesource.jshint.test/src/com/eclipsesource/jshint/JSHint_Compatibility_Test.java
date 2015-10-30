@@ -53,7 +53,12 @@ public class JSHint_Compatibility_Test {
       { "2.1.2" },
       { "2.1.10" },
       { "2.4.3" },
-      { "2.5.6" } } );
+      { "2.5.6" },
+      { "2.6.3" },
+      { "2.7.0" },
+      { "2.8.0" },
+      { "2.9.0" },
+      } );
   }
 
   public JSHint_Compatibility_Test( String version ) {
