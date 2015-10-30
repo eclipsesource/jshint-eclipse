@@ -2,12 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests for JSHint Eclipse Integration
 Bundle-SymbolicName: com.eclipsesource.jshint.test
-Bundle-Version: 0.9.11.qualifier
-Fragment-Host: com.eclipsesource.jshint;bundle-version="0.9.11"
+Bundle-Version: 0.10.0.qualifier
+Fragment-Host: com.eclipsesource.jshint;bundle-version="0.10.0"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.junit;version="4.8.2",
  org.junit.runner;version="4.8.2",
  org.junit.runners;version="4.8.2"
 Bundle-Vendor: EclipseSource
 Require-Bundle: org.hamcrest.core;bundle-version="1.1.0",
- org.mockito.mockito-all;bundle-version="[1.9.5,2.0.0)"
+ org.mockito.mockito-all;bundle-version="[1.9.5,2.0.0)",
+ org.eclipse.equinox.ds,
+ org.eclipse.equinox.event

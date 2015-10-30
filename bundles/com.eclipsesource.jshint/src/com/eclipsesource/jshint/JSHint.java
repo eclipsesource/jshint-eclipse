@@ -47,7 +47,7 @@ import com.eclipsesource.json.JsonValue;
  */
 public class JSHint {
 
-  private static final String DEFAULT_JSHINT_VERSION = "2.5.6";
+  private static final String DEFAULT_JSHINT_VERSION = "2.9.0";
   private static final int DEFAULT_JSHINT_INDENT = 4;
   private ScriptableObject scope;
   private Function jshint;
@@ -259,7 +259,8 @@ public class JSHint {
     // Create shims to prevent problems with JSHint accessing objects that are not available in
     // Rhino, e.g. https://github.com/jshint/jshint/issues/1038
     return "console = {log:function(){},error:function(){},trace:function(){}};"
-         + "window = {};";
+         + "window = {};"
+         + "global = this;";
   }
 
   private static Function findJSHintFunction( ScriptableObject scope )

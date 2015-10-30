@@ -17,7 +17,7 @@
 
   <groupId>com.eclipsesource.jshint</groupId>
   <artifactId>com.eclipsesource.jshint.build</artifactId>
-  <version>0.9.11-SNAPSHOT</version>
+  <version>0.10.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -34,17 +34,17 @@
     <repository>
       <id>target-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/indigo/</url>
+      <url>http://download.eclipse.org/releases/mars/</url>
     </repository>
     <repository>
       <id>orbit-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20130827064939/repository/</url>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/</url>
     </repository>
     <repository>
       <id>swtbot-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/technology/swtbot/helios/dev-build/update-site</url>
+      <url>http://download.eclipse.org/technology/swtbot/releases/2.3.0/</url>
     </repository>
     <repository>
       <id>mockito-all-repo</id>
@@ -101,7 +101,6 @@
           <dependency>
             <type>eclipse-feature</type>
             <artifactId>org.eclipse.rcp</artifactId>
-            <version>0.0.0</version>
           </dependency>
         </configuration>
       </plugin>
