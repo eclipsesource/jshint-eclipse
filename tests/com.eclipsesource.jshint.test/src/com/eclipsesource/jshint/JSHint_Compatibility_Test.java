@@ -58,6 +58,7 @@ public class JSHint_Compatibility_Test {
       { "2.7.0" },
       { "2.8.0" },
       { "2.9.0" },
+      { "2.9.1" },
       } );
   }
 
