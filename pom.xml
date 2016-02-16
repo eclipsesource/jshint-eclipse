@@ -17,7 +17,7 @@
 
   <groupId>com.eclipsesource.jshint</groupId>
   <artifactId>com.eclipsesource.jshint.build</artifactId>
-  <version>0.10.0-SNAPSHOT</version>
+  <version>0.10.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
