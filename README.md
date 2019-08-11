@@ -25,7 +25,7 @@ Eclipse 3.6 (Helios) or newer.
 JSHint included
 ---------------
 
-A [recent version](https://github.com/eclipsesource/jshint-eclipse/tree/master/bundles/com.eclipsesource.jshint/src/com/jshint) of JSHint is included.
+An [ancient version](https://github.com/eclipsesource/jshint-eclipse/tree/master/bundles/com.eclipsesource.jshint/src/com/jshint) of JSHint is included.
 
 Installation
 ------------
