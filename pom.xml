@@ -34,22 +34,22 @@
     <repository>
       <id>target-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/mars/</url>
+      <url>https://download.eclipse.org/releases/mars/</url>
     </repository>
     <repository>
       <id>orbit-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/</url>
+      <url>https://download.eclipse.org/tools/orbit/downloads/drops/R20150821153341/repository/</url>
     </repository>
     <repository>
       <id>swtbot-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/technology/swtbot/releases/2.3.0/</url>
+      <url>https://download.eclipse.org/technology/swtbot/releases/2.3.0/</url>
     </repository>
     <repository>
       <id>mockito-all-repo</id>
       <layout>p2</layout>
-      <url>http://download.eclipsesource.com/~rsternberg/mockito-all/</url>
+      <url>https://download.eclipsesource.com/~rsternberg/mockito-all/</url>
     </repository>
   </repositories>
 
